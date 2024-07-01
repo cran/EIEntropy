@@ -1,0 +1,2396 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Vignette EIEntropy</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Vignette EIEntropy</h1>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#methodology" id="toc-methodology">1. Methodology</a></li>
+<li><a href="#data" id="toc-data">2. Data</a></li>
+<li><a href="#examples" id="toc-examples">3. Examples</a></li>
+<li><a href="#generalized-cross-entropy-ei_gce" id="toc-generalized-cross-entropy-ei_gce">3.1 Generalized Cross entropy:
+ei_gce()</a></li>
+<li><a href="#without-prior-information" id="toc-without-prior-information">3.2 Without prior
+information</a></li>
+<li><a href="#another-option-when-we-do-not-have-prior-information-ei_gme" id="toc-another-option-when-we-do-not-have-prior-information-ei_gme">3.2.1
+Another option when we do not have prior information: ei_gme()</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
+</ul>
+</div>
+
+<p>In a wide range of analyses, there is a common problem.  The data is
+usually not available at the desired spatial scale that researchers
+need.  Ecological inference allows us to recover incomplete or
+unavailable data by inferring individual behaviours based on the
+aggregated information. In some cases, the database containing the
+variable of interest does not have it at the needed spatial level. 
+Entropy allows us to obtain the best solution according to the
+information that we have.  To learn more about the methodology, see
+Fernández-Vázquez et al. (2020)</p>
+<p>The package extrapolates the value of the variable of interest above
+a data frame with more detailed geographical information, being
+consistent with the aggregates available. This package contains two
+functions, ei_gce() and ei_gme(). The method that the function ei_gce()
+applies is framed between GCE (Generalized Cross entropy), minimising
+the distance between the two distributions <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span>, being this <span class="math inline">\(Q\)</span> the prior information we can initially
+have.  If the user does not have prior information can choose ei_gme()
+for computational reasons which will use GME (Generalized maximum
+entropy) since our distribution a priori will be the uniform
+distribution.  These two kinds of problems will be explained in
+the next sections. </p>
+<p>The EIentropy package makes the process of assessing uncertainty to
+estimate information at the desired level of disaggregation into one
+function. It gathers all the steps making it easy to apply this
+methodology to problems of absence of data. This document introduces you
+to the functions ei_gme() and ei_gce(), which apply entropy to solve
+issues of ecological inference, providing, consistent disaggregated
+indicators with observable aggregated data and cross moments.</p>
+<p>Once you’ve installed it, the vignette (“EIEntropy”) will allow you
+to learn more. We will use the data included in this package to explore
+its functions. This data is a straightforward application of this
+methodology developed in…</p>
+<p>This package is on CRAN and can be installed from within R.</p>
+<div id="methodology" class="section level2">
+<h2>1. Methodology</h2>
+<p>The problem assessed is the need to obtain a variable <span class="math inline">\(Y\)</span> at a spatial level that is not
+available. This variable <span class="math inline">\(Y\)</span> can take
+<span class="math inline">\(j\)</span> values. The method aims to obtain
+a matrix <span class="math inline">\(P\)</span> with dimension <span class="math inline">\(n\)</span> <em>x</em> <span class="math inline">\(J\)</span> being <span class="math inline">\(n\)</span> the number of observations. Matrix
+<span class="math inline">\(P\)</span> is compounded by the
+probabilities associated with each <span class="math inline">\(j\)</span> value for each observation. Taking
+advantage of the information that we have, the method introduces the
+cross-moments as a restriction to assure consistency.</p>
+<p>Taking into account <span class="math inline">\(Y\)</span> is the sum
+of <span class="math inline">\(P\)</span> and <span class="math inline">\(U\)</span>, being <span class="math inline">\(U\)</span> the random noise. Once we have
+estimated matrix <span class="math inline">\(P\)</span> and the error
+term, we can obtain <span class="math inline">\(Y\)</span> as <span class="math inline">\(Y=P+U\)</span>. The error term is built as a
+weighted mean of a support vector <span class="math inline">\(V\)</span>
+in which weights <span class="math inline">\(W\)</span> are
+estimated.</p>
+<p>The support vector is the component of the noise defining the
+flexibility of the estimation. It represents the maximum and minimum
+error around a value in the center. By default, <span class="math inline">\(V\)</span> is defined as (-var, 0, var) where
+<em>var</em> represents the variance of the dependent variable. If the
+estimation requires more flexibility <span class="math inline">\(V\)</span> can be defined wider–with (-1,0,1) as
+the recommended maximum.</p>
+<p>We present two functions to apply ecological inference through
+entropy. The general case minimizes the Kullback-Leibler divergence to
+find the matrix of probabilities <span class="math inline">\(P\)</span>
+with the minimum divergence with a prior. This case is adequate even
+when we have prior information on the distribution of the probabilities
+of our variable of interest. This information refers to all existing
+knowledge previous to the data that can influence the expectations of
+the variable of interest.</p>
+<p><span class="math display">\[\[
+\text{{Min}}_{P} \text{{KL}}(P, Q) = \sum_{i=1}^{n} \sum_{j=1}^{J}
+P_{ij} \log\left(\frac{P_{ij}}{Q_{ij}}\right)\text{{ s.t.}}
+\]\]</span></p>
+<p><span class="math display">\[
+\frac{1}{n} \sum_{i=1}^{n} x_{s_{ik}} y_{ij} = \frac{1}{n}
+\sum_{i=1}^{n} x_{c_{ik}} (p_{ij} + u_{ij}) =\frac{1}{n} \sum_{i=1}^{n}
+x_{cik} [p_{ij} + w_{Lij} v_{l}];         
+j=1,\ldots,J
+\]
+\]</span> <span class="math display">\[\[
+\sum_{j=1}^{J} p_{ij} = 1 \quad \text{for } i=1,\ldots,n
+\]
+\]</span> <span class="math display">\[\[
+\sum_{l=1}^{L}  w_{Lij} = 1 \quad \text{for } i=1,\ldots,n;         
+j=1,\ldots,J
+\]
+\]</span></p>
+<p>This function minimizes the distance between <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span>. Being <span class="math inline">\(Q\)</span> the prior information that we already
+have. If we have some information about the possible distribution of our
+variable of interest we can include this information here. For example,
+if you know your variable of interest can take two values but one of
+them is more common than the other you can include it in your estimation
+by using <span class="math inline">\(Q\)</span>.</p>
+<p>If we don’t have any information then we will assume there is the
+same probability for each possibility <span class="math inline">\(j\)</span> of our variable of interest. In this
+sense, we minimize the divergence with a uniform distribution.</p>
+<p>Solving the optimization problem, we obtain estimations as <span class="math inline">\(\hat{Y}= \hat{P} + \hat{W}V\)</span>. The solution
+should be consistent with the restrictions. In this case, the
+restrictions will contain information from two data sources, datahp and
+datahs. If there were divergences between the two sources of data, they
+would be captured in the error term. This is one of the main advantages
+of the methodology because it allows the user to use two databases with
+divergences between them.</p>
+</div>
+<div id="data" class="section level2">
+<h2>2. Data</h2>
+<p>To explore the functions we will use data included in the package. In
+our example, we want to obtain microdata about poverty, in terms of
+wealth, with an indication of location at regional level. We have the
+variable of interest in one official database but without information
+about location. At the same time, in other database, the variable of
+interest is not available but the household location is.</p>
+<p>The data can be loaded by calling the functions financial() and
+social().</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>datahp <span class="ot">&lt;-</span> <span class="fu">financial</span>()</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>datahs <span class="ot">&lt;-</span> <span class="fu">social</span>()</span></code></pre></div>
+<p>In this example, we aim to obtain probabilities of being poor in
+terms of wealth for each individual or observation in the survey with
+detailed information about location. With this procedure, we will have
+our variable of interest at the desired spatial scale. As it is known,
+some variables, such as education level, income, or employment status
+are related to wealth. Hence, we will use these variables as regressors
+in the example. These variables are going to be our X. We have the same
+variables in both data frames with the same name. For this example, the
+financial survey includes 100 observations for the variables Dcollege,
+Dunemp, total income and the variable of interest:poor_liq. They are a
+dummy for college, a dummy for being unemployed, the household income
+(in euros) and a dummy for being poor in terms of liquid assets
+respectively.</p>
+<p>The data called social has the same variables but instead of the
+variable of interest, it has another variable with the region of each
+household. In this database, we have 200 observations (households).</p>
+</div>
+<div id="examples" class="section level2">
+<h2>3. Examples</h2>
+</div>
+<div id="generalized-cross-entropy-ei_gce" class="section level1">
+<h1>3.1 Generalized Cross entropy: ei_gce()</h1>
+<p>The function ei_gce() allows the user to introduce prior information
+in the estimation. In this example, we keep using the databases included
+in this package <em>financial</em> and <em>social</em>. Once we have
+chosen the best function for our case note that we need to specify our
+function :</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>fn <span class="ot">&lt;-</span> datahp<span class="sc">$</span>poor_liq <span class="sc">~</span> Dcollege<span class="sc">+</span>Totalincome<span class="sc">+</span>Dunemp</span></code></pre></div>
+<p>Note that the same name in both datasets for the independent
+variables is required.</p>
+<p>This function’s arguments are the previously defined function, the
+databases used, the weights, the tolerance and the method applied in the
+optimization and the support vector. With this function, weights can be
+used and included with w. If there are no weights the function assumes a
+matrix of 1. Note that the weights used in this methodology are
+normalised so analytics and sampling weights can be used without
+distinction.</p>
+<p>In this example the variable of interest (poor_liq) is defined with a
+function in the argument <em>fn</em> (see previous section)</p>
+<p>The arguments corresponding to the information a priori and the
+support vector can be included as :</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>q <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.4</span>,<span class="fl">0.6</span>) </span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>v <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>))</span></code></pre></div>
+<p>In this example we assume a priori distribution of poverty equal to
+0.4 for poor and 0.6 for non-poor. The support vector has been set to
+the maximum (-1,0,1). Applying the ei_gce() we can solve the estimation
+as:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">ei_gce</span>(fn,datahp,datahs,<span class="at">q=</span>q,<span class="at">w=</span>w,<span class="at">tol=</span><span class="cn">NULL</span>,<span class="at">method=</span><span class="st">&quot;BFGS&quot;</span>,<span class="at">v=</span>v)</span></code></pre></div>
+<p>The function will produce a data frame called a table with the
+following information:</p>
+<ul>
+<li><p>Probabilities for each individual to each possibility <span class="math inline">\(j\)</span> of the variable of interest <span class="math inline">\(Y\)</span>.</p></li>
+<li><p>The errors are calculated to the <span class="math inline">\(j\)</span> possibilities of <span class="math inline">\(Y\)</span>.</p></li>
+<li><p>The prediction for each individual is the result of the sum of
+the probability plus the error.</p></li>
+</ul>
+<p>The function provides information about the optimization process, in
+concrete:</p>
+<ul>
+<li>The value of entropy resulting from the optimization, the
+iterations, which indicate the times the objective function and the
+gradient have been evaluated during the optimization process and a
+message in case something went wrong.</li>
+</ul>
+<p>Lagrange multipliers <span class="math inline">\(\lambda\)</span>
+associated to each independent variables are also provided in the form
+of a data frame. In addition, it provides an object with the
+restrictions checked which should be approximately zero. Being g1 the
+restriction related to the unit probability constraint, g2 to the error
+unit sum constraint, and g3 to the consistency restriction that implies
+that the difference between the cross moment in both datasets must be
+zero. The restriction g3 can be checked thoroughly with the objects
+separately which are to be provided in the output as cross moments hp
+(the cross moments in datahp) and cross moments hs (the cross moments in
+datahs).</p>
+<pre><code>{r} result</code></pre>
+<p>To make the results more visual, this package includes a personalized
+summary function, providing the means for each category <span class="math inline">\(j\)</span> for the predictions, the probabilities
+and the error.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
+<pre><code>## 
+## Adjuntando el paquete: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">summary</span>(result)</span></code></pre></div>
+<pre><code>## Iterationsfunction 
+##     1001 
+## Entropy value[1] -15.05311
+## [1] &quot;mean_estimations&quot;
+##       n predictions_j1 predictions_j2 p_dual_j1 p_dual_j2 e_dual_j1  e_dual_j2
+## 1 100.5      0.5874094      0.3825055 0.4873519 0.5126481 0.1000575 -0.1301426
+## [1] &quot;lambda&quot;
+##    intercept  Dcollege   Totalincome    Dunemp
+## j1 63.037111  56.62013 -1.763225e-04 -3.627390
+## j2 -8.711875 -23.03967 -4.508848e-05 -8.457388</code></pre>
+<p>Graphs included are generated with the plot function, showing the
+averages of the predictions for each territorial unit and the 95%
+confidence interval associated with each of them.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>result,datahs<span class="sc">$</span>reg)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>Notes: Arguments <em>tol</em> and <em>metho</em>d can be defined by
+the user. The default tolerance has been set in 1e-24 while the
+by-default method applied in the optimization is BFGS. Other acceptable
+methods are Nelder-Mead, CG, L-BFGS-B, SANN or Brent from the optim()
+function.</p>
+</div>
+<div id="without-prior-information" class="section level1">
+<h1>3.2 Without prior information</h1>
+<p>Suppose we do not have prior information about our variable of
+interest. In that case, the process starting point will be the uniform
+distribution as we do not have information to think one characteristic
+is more likely than the other.</p>
+<p>The function ei_gce() will include by default the uniform
+distribution as <span class="math inline">\(Q\)</span> if the user does
+not specify any other. This would be:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>result2 <span class="ot">&lt;-</span> <span class="fu">ei_gce</span>(fn,datahp,datahs,<span class="at">q=</span><span class="cn">NULL</span>,<span class="at">w=</span>w,<span class="at">method=</span><span class="st">&quot;BFGS&quot;</span>,<span class="at">v=</span><span class="cn">NULL</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>result2</span></code></pre></div>
+<pre><code>## $estimations
+##       n predictions_j1 predictions_j2 p_dual_j1 p_dual_j2     e_dual_j1
+## 1     1      0.7653033     0.18158964 0.7731569 0.2268431 -7.853661e-03
+## 2     2      0.6292050     0.37279864 0.6205527 0.3794473  8.652291e-03
+## 3     3      0.4987039     0.50016358 0.4993129 0.5006871 -6.090037e-04
+## 4     4      0.7444188     0.15161168 0.7782039 0.2217961 -3.378510e-02
+## 5     5      0.4941731     0.36487022 0.5612745 0.4387255 -6.710137e-02
+## 6     6      0.4970286     0.46086031 0.5170348 0.4829652 -2.000616e-02
+## 7     7      0.4942557     0.42257937 0.5338178 0.4661822 -3.956203e-02
+## 8     8      0.7769846     0.17646843 0.7808107 0.2191893 -3.826155e-03
+## 9     9      0.8272146     0.02204835 0.8764939 0.1235061 -4.927927e-02
+## 10   10      0.5621524     0.40621453 0.5733959 0.4266041 -1.124343e-02
+## 11   11      0.7794729     0.15880390 0.7902411 0.2097589 -1.076820e-02
+## 12   12      0.4989756     0.48059781 0.5086517 0.4913483 -9.676100e-03
+## 13   13      0.4952506     0.49295642 0.5010799 0.4989201 -5.829343e-03
+## 14   14      0.7355029     0.17434095 0.7633031 0.2366969 -2.780016e-02
+## 15   15      0.3765361     0.55081300 0.4178562 0.5821438 -4.132013e-02
+## 16   16      0.7281199     0.17234292 0.7609904 0.2390096 -3.287050e-02
+## 17   17      0.4999926     0.49998267 0.5000047 0.4999953 -1.206123e-05
+## 18   18      0.4836230     0.50820196 0.4884305 0.5115695 -4.807471e-03
+## 19   19      0.7002293     0.26961229 0.7020630 0.2979370 -1.833711e-03
+## 20   20      0.5571214     0.40711448 0.5706135 0.4293865 -1.349208e-02
+## 21   21      0.3840515     0.49127590 0.4492613 0.5507387 -6.520990e-02
+## 22   22      0.7297204     0.27890097 0.7113995 0.2886005  1.832094e-02
+## 23   23      0.5236001     0.46886971 0.5257609 0.4742391 -2.160832e-03
+## 24   24      0.7533880     0.20773516 0.7554770 0.2445230 -2.089002e-03
+## 25   25      0.4949610     0.37963899 0.5545724 0.4454276 -5.961137e-02
+## 26   26      0.4975046     0.44828339 0.5231916 0.4768084 -2.568702e-02
+## 27   27      0.7995576     0.08352909 0.8349943 0.1650057 -3.543670e-02
+## 28   28      0.4972721     0.46179634 0.5167080 0.4832920 -1.943595e-02
+## 29   29      0.5654637     0.42262947 0.5672124 0.4327876 -1.748624e-03
+## 30   30      0.4985680     0.49576635 0.5013188 0.4986812 -2.750747e-03
+## 31   31      0.8040623     0.11998391 0.8194299 0.1805701 -1.536764e-02
+## 32   32      0.4032058     0.48838266 0.4597453 0.5402547 -5.653955e-02
+## 33   33      0.7363876     0.09370123 0.8033162 0.1966838 -6.692862e-02
+## 34   34      0.5973463     0.34650873 0.6180738 0.3819262 -2.072744e-02
+## 35   35      0.5691724     0.41830439 0.5709902 0.4290098 -1.817842e-03
+## 36   36      0.4983271     0.48085290 0.5082263 0.4917737 -9.899282e-03
+## 37   37      0.4728300     0.50662677 0.4840897 0.5159103 -1.125972e-02
+## 38   38      0.5277579     0.46412209 0.5299521 0.4700479 -2.194268e-03
+## 39   39      0.5833898     0.38800359 0.5919351 0.4080649 -8.545267e-03
+## 40   40      0.7929150     0.15143654 0.7996821 0.2003179 -6.767172e-03
+## 41   41      0.4936384     0.36799945 0.5595239 0.4404761 -6.588543e-02
+## 42   42      0.5413776     0.44118085 0.5471599 0.4528401 -5.782263e-03
+## 43   43      0.4127481     0.52241638 0.4483127 0.5516873 -3.556451e-02
+## 44   44      0.3622799     0.51409448 0.4281809 0.5718191 -6.590106e-02
+## 45   45      0.7914332     0.06909600 0.8386603 0.1613397 -4.722706e-02
+## 46   46      0.7933948     0.14923978 0.8009282 0.1990718 -7.533386e-03
+## 47   47      0.5893981     0.37338866 0.6016444 0.3983556 -1.224625e-02
+## 48   48      0.4136758     0.48675718 0.4654830 0.5345170 -5.180719e-02
+## 49   49      0.7519814     0.09770408 0.8079087 0.1920913 -5.592731e-02
+## 50   50      0.8072986     0.01675040 0.8712591 0.1287409 -6.396049e-02
+## 51   51      0.4113115     0.49342375 0.4612300 0.5387700 -4.991846e-02
+## 52   52      0.4994419     0.49787590 0.5007371 0.4992629 -1.295214e-03
+## 53   53      0.5906377     0.40790509 0.5859634 0.4140366  4.674342e-03
+## 54   54      0.4987232     0.48041351 0.5086197 0.4913803 -9.896464e-03
+## 55   55      0.5722205     0.41464107 0.5741460 0.4258540 -1.925518e-03
+## 56   56      0.8265246     0.08621683 0.8451156 0.1548844 -1.859103e-02
+## 57   57      0.4995444     0.49993899 0.4998142 0.5001858 -2.698822e-04
+## 58   58      0.3888460     0.58812469 0.4062456 0.5937544 -1.739955e-02
+## 59   59      0.7488854     0.08293877 0.8139929 0.1860071 -6.510758e-02
+## 60   60      0.6561214     0.32015191 0.6578549 0.3421451 -1.733526e-03
+## 61   61      0.7056956     0.19367797 0.7407066 0.2592934 -3.501096e-02
+## 62   62      0.5024172     0.49696879 0.5025646 0.4974354 -1.473857e-04
+## 63   63      0.5324788     0.46660977 0.5310024 0.4689976  1.476356e-03
+## 64   64      0.4509832     0.52818020 0.4636613 0.5363387 -1.267811e-02
+## 65   65      0.7444740     0.26382786 0.7252526 0.2747474  1.922130e-02
+## 66   66      0.4980519     0.46808186 0.5141125 0.4858875 -1.606056e-02
+## 67   67      0.4971283     0.45999009 0.5174920 0.4825080 -2.036370e-02
+## 68   68      0.4959101     0.47383016 0.5103963 0.4896037 -1.448625e-02
+## 69   69      0.4940167     0.46683345 0.5128020 0.4871980 -1.878527e-02
+## 70   70      0.4959218     0.47196600 0.5112800 0.4887200 -1.535826e-02
+## 71   71      0.4992346     0.49401769 0.5024556 0.4975444 -3.221068e-03
+## 72   72      0.6150524     0.38679586 0.6073439 0.3926561  7.708449e-03
+## 73   73      0.4147982     0.50059691 0.4595172 0.5404828 -4.471896e-02
+## 74   74      0.4945179     0.34447541 0.5712480 0.4287520 -7.673010e-02
+## 75   75      0.8217442     0.02234840 0.8741712 0.1258288 -5.242704e-02
+## 76   76      0.5351524     0.45685611 0.5368512 0.4631488 -1.698812e-03
+## 77   77      0.5635379     0.41892791 0.5680514 0.4319486 -4.513431e-03
+## 78   78      0.6013013     0.34911565 0.6186773 0.3813227 -1.737606e-02
+## 79   79      0.7892509     0.07050544 0.8370563 0.1629437 -4.780542e-02
+## 80   80      0.4500487     0.49106296 0.4806714 0.5193286 -3.062270e-02
+## 81   81      0.4177294     0.52265687 0.4505575 0.5494425 -3.282815e-02
+## 82   82      0.6570250     0.29903206 0.6682377 0.3317623 -1.121273e-02
+## 83   83      0.6651487     0.30818817 0.6676802 0.3323198 -2.531504e-03
+## 84   84      0.7557164     0.20515758 0.7577437 0.2422563 -2.027353e-03
+## 85   85      0.4961058     0.40722329 0.5419699 0.4580301 -4.586408e-02
+## 86   86      0.3962333     0.57836685 0.4142985 0.5857015 -1.806520e-02
+## 87   87      0.7167005     0.20012755 0.7425287 0.2574713 -2.582817e-02
+## 88   88      0.7670712     0.20361325 0.7636251 0.2363749  3.446139e-03
+## 89   89      0.5463049     0.45283891 0.5439881 0.4560119  2.316770e-03
+## 90   90      0.3931407     0.57155945 0.4160266 0.5839734 -2.288589e-02
+## 91   91      0.7655896     0.20637311 0.7616628 0.2383372  3.926820e-03
+## 92   92      0.7372561     0.25906162 0.7241104 0.2758896  1.314571e-02
+## 93   93      0.7394356     0.19517267 0.7551052 0.2448948 -1.566961e-02
+## 94   94      0.4946470     0.38203441 0.5532810 0.4467190 -5.863403e-02
+## 95   95      0.7196031     0.13114148 0.7774288 0.2225712 -5.782562e-02
+## 96   96      0.7411435     0.22395276 0.7422905 0.2577095 -1.146984e-03
+## 97   97      0.6123176     0.37362974 0.6122476 0.3877524  6.997244e-05
+## 98   98      0.5769530     0.42167335 0.5730604 0.4269396  3.892647e-03
+## 99   99      0.4965710     0.43010614 0.5313423 0.4686577 -3.477126e-02
+## 100 100      0.7026270     0.20771884 0.7325644 0.2674356 -2.993736e-02
+## 101 101      0.5623062     0.39757035 0.5775498 0.4224502 -1.524365e-02
+## 102 102      0.4350916     0.54848886 0.4466302 0.5533698 -1.153867e-02
+## 103 103      0.3701877     0.46018841 0.4572112 0.5427888 -8.702350e-02
+## 104 104      0.8473435     0.09436680 0.8501884 0.1498116 -2.844924e-03
+## 105 105      0.4942623     0.38602392 0.5511964 0.4488036 -5.693409e-02
+## 106 106      0.5248113     0.45896136 0.5309963 0.4690037 -6.185003e-03
+## 107 107      0.4029980     0.55203970 0.4298220 0.5701780 -2.682406e-02
+## 108 108      0.4217657     0.49943354 0.4633651 0.5366349 -4.159936e-02
+## 109 109      0.6575911     0.27648001 0.6792019 0.3207981 -2.161073e-02
+## 110 110      0.3916275     0.59286472 0.4053352 0.5946648 -1.370774e-02
+## 111 111      0.4946918     0.36641251 0.5607773 0.4392227 -6.608552e-02
+## 112 112      0.6759990     0.25379577 0.6984387 0.3015613 -2.243973e-02
+## 113 113      0.4949537     0.34373571 0.5718083 0.4281917 -7.685459e-02
+## 114 114      0.8233836     0.03445896 0.8688327 0.1311673 -4.544916e-02
+## 115 115      0.5740062     0.41345972 0.5755404 0.4244596 -1.534262e-03
+## 116 116      0.6800335     0.31789718 0.6700554 0.3299446  9.978080e-03
+## 117 117      0.5996739     0.38459745 0.6011650 0.3988350 -1.491023e-03
+## 118 118      0.4997497     0.49750462 0.5010568 0.4989432 -1.307052e-03
+## 119 119      0.4993862     0.48957091 0.5046202 0.4953798 -5.234088e-03
+## 120 120      0.5840319     0.40626310 0.5836335 0.4163665  3.983046e-04
+## 121 121      0.7603109     0.17786478 0.7726795 0.2273205 -1.236869e-02
+## 122 122      0.4242256     0.54173139 0.4446801 0.5553199 -2.045447e-02
+## 123 123      0.7423741     0.16329214 0.7716638 0.2283362 -2.928976e-02
+## 124 124      0.7537301     0.22818468 0.7460727 0.2539273  7.657389e-03
+## 125 125      0.5018266     0.49769977 0.5019425 0.4980575 -1.158956e-04
+## 126 126      0.5091058     0.48839574 0.5097482 0.4902518 -6.424242e-04
+## 127 127      0.4970018     0.46000794 0.5174240 0.4825760 -2.042227e-02
+## 128 128      0.6784950     0.22104227 0.7152862 0.2847138 -3.679118e-02
+## 129 129      0.6114754     0.34872548 0.6235980 0.3764020 -1.212266e-02
+## 130 130      0.6050145     0.35857263 0.6159332 0.3840668 -1.091869e-02
+## 131 131      0.5147086     0.48131540 0.5157180 0.4842820 -1.009454e-03
+## 132 132      0.5601869     0.42462542 0.5637943 0.4362057 -3.607412e-03
+## 133 133      0.7884674     0.13288974 0.8064959 0.1935041 -1.802858e-02
+## 134 134      0.7246852     0.13766116 0.7764049 0.2235951 -5.171975e-02
+## 135 135      0.4937676     0.44063318 0.5250473 0.4749527 -3.127972e-02
+## 136 136      0.5742411     0.39799606 0.5829374 0.4170626 -8.696352e-03
+## 137 137      0.6264470     0.33237096 0.6382958 0.3617042 -1.184882e-02
+## 138 138      0.4974735     0.46138437 0.5169970 0.4830030 -1.952353e-02
+## 139 139      0.4933474     0.45284082 0.5190855 0.4809145 -2.573811e-02
+## 140 140      0.7130379     0.24014904 0.7218290 0.2781710 -8.791097e-03
+## 141 141      0.3953746     0.60140932 0.4030897 0.5969103 -7.715102e-03
+## 142 142      0.4982992     0.48197808 0.5076834 0.4923166 -9.384205e-03
+## 143 143      0.4946890     0.37602327 0.5561736 0.4438264 -6.148457e-02
+## 144 144      0.8387031     0.15328835 0.8192988 0.1807012  1.940429e-02
+## 145 145      0.4928480     0.46483445 0.5131942 0.4868058 -2.034623e-02
+## 146 146      0.4958108     0.32855478 0.5795531 0.4204469 -8.374227e-02
+## 147 147      0.5713354     0.38386858 0.5882508 0.4117492 -1.691537e-02
+## 148 148      0.6654977     0.24148751 0.6995565 0.3004435 -3.405885e-02
+## 149 149      0.7614002     0.19430023 0.7654161 0.2345839 -4.015831e-03
+## 150 150      0.4078639     0.57002914 0.4236896 0.5763104 -1.582570e-02
+## 151 151      0.5619560     0.39903213 0.5766952 0.4233048 -1.473921e-02
+## 152 152      0.4935234     0.43546415 0.5273757 0.4726243 -3.385237e-02
+## 153 153      0.4962830     0.41095392 0.5402819 0.4597181 -4.399886e-02
+## 154 154      0.4954399     0.36554591 0.5615427 0.4384573 -6.610273e-02
+## 155 155      0.4999351     0.49966483 0.5001272 0.4998728 -1.920950e-04
+## 156 156      0.4959809     0.41799465 0.5368006 0.4631994 -4.081966e-02
+## 157 157      0.7829037     0.07899932 0.8302121 0.1697879 -4.730835e-02
+## 158 158      0.4122171     0.48442341 0.4658870 0.5341130 -5.366986e-02
+## 159 159      0.7392005     0.09845459 0.8021179 0.1978821 -6.291743e-02
+## 160 160      0.4490249     0.49814315 0.4768581 0.5231419 -2.783320e-02
+## 161 161      0.4953486     0.39746211 0.5462552 0.4537448 -5.090664e-02
+## 162 162      0.8194679     0.03425042 0.8673581 0.1326419 -4.789019e-02
+## 163 163      0.4947549     0.48564760 0.5042874 0.4957126 -9.532491e-03
+## 164 164      0.4636414     0.48995432 0.4876052 0.5123948 -2.396376e-02
+## 165 165      0.6738961     0.24321664 0.7025392 0.2974608 -2.864311e-02
+## 166 166      0.7471831     0.18048032 0.7655680 0.2344320 -1.838490e-02
+## 167 167      0.7347689     0.14580632 0.7768000 0.2232000 -4.203111e-02
+## 168 168      0.3714247     0.51195794 0.4335539 0.5664461 -6.212914e-02
+## 169 169      0.4992110     0.49712967 0.5009797 0.4990203 -1.768698e-03
+## 170 170      0.6802301     0.21170972 0.7205800 0.2794200 -4.034998e-02
+## 171 171      0.4733124     0.52761844 0.4744393 0.5255607 -1.126910e-03
+## 172 172      0.4432428     0.53269054 0.4578938 0.5421062 -1.465105e-02
+## 173 173      0.4934378     0.41965789 0.5348179 0.4651821 -4.138005e-02
+## 174 174      0.7352453     0.10644682 0.7964384 0.2035616 -6.119310e-02
+## 175 175      0.4956352     0.43404290 0.5290404 0.4709596 -3.340521e-02
+## 176 176      0.4949062     0.40908179 0.5405244 0.4594756 -4.561817e-02
+## 177 177      0.4958159     0.48533677 0.5049331 0.4950669 -9.117267e-03
+## 178 178      0.4955408     0.33733679 0.5751737 0.4248263 -7.963292e-02
+## 179 179      0.4957966     0.45665870 0.5184365 0.4815635 -2.263990e-02
+## 180 180      0.4691232     0.53061404 0.4710580 0.5289420 -1.934760e-03
+## 181 181      0.3989463     0.52616612 0.4400148 0.5599852 -4.106855e-02
+## 182 182      0.4964614     0.44488610 0.5243050 0.4756950 -2.784359e-02
+## 183 183      0.3731728     0.53726768 0.4225757 0.5774243 -4.940283e-02
+## 184 184      0.3837733     0.51803063 0.4366081 0.5633919 -5.283485e-02
+## 185 185      0.4976685     0.46070096 0.5174110 0.4825890 -1.974243e-02
+## 186 186      0.4194873     0.57347000 0.4275481 0.5724519 -8.060824e-03
+## 187 187      0.4995348     0.49675703 0.5013075 0.4986925 -1.772707e-03
+## 188 188      0.5016241     0.49839697 0.5015190 0.4984810  1.050931e-04
+## 189 189      0.4567661     0.54440085 0.4587555 0.5412445 -1.989388e-03
+## 190 190      0.4955474     0.39346972 0.5482492 0.4517508 -5.270174e-02
+## 191 191      0.5654125     0.40055583 0.5775942 0.4224058 -1.218171e-02
+## 192 192      0.7264280     0.12934923 0.7812661 0.2187339 -5.483805e-02
+## 193 193      0.4982278     0.47913242 0.5089898 0.4910102 -1.076201e-02
+## 194 194      0.6447205     0.32231610 0.6515356 0.3484644 -6.815065e-03
+## 195 195      0.4938172     0.39824116 0.5451663 0.4548337 -5.134916e-02
+## 196 196      0.5000297     0.49995627 0.5000346 0.4999654 -4.857243e-06
+## 197 197      0.5722037     0.39942521 0.5813088 0.4186912 -9.105146e-03
+## 198 198      0.7150176     0.19963135 0.7420117 0.2579883 -2.699407e-02
+## 199 199      0.4652790     0.49027814 0.4882248 0.5117752 -2.294577e-02
+## 200 200      0.6257553     0.37611699 0.6173779 0.3826221  8.377466e-03
+##         e_dual_j2
+## 1   -4.525345e-02
+## 2   -6.648626e-03
+## 3   -5.234751e-04
+## 4   -7.018445e-02
+## 5   -7.385533e-02
+## 6   -2.210490e-02
+## 7   -4.360286e-02
+## 8   -4.272082e-02
+## 9   -1.014578e-01
+## 10  -2.038962e-02
+## 11  -5.095502e-02
+## 12  -1.075051e-02
+## 13  -5.963664e-03
+## 14  -6.235599e-02
+## 15  -3.133076e-02
+## 16  -6.666672e-02
+## 17  -1.264410e-05
+## 18  -3.367559e-03
+## 19  -2.832467e-02
+## 20  -2.227203e-02
+## 21  -5.946275e-02
+## 22  -9.699575e-03
+## 23  -5.369379e-03
+## 24  -3.678783e-02
+## 25  -6.578863e-02
+## 26  -2.852497e-02
+## 27  -8.147658e-02
+## 28  -2.149563e-02
+## 29  -1.015817e-02
+## 30  -2.914883e-03
+## 31  -6.058617e-02
+## 32  -5.187200e-02
+## 33  -1.029826e-01
+## 34  -3.541752e-02
+## 35  -1.070541e-02
+## 36  -1.092076e-02
+## 37  -9.283498e-03
+## 38  -5.925767e-03
+## 39  -2.006134e-02
+## 40  -4.888132e-02
+## 41  -7.247667e-02
+## 42  -1.165930e-02
+## 43  -2.927097e-02
+## 44  -5.772458e-02
+## 45  -9.224370e-02
+## 46  -4.983204e-02
+## 47  -2.496698e-02
+## 48  -4.775982e-02
+## 49  -9.438718e-02
+## 50  -1.119905e-01
+## 51  -4.534628e-02
+## 52  -1.386973e-03
+## 53  -6.131553e-03
+## 54  -1.096678e-02
+## 55  -1.121292e-02
+## 56  -6.866754e-02
+## 57  -2.467589e-04
+## 58  -5.629761e-03
+## 59  -1.030683e-01
+## 60  -2.199318e-02
+## 61  -6.561545e-02
+## 62  -4.666407e-04
+## 63  -2.387826e-03
+## 64  -8.158503e-03
+## 65  -1.091949e-02
+## 66  -1.780568e-02
+## 67  -2.251795e-02
+## 68  -1.577350e-02
+## 69  -2.036457e-02
+## 70  -1.675397e-02
+## 71  -3.526679e-03
+## 72  -5.860220e-03
+## 73  -3.988592e-02
+## 74  -8.427660e-02
+## 75  -1.034804e-01
+## 76  -6.292640e-03
+## 77  -1.302072e-02
+## 78  -3.220700e-02
+## 79  -9.243825e-02
+## 80  -2.826563e-02
+## 81  -2.678562e-02
+## 82  -3.273025e-02
+## 83  -2.413164e-02
+## 84  -3.709870e-02
+## 85  -5.080683e-02
+## 86  -7.334617e-03
+## 87  -5.734373e-02
+## 88  -3.276167e-02
+## 89  -3.172965e-03
+## 90  -1.241399e-02
+## 91  -3.196408e-02
+## 92  -1.682800e-02
+## 93  -4.972209e-02
+## 94  -6.468456e-02
+## 95  -9.142975e-02
+## 96  -3.375673e-02
+## 97  -1.412268e-02
+## 98  -5.266260e-03
+## 99  -3.855161e-02
+## 100 -5.971679e-02
+## 101 -2.487983e-02
+## 102 -4.880911e-03
+## 103 -8.260035e-02
+## 104 -5.544481e-02
+## 105 -6.277965e-02
+## 106 -1.004232e-02
+## 107 -1.813828e-02
+## 108 -3.720140e-02
+## 109 -4.431813e-02
+## 110 -1.800091e-03
+## 111 -7.281020e-02
+## 112 -4.776550e-02
+## 113 -8.445602e-02
+## 114 -9.670833e-02
+## 115 -1.099984e-02
+## 116 -1.204741e-02
+## 117 -1.423760e-02
+## 118 -1.438601e-03
+## 119 -5.808837e-03
+## 120 -1.010335e-02
+## 121 -4.945568e-02
+## 122 -1.358855e-02
+## 123 -6.504402e-02
+## 124 -2.574264e-02
+## 125 -3.577122e-04
+## 126 -1.856043e-03
+## 127 -2.256803e-02
+## 128 -6.367153e-02
+## 129 -2.767651e-02
+## 130 -2.549421e-02
+## 131 -2.966570e-03
+## 132 -1.158029e-02
+## 133 -6.061431e-02
+## 134 -8.593392e-02
+## 135 -3.431952e-02
+## 136 -1.906650e-02
+## 137 -2.933325e-02
+## 138 -2.161864e-02
+## 139 -2.807368e-02
+## 140 -3.802201e-02
+## 141  4.499002e-03
+## 142 -1.033851e-02
+## 143 -6.780313e-02
+## 144 -2.741284e-02
+## 145 -2.197137e-02
+## 146 -9.189214e-02
+## 147 -2.788067e-02
+## 148 -5.895596e-02
+## 149 -4.028370e-02
+## 150 -6.281284e-03
+## 151 -2.427263e-02
+## 152 -3.716012e-02
+## 153 -4.876423e-02
+## 154 -7.291142e-02
+## 155 -2.079343e-04
+## 156 -4.520480e-02
+## 157 -9.078859e-02
+## 158 -4.968959e-02
+## 159 -9.942750e-02
+## 160 -2.499878e-02
+## 161 -5.628268e-02
+## 162 -9.839148e-02
+## 163 -1.006499e-02
+## 164 -2.244048e-02
+## 165 -5.424418e-02
+## 166 -5.395171e-02
+## 167 -7.739368e-02
+## 168 -5.448818e-02
+## 169 -1.890645e-03
+## 170 -6.771023e-02
+## 171  2.057730e-03
+## 172 -9.415612e-03
+## 173 -4.552421e-02
+## 174 -9.711479e-02
+## 175 -3.691666e-02
+## 176 -5.039379e-02
+## 177 -9.730080e-03
+## 178 -8.748947e-02
+## 179 -2.490476e-02
+## 180  1.672044e-03
+## 181 -3.381905e-02
+## 182 -3.080887e-02
+## 183 -4.015667e-02
+## 184 -4.536126e-02
+## 185 -2.188808e-02
+## 186  1.018121e-03
+## 187 -1.935460e-03
+## 188 -8.400460e-05
+## 189  3.156346e-03
+## 190 -5.828112e-02
+## 191 -2.184998e-02
+## 192 -8.938471e-02
+## 193 -1.187778e-02
+## 194 -2.614831e-02
+## 195 -5.659251e-02
+## 196 -9.160221e-06
+## 197 -1.926594e-02
+## 198 -5.835698e-02
+## 199 -2.149709e-02
+## 200 -6.505138e-03
+## 
+## $values
+## $values$entropy
+## [1] 413.9443
+## 
+## $values$iterations
+## function gradient 
+##     1001       NA 
+## 
+## $values$message
+## NULL
+## 
+## $values$method
+## [1] &quot;BFGS&quot;
+## 
+## 
+## $tol
+## [1] &quot;1e-24&quot;
+## 
+## $v
+##            [,1] [,2]      [,3]
+## [1,] -0.2160606    0 0.2160606
+## 
+## $lambda
+##          X1        X2            X3       X4
+## 1 -6.611062  90.75890 -0.0005594453 -4.90244
+## 2 -4.654999 -87.65074 -0.0006268546 51.97588
+## 
+## $checkrestrictions
+## $checkrestrictions$g1
+##              [,1]
+## 1    0.000000e+00
+## 2    2.220446e-16
+## 3   -1.110223e-16
+## 4    0.000000e+00
+## 5    0.000000e+00
+## 6    0.000000e+00
+## 7    2.220446e-16
+## 8    0.000000e+00
+## 9    0.000000e+00
+## 10  -1.110223e-16
+## 11   0.000000e+00
+## 12  -1.110223e-16
+## 13   0.000000e+00
+## 14  -1.110223e-16
+## 15   0.000000e+00
+## 16  -1.110223e-16
+## 17   0.000000e+00
+## 18   0.000000e+00
+## 19   0.000000e+00
+## 20  -1.110223e-16
+## 21   0.000000e+00
+## 22   0.000000e+00
+## 23   0.000000e+00
+## 24   0.000000e+00
+## 25   0.000000e+00
+## 26   0.000000e+00
+## 27   0.000000e+00
+## 28   0.000000e+00
+## 29   0.000000e+00
+## 30   0.000000e+00
+## 31   0.000000e+00
+## 32   0.000000e+00
+## 33  -1.110223e-16
+## 34   0.000000e+00
+## 35   0.000000e+00
+## 36   0.000000e+00
+## 37   0.000000e+00
+## 38   0.000000e+00
+## 39   0.000000e+00
+## 40  -1.110223e-16
+## 41   0.000000e+00
+## 42   0.000000e+00
+## 43   0.000000e+00
+## 44   0.000000e+00
+## 45   0.000000e+00
+## 46   0.000000e+00
+## 47   0.000000e+00
+## 48   0.000000e+00
+## 49   0.000000e+00
+## 50  -1.110223e-16
+## 51   0.000000e+00
+## 52   0.000000e+00
+## 53   0.000000e+00
+## 54   0.000000e+00
+## 55   0.000000e+00
+## 56   0.000000e+00
+## 57   0.000000e+00
+## 58   0.000000e+00
+## 59   0.000000e+00
+## 60   0.000000e+00
+## 61   0.000000e+00
+## 62   0.000000e+00
+## 63   0.000000e+00
+## 64   0.000000e+00
+## 65   0.000000e+00
+## 66   0.000000e+00
+## 67   0.000000e+00
+## 68   0.000000e+00
+## 69  -1.110223e-16
+## 70   0.000000e+00
+## 71   0.000000e+00
+## 72   0.000000e+00
+## 73   0.000000e+00
+## 74   0.000000e+00
+## 75   0.000000e+00
+## 76   0.000000e+00
+## 77   0.000000e+00
+## 78   0.000000e+00
+## 79   0.000000e+00
+## 80  -1.110223e-16
+## 81   0.000000e+00
+## 82   0.000000e+00
+## 83   0.000000e+00
+## 84   0.000000e+00
+## 85   0.000000e+00
+## 86   0.000000e+00
+## 87   0.000000e+00
+## 88   0.000000e+00
+## 89   0.000000e+00
+## 90   0.000000e+00
+## 91   0.000000e+00
+## 92   0.000000e+00
+## 93   0.000000e+00
+## 94   0.000000e+00
+## 95  -1.110223e-16
+## 96   0.000000e+00
+## 97   0.000000e+00
+## 98   0.000000e+00
+## 99   0.000000e+00
+## 100  0.000000e+00
+## 101 -2.220446e-16
+## 102  0.000000e+00
+## 103  0.000000e+00
+## 104 -1.110223e-16
+## 105  0.000000e+00
+## 106 -1.110223e-16
+## 107  0.000000e+00
+## 108  0.000000e+00
+## 109  0.000000e+00
+## 110  0.000000e+00
+## 111  0.000000e+00
+## 112  0.000000e+00
+## 113  0.000000e+00
+## 114  0.000000e+00
+## 115 -1.110223e-16
+## 116  0.000000e+00
+## 117  0.000000e+00
+## 118  0.000000e+00
+## 119  0.000000e+00
+## 120  0.000000e+00
+## 121 -1.110223e-16
+## 122  0.000000e+00
+## 123  0.000000e+00
+## 124  0.000000e+00
+## 125 -1.110223e-16
+## 126  0.000000e+00
+## 127  0.000000e+00
+## 128  0.000000e+00
+## 129  0.000000e+00
+## 130  0.000000e+00
+## 131 -1.110223e-16
+## 132  0.000000e+00
+## 133  0.000000e+00
+## 134  0.000000e+00
+## 135  0.000000e+00
+## 136 -1.110223e-16
+## 137  0.000000e+00
+## 138  0.000000e+00
+## 139  0.000000e+00
+## 140  0.000000e+00
+## 141  0.000000e+00
+## 142  0.000000e+00
+## 143  0.000000e+00
+## 144  0.000000e+00
+## 145  0.000000e+00
+## 146  0.000000e+00
+## 147  0.000000e+00
+## 148  0.000000e+00
+## 149  0.000000e+00
+## 150  0.000000e+00
+## 151  0.000000e+00
+## 152  0.000000e+00
+## 153  0.000000e+00
+## 154  0.000000e+00
+## 155  0.000000e+00
+## 156  0.000000e+00
+## 157  0.000000e+00
+## 158  0.000000e+00
+## 159  0.000000e+00
+## 160  0.000000e+00
+## 161  0.000000e+00
+## 162 -1.110223e-16
+## 163  0.000000e+00
+## 164  0.000000e+00
+## 165  0.000000e+00
+## 166  0.000000e+00
+## 167  0.000000e+00
+## 168  0.000000e+00
+## 169  0.000000e+00
+## 170  0.000000e+00
+## 171  0.000000e+00
+## 172  0.000000e+00
+## 173  0.000000e+00
+## 174  0.000000e+00
+## 175  0.000000e+00
+## 176  0.000000e+00
+## 177  0.000000e+00
+## 178  0.000000e+00
+## 179  0.000000e+00
+## 180  0.000000e+00
+## 181  0.000000e+00
+## 182  0.000000e+00
+## 183  0.000000e+00
+## 184  0.000000e+00
+## 185  0.000000e+00
+## 186  0.000000e+00
+## 187  0.000000e+00
+## 188  0.000000e+00
+## 189  0.000000e+00
+## 190  0.000000e+00
+## 191  0.000000e+00
+## 192  0.000000e+00
+## 193  0.000000e+00
+## 194  0.000000e+00
+## 195  0.000000e+00
+## 196  0.000000e+00
+## 197  0.000000e+00
+## 198  0.000000e+00
+## 199  0.000000e+00
+## 200  0.000000e+00
+## 
+## $checkrestrictions$g2
+##              [,1]          [,2]
+## 1    0.000000e+00  0.000000e+00
+## 2    0.000000e+00  0.000000e+00
+## 3    2.220446e-16  0.000000e+00
+## 4   -2.220446e-16 -1.110223e-16
+## 5    0.000000e+00  0.000000e+00
+## 6    0.000000e+00  0.000000e+00
+## 7   -1.110223e-16  0.000000e+00
+## 8   -2.220446e-16 -1.110223e-16
+## 9    0.000000e+00  0.000000e+00
+## 10   0.000000e+00  0.000000e+00
+## 11   0.000000e+00  2.220446e-16
+## 12  -1.110223e-16  0.000000e+00
+## 13   0.000000e+00  0.000000e+00
+## 14   0.000000e+00 -1.110223e-16
+## 15   0.000000e+00 -1.110223e-16
+## 16   2.220446e-16  0.000000e+00
+## 17   0.000000e+00  0.000000e+00
+## 18   0.000000e+00  0.000000e+00
+## 19   0.000000e+00  2.220446e-16
+## 20   0.000000e+00  0.000000e+00
+## 21   0.000000e+00  0.000000e+00
+## 22   0.000000e+00 -1.110223e-16
+## 23   0.000000e+00  0.000000e+00
+## 24   2.220446e-16 -2.220446e-16
+## 25   0.000000e+00  0.000000e+00
+## 26   0.000000e+00  0.000000e+00
+## 27  -1.110223e-16  0.000000e+00
+## 28   0.000000e+00  0.000000e+00
+## 29   0.000000e+00  0.000000e+00
+## 30   0.000000e+00 -1.110223e-16
+## 31   0.000000e+00  2.220446e-16
+## 32   0.000000e+00  0.000000e+00
+## 33   0.000000e+00 -1.110223e-16
+## 34   0.000000e+00 -1.110223e-16
+## 35   0.000000e+00  0.000000e+00
+## 36   0.000000e+00 -1.110223e-16
+## 37   0.000000e+00  0.000000e+00
+## 38   0.000000e+00  0.000000e+00
+## 39   0.000000e+00  0.000000e+00
+## 40   0.000000e+00  0.000000e+00
+## 41  -1.110223e-16  2.220446e-16
+## 42   0.000000e+00  2.220446e-16
+## 43   0.000000e+00  0.000000e+00
+## 44   0.000000e+00  0.000000e+00
+## 45   2.220446e-16  2.220446e-16
+## 46  -2.220446e-16  2.220446e-16
+## 47  -1.110223e-16  0.000000e+00
+## 48   0.000000e+00  0.000000e+00
+## 49   0.000000e+00  0.000000e+00
+## 50  -1.110223e-16  0.000000e+00
+## 51   0.000000e+00  0.000000e+00
+## 52   0.000000e+00 -1.110223e-16
+## 53   0.000000e+00  0.000000e+00
+## 54  -2.220446e-16  0.000000e+00
+## 55   2.220446e-16  2.220446e-16
+## 56   2.220446e-16  0.000000e+00
+## 57   0.000000e+00  0.000000e+00
+## 58   0.000000e+00  0.000000e+00
+## 59   0.000000e+00  0.000000e+00
+## 60   0.000000e+00 -1.110223e-16
+## 61   0.000000e+00 -1.110223e-16
+## 62  -1.110223e-16  0.000000e+00
+## 63   0.000000e+00  0.000000e+00
+## 64   0.000000e+00  0.000000e+00
+## 65   0.000000e+00 -1.110223e-16
+## 66   0.000000e+00  0.000000e+00
+## 67  -1.110223e-16  0.000000e+00
+## 68   0.000000e+00  0.000000e+00
+## 69   0.000000e+00  0.000000e+00
+## 70   2.220446e-16  0.000000e+00
+## 71   2.220446e-16 -2.220446e-16
+## 72  -1.110223e-16  0.000000e+00
+## 73   0.000000e+00 -1.110223e-16
+## 74  -1.110223e-16  0.000000e+00
+## 75   0.000000e+00  0.000000e+00
+## 76   0.000000e+00  0.000000e+00
+## 77   0.000000e+00  0.000000e+00
+## 78   0.000000e+00  0.000000e+00
+## 79   0.000000e+00  0.000000e+00
+## 80   0.000000e+00  0.000000e+00
+## 81   0.000000e+00  0.000000e+00
+## 82   0.000000e+00 -2.220446e-16
+## 83   0.000000e+00  0.000000e+00
+## 84   0.000000e+00  0.000000e+00
+## 85   2.220446e-16  0.000000e+00
+## 86   0.000000e+00  0.000000e+00
+## 87   2.220446e-16 -2.220446e-16
+## 88   0.000000e+00 -2.220446e-16
+## 89   0.000000e+00  0.000000e+00
+## 90  -2.220446e-16  0.000000e+00
+## 91   0.000000e+00  0.000000e+00
+## 92   0.000000e+00  0.000000e+00
+## 93   0.000000e+00  0.000000e+00
+## 94   2.220446e-16 -1.110223e-16
+## 95   0.000000e+00  0.000000e+00
+## 96   0.000000e+00  0.000000e+00
+## 97   0.000000e+00  0.000000e+00
+## 98   0.000000e+00  0.000000e+00
+## 99  -2.220446e-16  0.000000e+00
+## 100  0.000000e+00  0.000000e+00
+## 101  0.000000e+00  0.000000e+00
+## 102  0.000000e+00  0.000000e+00
+## 103  0.000000e+00  0.000000e+00
+## 104  0.000000e+00  0.000000e+00
+## 105  0.000000e+00 -1.110223e-16
+## 106  0.000000e+00  0.000000e+00
+## 107  0.000000e+00  2.220446e-16
+## 108  0.000000e+00 -1.110223e-16
+## 109  0.000000e+00  0.000000e+00
+## 110  2.220446e-16  2.220446e-16
+## 111  0.000000e+00 -1.110223e-16
+## 112  0.000000e+00  0.000000e+00
+## 113  0.000000e+00  0.000000e+00
+## 114  0.000000e+00  0.000000e+00
+## 115 -2.220446e-16  0.000000e+00
+## 116  0.000000e+00  0.000000e+00
+## 117  0.000000e+00 -1.110223e-16
+## 118  0.000000e+00 -1.110223e-16
+## 119  0.000000e+00  0.000000e+00
+## 120  0.000000e+00 -1.110223e-16
+## 121  0.000000e+00  0.000000e+00
+## 122  0.000000e+00  0.000000e+00
+## 123  0.000000e+00  0.000000e+00
+## 124  0.000000e+00 -1.110223e-16
+## 125  0.000000e+00  0.000000e+00
+## 126 -2.220446e-16  0.000000e+00
+## 127  0.000000e+00  0.000000e+00
+## 128  0.000000e+00 -1.110223e-16
+## 129  0.000000e+00  0.000000e+00
+## 130  0.000000e+00  0.000000e+00
+## 131  0.000000e+00 -1.110223e-16
+## 132  0.000000e+00  0.000000e+00
+## 133 -1.110223e-16 -1.110223e-16
+## 134  0.000000e+00  2.220446e-16
+## 135  0.000000e+00  0.000000e+00
+## 136  0.000000e+00  0.000000e+00
+## 137  0.000000e+00  0.000000e+00
+## 138  0.000000e+00  0.000000e+00
+## 139  0.000000e+00  0.000000e+00
+## 140  0.000000e+00  2.220446e-16
+## 141 -1.110223e-16  0.000000e+00
+## 142 -1.110223e-16  0.000000e+00
+## 143 -1.110223e-16  0.000000e+00
+## 144  0.000000e+00 -1.110223e-16
+## 145  0.000000e+00  0.000000e+00
+## 146  0.000000e+00  0.000000e+00
+## 147  0.000000e+00  0.000000e+00
+## 148  0.000000e+00  0.000000e+00
+## 149  0.000000e+00 -1.110223e-16
+## 150  0.000000e+00  0.000000e+00
+## 151  0.000000e+00  0.000000e+00
+## 152  0.000000e+00  0.000000e+00
+## 153  0.000000e+00  0.000000e+00
+## 154  0.000000e+00  0.000000e+00
+## 155  0.000000e+00 -1.110223e-16
+## 156  0.000000e+00 -1.110223e-16
+## 157 -2.220446e-16  0.000000e+00
+## 158  0.000000e+00  0.000000e+00
+## 159  0.000000e+00  0.000000e+00
+## 160  2.220446e-16 -2.220446e-16
+## 161 -1.110223e-16  0.000000e+00
+## 162  0.000000e+00  0.000000e+00
+## 163  0.000000e+00  0.000000e+00
+## 164 -2.220446e-16  2.220446e-16
+## 165  0.000000e+00 -1.110223e-16
+## 166 -1.110223e-16  0.000000e+00
+## 167  0.000000e+00 -1.110223e-16
+## 168  0.000000e+00  0.000000e+00
+## 169  0.000000e+00  0.000000e+00
+## 170  2.220446e-16  0.000000e+00
+## 171  0.000000e+00  0.000000e+00
+## 172 -1.110223e-16  0.000000e+00
+## 173  0.000000e+00 -1.110223e-16
+## 174  0.000000e+00  0.000000e+00
+## 175 -1.110223e-16  0.000000e+00
+## 176  0.000000e+00 -1.110223e-16
+## 177 -2.220446e-16  0.000000e+00
+## 178  0.000000e+00  0.000000e+00
+## 179 -2.220446e-16  0.000000e+00
+## 180  0.000000e+00  0.000000e+00
+## 181  0.000000e+00 -1.110223e-16
+## 182  0.000000e+00 -1.110223e-16
+## 183  0.000000e+00  0.000000e+00
+## 184  0.000000e+00  0.000000e+00
+## 185  0.000000e+00  0.000000e+00
+## 186  0.000000e+00  0.000000e+00
+## 187  2.220446e-16  0.000000e+00
+## 188  0.000000e+00 -2.220446e-16
+## 189  0.000000e+00  2.220446e-16
+## 190  0.000000e+00 -1.110223e-16
+## 191  0.000000e+00  0.000000e+00
+## 192 -1.110223e-16  0.000000e+00
+## 193  0.000000e+00 -1.110223e-16
+## 194  0.000000e+00  0.000000e+00
+## 195  0.000000e+00 -1.110223e-16
+## 196  0.000000e+00  0.000000e+00
+## 197  0.000000e+00  0.000000e+00
+## 198  0.000000e+00  0.000000e+00
+## 199  0.000000e+00  0.000000e+00
+## 200  0.000000e+00  0.000000e+00
+## 
+## $checkrestrictions$g3
+##                factor(y)0    factor(y)1
+## (Intercept)  6.465657e-02  1.387227e-02
+## Dcollege     5.995540e-02  6.587647e-02
+## Totalincome -1.145992e+04  1.613179e+03
+## Dunemp       2.123750e-02 -5.769455e-03
+## 
+## 
+## $cross_moments_hp
+##               factor(y)0   factor(y)1
+## (Intercept) 6.622217e-01 3.377783e-01
+## Dcollege    4.376594e-01 1.663265e-01
+## Totalincome 1.895948e+05 1.030366e+05
+## Dunemp      2.859345e-01 1.622465e-01
+## 
+## $cross_moments_hs
+##                     [,1]         [,2]
+## (Intercept) 5.975652e-01 3.239060e-01
+## Dcollege    3.777040e-01 1.004500e-01
+## Totalincome 2.010547e+05 1.014235e+05
+## Dunemp      2.646970e-01 1.680160e-01
+## 
+## $J
+## [1] 2
+## 
+## $fn
+## datahp$poor_liq ~ Dcollege + Totalincome + Dunemp
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;kl&quot;</code></pre>
+<p>The summary and the plot options are the same as in the previous
+case.</p>
+</div>
+<div id="another-option-when-we-do-not-have-prior-information-ei_gme" class="section level1">
+<h1>3.2.1 Another option when we do not have prior information:
+ei_gme()</h1>
+<p>In the case the user does not have prior information the function
+ei_gme() is also available. This function is provided for cases where
+the user may prefer using GME (Generalized maximum entropy) if the user
+has a big volume of data, because it is a more efficient function in
+computational terms than ei_gce() with the uniform distribution as
+prior. Both functions should provide the same result.</p>
+<p>ei_gme() applies the Shannon entropy function to the optimization. It
+is adequate when you cannot assume anything about the distribution of
+<span class="math inline">\(Y\)</span>. So the starting point is the
+uniform distribution.</p>
+<p>Using the same example, our variable of interest is the poverty rate
+in terms of wealth and our independent variables are the income and
+dummies for unemployment and college studies. In this case, we need to
+define the function</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>result3 <span class="ot">&lt;-</span> <span class="fu">ei_gme</span> (fn,datahp,datahs,w,<span class="at">tol=</span><span class="cn">NULL</span>,<span class="at">method=</span><span class="st">&quot;BFGS&quot;</span>,v)</span></code></pre></div>
+<p>The function will produce the same output as ei_gce(), see the
+previous section for further details.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>result3</span></code></pre></div>
+<pre><code>## $estimations
+##       n predictions_j1 predictions_j2 p_dual_j1 p_dual_j2     e_dual_j1
+## 1     1      0.6618706     0.32607778 0.5718150 0.4281850  9.005565e-02
+## 2     2      0.5411147     0.58480211 0.4906148 0.5093852  5.049989e-02
+## 3     3      0.4989333     0.49987851 0.4997974 0.5002026 -8.641873e-04
+## 4     4      0.5983162     0.18177093 0.5896916 0.4103084  8.624687e-03
+## 5     5      0.5626436     0.20232164 0.5777308 0.4222692 -1.508722e-02
+## 6     6      0.5422113     0.42645192 0.5248037 0.4751963  1.740762e-02
+## 7     7      0.5894027     0.35647775 0.5498886 0.4501114  3.951410e-02
+## 8     8      0.6786707     0.34359141 0.5716670 0.4283330  1.070036e-01
+## 9     9      0.6591332     0.02952256 0.6361413 0.3638587  2.299191e-02
+## 10   10      0.4889157     0.44874183 0.5086138 0.4913862 -1.969814e-02
+## 11   11      0.6691102     0.29957043 0.5790099 0.4209901  9.010037e-02
+## 12   12      0.5054964     0.45614111 0.5105782 0.4894218 -5.081802e-03
+## 13   13      0.6452125     0.55359745 0.5197544 0.4802456  1.254581e-01
+## 14   14      0.6017768     0.22285204 0.5813991 0.4186009  2.037766e-02
+## 15   15      0.4309197     0.58967130 0.4659945 0.5340055 -3.507476e-02
+## 16   16      0.4803617     0.36753580 0.5242618 0.4757382 -4.390017e-02
+## 17   17      0.5002174     0.50006363 0.5000329 0.4999671  1.844253e-04
+## 18   18      0.4923101     0.51597537 0.4949289 0.5050711 -2.618736e-03
+## 19   19      0.6228203     0.39834679 0.5480625 0.4519375  7.475782e-02
+## 20   20      0.4834905     0.43402126 0.5106117 0.4893883 -2.712117e-02
+## 21   21      0.3791572     0.41703664 0.4918287 0.5081713 -1.126715e-01
+## 22   22      0.5805534     0.67002077 0.4806358 0.5193642  9.991758e-02
+## 23   23      0.5098109     0.47695728 0.5070401 0.4929599  2.770807e-03
+## 24   24      0.5465811     0.55831032 0.4974822 0.5025178  4.909895e-02
+## 25   25      0.5370076     0.22700596 0.5669189 0.4330811 -2.991124e-02
+## 26   26      0.5100419     0.38072899 0.5277551 0.4722449 -1.771318e-02
+## 27   27      0.6476888     0.13579325 0.6100275 0.3899725  3.766131e-02
+## 28   28      0.5354230     0.42543051 0.5235706 0.4764294  1.185240e-02
+## 29   29      0.5358292     0.46136053 0.5159560 0.4840440  1.987314e-02
+## 30   30      0.5408979     0.50964467 0.5066998 0.4933002  3.419816e-02
+## 31   31      0.6845505     0.25506116 0.5917895 0.4082105  9.276097e-02
+## 32   32      0.3956760     0.41934521 0.4949001 0.5050999 -9.922402e-02
+## 33   33      0.4133952     0.16567445 0.5545815 0.4454185 -1.411863e-01
+## 34   34      0.4765755     0.40131500 0.5161644 0.4838356 -3.958887e-02
+## 35   35      0.5379471     0.45932977 0.5168448 0.4831552  2.110234e-02
+## 36   36      0.5272205     0.46725380 0.5128493 0.4871507  1.437120e-02
+## 37   37      0.4806397     0.50656707 0.4944440 0.5055560 -1.380438e-02
+## 38   38      0.5006645     0.49394174 0.5014406 0.4985594 -7.760580e-04
+## 39   39      0.4982605     0.47036197 0.5059791 0.4940209 -7.718630e-03
+## 40   40      0.6878697     0.31543882 0.5796125 0.4203875  1.082573e-01
+## 41   41      0.5812498     0.21851009 0.5780571 0.4219429  3.192695e-03
+## 42   42      0.5133029     0.44763150 0.5140748 0.4859252 -7.719531e-04
+## 43   43      0.4384496     0.52405261 0.4816547 0.5183453 -4.320507e-02
+## 44   44      0.3800996     0.47320429 0.4799828 0.5200172 -9.988322e-02
+## 45   45      0.6195057     0.07057342 0.6188697 0.3811303  6.360590e-04
+## 46   46      0.6870533     0.31041675 0.5805070 0.4194930  1.065463e-01
+## 47   47      0.4920137     0.44985832 0.5090379 0.4909621 -1.702420e-02
+## 48   48      0.4045166     0.42026764 0.4966081 0.5033919 -9.209149e-02
+## 49   49      0.4405209     0.23803502 0.5440915 0.4559085 -1.035705e-01
+## 50   50      0.6104348    -0.04188454 0.6431120 0.3568880 -3.267722e-02
+## 51   51      0.4087599     0.43861016 0.4935796 0.5064204 -8.481968e-02
+## 52   52      0.5152489     0.50228641 0.5027778 0.4972222  1.247110e-02
+## 53   53      0.5259218     0.55101338 0.4946182 0.5053818  3.130362e-02
+## 54   54      0.5135431     0.45958700 0.5115628 0.4884372  1.980348e-03
+## 55   55      0.5093622     0.50692759 0.5005217 0.4994783  8.840513e-03
+## 56   56      0.7031336     0.21855675 0.6035124 0.3964876  9.962120e-02
+## 57   57      0.5148976     0.50706170 0.5016792 0.4983208  1.321834e-02
+## 58   58      0.4785499     0.70215903 0.4518725 0.5481275  2.667742e-02
+## 59   59      0.4207752     0.18141389 0.5525787 0.4474213 -1.318035e-01
+## 60   60      0.5929126     0.42054435 0.5369179 0.4630821  5.599467e-02
+## 61   61      0.5646979     0.19618188 0.5795155 0.4204845 -1.481762e-02
+## 62   62      0.5011501     0.49808345 0.5006571 0.4993429  4.929624e-04
+## 63   63      0.5223271     0.49493067 0.5058709 0.4941291  1.645623e-02
+## 64   64      0.4804011     0.55827000 0.4833116 0.5166884 -2.910451e-03
+## 65   65      0.5855653     0.67975800 0.4795882 0.5204118  1.059771e-01
+## 66   66      0.5182645     0.43226622 0.5184331 0.4815669 -1.685588e-04
+## 67   67      0.5377520     0.42220693 0.5247603 0.4752397  1.299175e-02
+## 68   68      0.5967803     0.48411158 0.5241634 0.4758366  7.261695e-02
+## 69   69      0.6492062     0.49286747 0.5335959 0.4664041  1.156102e-01
+## 70   70      0.5938180     0.47818635 0.5247931 0.4752069  6.902488e-02
+## 71   71      0.5164302     0.49360890 0.5048903 0.4951097  1.153988e-02
+## 72   72      0.5365424     0.57544462 0.4916472 0.5083528  4.489518e-02
+## 73   73      0.4192393     0.46145869 0.4909325 0.5090675 -7.169325e-02
+## 74   74      0.5571798     0.14936815 0.5883665 0.4116335 -3.118677e-02
+## 75   75      0.6472341     0.01521104 0.6370446 0.3629554  1.018953e-02
+## 76   76      0.5176452     0.47476415 0.5091886 0.4908114  8.456638e-03
+## 77   77      0.5292074     0.44563392 0.5179082 0.4820918  1.129918e-02
+## 78   78      0.5271962     0.35197533 0.5376155 0.4623845 -1.041937e-02
+## 79   79      0.6161820     0.06868122 0.6186269 0.3813731 -2.444931e-03
+## 80   80      0.4441683     0.45126331 0.4984770 0.5015230 -5.430865e-02
+## 81   81      0.4434805     0.52711745 0.4820775 0.5179225 -3.859700e-02
+## 82   82      0.5753677     0.36312167 0.5454731 0.4545269  2.989452e-02
+## 83   83      0.5973891     0.41143731 0.5398232 0.4601768  5.756594e-02
+## 84   84      0.5472715     0.55946875 0.4973815 0.5026185  4.989002e-02
+## 85   85      0.5134243     0.28326472 0.5496045 0.4503955 -3.618018e-02
+## 86   86      0.4762569     0.67752946 0.4567360 0.5432640  1.952090e-02
+## 87   87      0.4915158     0.40568059 0.5184222 0.4815778 -2.690637e-02
+## 88   88      0.5605823     0.59536936 0.4925166 0.5074834  6.806579e-02
+## 89   89      0.5322829     0.49401794 0.5082003 0.4917997  2.408256e-02
+## 90   90      0.4668448     0.65686314 0.4592070 0.5407930  7.637786e-03
+## 91   91      0.6824468     0.39792177 0.5609467 0.4390533  1.215001e-01
+## 92   92      0.6768850     0.47012032 0.5444282 0.4555718  1.324568e-01
+## 93   93      0.6269196     0.29370357 0.5713371 0.4286629  5.558254e-02
+## 94   94      0.5485989     0.23816950 0.5668995 0.4331005 -1.830064e-02
+## 95   95      0.4278086     0.21479446 0.5465662 0.4534338 -1.187576e-01
+## 96   96      0.6542445     0.38084181 0.5585212 0.4414788  9.572333e-02
+## 97   97      0.5208693     0.52932601 0.4981871 0.5018129  2.268216e-02
+## 98   98      0.5218216     0.54281400 0.4954986 0.5045014  2.632297e-02
+## 99   99      0.5196272     0.34149919 0.5382679 0.4617321 -1.864065e-02
+## 100 100      0.4800783     0.37661115 0.5222408 0.4777592 -4.216253e-02
+## 101 101      0.4809483     0.42489925 0.5120270 0.4879730 -3.107868e-02
+## 102 102      0.4846222     0.60915609 0.4732836 0.5267164  1.133859e-02
+## 103 103      0.3317776     0.31309996 0.5040850 0.4959150 -1.723074e-01
+## 104 104      0.7490548     0.30014866 0.5958912 0.4041088  1.531636e-01
+## 105 105      0.5633193     0.25473414 0.5663699 0.4336301 -3.050634e-03
+## 106 106      0.4921636     0.46938254 0.5048828 0.4951172 -1.271914e-02
+## 107 107      0.4575733     0.60519482 0.4683588 0.5316412 -1.078554e-02
+## 108 108      0.4249129     0.46159360 0.4921237 0.5078763 -6.721085e-02
+## 109 109      0.4868086     0.41268823 0.5159072 0.4840928 -2.909866e-02
+## 110 110      0.4856726     0.71664423 0.4502240 0.5497760  3.544855e-02
+## 111 111      0.5444285     0.19791847 0.5748998 0.4251002 -3.047126e-02
+## 112 112      0.5668816     0.28656606 0.5601936 0.4398064  6.688013e-03
+## 113 113      0.5420407     0.14092562 0.5871292 0.4128708 -4.508853e-02
+## 114 114      0.6597339     0.05619730 0.6302223 0.3697777  2.951165e-02
+## 115 115      0.5104727     0.50972188 0.5001609 0.4998391  1.031184e-02
+## 116 116      0.5537756     0.60659970 0.4886341 0.5113659  6.514148e-02
+## 117 117      0.5153668     0.51668503 0.4997175 0.5002825  1.564930e-02
+## 118 118      0.5045809     0.49623470 0.5017885 0.4982115  2.792442e-03
+## 119 119      0.5049597     0.47739851 0.5059062 0.4940938 -9.464650e-04
+## 120 120      0.5161851     0.52383897 0.4983595 0.5016405  1.782560e-02
+## 121 121      0.6498476     0.30157816 0.5744988 0.4255012  7.534881e-02
+## 122 122      0.4679312     0.58504929 0.4748979 0.5251021 -6.966784e-03
+## 123 123      0.4910321     0.39385596 0.5208645 0.4791355 -2.983234e-02
+## 124 124      0.6795618     0.42755345 0.5540417 0.4459583  1.255201e-01
+## 125 125      0.5001002     0.49977080 0.5000706 0.4999294  2.960500e-05
+## 126 126      0.5041604     0.49225751 0.5025506 0.4974494  1.609743e-03
+## 127 127      0.5419587     0.42427823 0.5252158 0.4747842  1.674296e-02
+## 128 128      0.4608946     0.32807966 0.5286567 0.4713433 -6.776213e-02
+## 129 129      0.5439464     0.37882255 0.5354008 0.4645992  8.545637e-03
+## 130 130      0.4976340     0.46192186 0.5076544 0.4923456 -1.002042e-02
+## 131 131      0.5006555     0.49770091 0.5006331 0.4993669  2.240824e-05
+## 132 132      0.5037854     0.49379494 0.5021408 0.4978592  1.644600e-03
+## 133 133      0.6651801     0.24941189 0.5889280 0.4110720  7.625214e-02
+## 134 134      0.4416449     0.25336734 0.5409325 0.4590675 -9.928760e-02
+## 135 135      0.6248079     0.41752660 0.5443968 0.4556032  8.041106e-02
+## 136 136      0.5274883     0.41590775 0.5239172 0.4760828  3.571059e-03
+## 137 137      0.4999418     0.46217011 0.5080956 0.4919044 -8.153783e-03
+## 138 138      0.5282111     0.42096378 0.5229865 0.4770135  5.224629e-03
+## 139 139      0.6531569     0.46099971 0.5412365 0.4587635  1.119204e-01
+## 140 140      0.5241047     0.50561998 0.5039615 0.4960385  2.014314e-02
+## 141 141      0.4972872     0.74208616 0.4471098 0.5528902  5.017741e-02
+## 142 142      0.5297521     0.47117870 0.5125507 0.4874493  1.720139e-02
+## 143 143      0.5455059     0.22201535 0.5698018 0.4301982 -2.429592e-02
+## 144 144      0.7720348     0.44703157 0.5700579 0.4299421  2.019769e-01
+## 145 145      0.6845455     0.50543393 0.5385836 0.4614164  1.459619e-01
+## 146 146      0.5240592     0.09569097 0.5936936 0.4063064 -6.963438e-02
+## 147 147      0.4792856     0.41725424 0.5133145 0.4866855 -3.402881e-02
+## 148 148      0.4635632     0.34056011 0.5265144 0.4734856 -6.295120e-02
+## 149 149      0.6652817     0.35180628 0.5670607 0.4329393  9.822097e-02
+## 150 150      0.4793298     0.65871059 0.4614647 0.5385353  1.786508e-02
+## 151 151      0.4818924     0.42782106 0.5116013 0.4883987 -2.970891e-02
+## 152 152      0.6271214     0.40607610 0.5473347 0.4526653  7.978666e-02
+## 153 153      0.5105332     0.29094451 0.5473154 0.4526846 -3.678217e-02
+## 154 154      0.5182974     0.18410529 0.5725099 0.4274901 -5.421245e-02
+## 155 155      0.5016429     0.49999145 0.5003539 0.4996461  1.289040e-03
+## 156 156      0.5270532     0.31572856 0.5454293 0.4545707 -1.837614e-02
+## 157 157      0.6103427     0.07615939 0.6157497 0.3842503 -5.407007e-03
+## 158 158      0.4007503     0.41260536 0.4974453 0.5025547 -9.669502e-02
+## 159 159      0.4225387     0.19100369 0.5507881 0.4492119 -1.282494e-01
+## 160 160      0.4499703     0.47117509 0.4954516 0.5045484 -4.548127e-02
+## 161 161      0.5320993     0.26824358 0.5568370 0.4431630 -2.473762e-02
+## 162 162      0.6511127     0.04468071 0.6310971 0.3689029  2.001556e-02
+## 163 163      0.6509507     0.53891694 0.5241419 0.4758581  1.268089e-01
+## 164 164      0.4561032     0.45455740 0.5003317 0.4996683 -4.422850e-02
+## 165 165      0.4762379     0.37546985 0.5216659 0.4783341 -4.542799e-02
+## 166 166      0.6283380     0.27284313 0.5761289 0.4238711  5.220909e-02
+## 167 167      0.4638191     0.31509747 0.5321089 0.4678911 -6.828987e-02
+## 168 168      0.3872756     0.47194949 0.4817999 0.5182001 -9.452428e-02
+## 169 169      0.5217525     0.50364479 0.5038806 0.4961194  1.787187e-02
+## 170 170      0.4540933     0.30726350 0.5317423 0.4682577 -7.764902e-02
+## 171 171      0.5009250     0.56669699 0.4858967 0.5141033  1.502833e-02
+## 172 172      0.4773581     0.56768402 0.4806409 0.5193591 -3.282763e-03
+## 173 173      0.6140757     0.36118596 0.5541353 0.4458647  5.994044e-02
+## 174 174      0.4250110     0.19997840 0.5492935 0.4507065 -1.242825e-01
+## 175 175      0.5552366     0.36797722 0.5401405 0.4598595  1.509614e-02
+## 176 176      0.5554973     0.30747385 0.5532519 0.4467481  2.245480e-03
+## 177 177      0.6160172     0.52111419 0.5203948 0.4796052  9.562238e-02
+## 178 178      0.5255234     0.11799292 0.5889035 0.4110965 -6.338008e-02
+## 179 179      0.5773775     0.43331878 0.5308591 0.4691409  4.651840e-02
+## 180 180      0.4998067     0.57334963 0.4842287 0.5157713  1.557799e-02
+## 181 181      0.4287105     0.52832483 0.4786514 0.5213486 -4.994093e-02
+## 182 182      0.5404502     0.38710619 0.5328737 0.4671263  7.576539e-03
+## 183 183      0.4143352     0.54828195 0.4712997 0.5287003 -5.696446e-02
+## 184 184      0.4057887     0.49675317 0.4804806 0.5195194 -7.469192e-02
+## 185 185      0.5208411     0.41577189 0.5225250 0.4774750 -1.683969e-03
+## 186 186      0.4935472     0.67334425 0.4613205 0.5386795  3.222670e-02
+## 187 187      0.5105575     0.49733432 0.5028336 0.4971664  7.723931e-03
+## 188 188      0.5005044     0.50103803 0.4998857 0.5001143  6.187711e-04
+## 189 189      0.5011835     0.60706801 0.4772721 0.5227279  2.391138e-02
+## 190 190      0.5229110     0.25428518 0.5579539 0.4420461 -3.504289e-02
+## 191 191      0.4876466     0.44398354 0.5093631 0.4906369 -2.171648e-02
+## 192 192      0.4357263     0.23519037 0.5437029 0.4562971 -1.079766e-01
+## 193 193      0.5280286     0.46351537 0.5138234 0.4861766  1.420516e-02
+## 194 194      0.5756689     0.39535397 0.5386222 0.4613778  3.704679e-02
+## 195 195      0.5847790     0.29474373 0.5622046 0.4377954  2.257445e-02
+## 196 196      0.4999957     0.49997854 0.5000037 0.4999963 -7.978791e-06
+## 197 197      0.4950517     0.46410539 0.5066330 0.4933670 -1.158134e-02
+## 198 198      0.4888137     0.39818195 0.5194582 0.4805418 -3.064454e-02
+## 199 199      0.4579712     0.45625799 0.5003675 0.4996325 -4.239638e-02
+## 200 200      0.5399088     0.58225243 0.4909048 0.5090952  4.900393e-02
+##         e_dual_j2
+## 1   -1.021072e-01
+## 2    7.541693e-02
+## 3   -3.240428e-04
+## 4   -2.285375e-01
+## 5   -2.199475e-01
+## 6   -4.874440e-02
+## 7   -9.363363e-02
+## 8   -8.474155e-02
+## 9   -3.343362e-01
+## 10  -4.264435e-02
+## 11  -1.214197e-01
+## 12  -3.328071e-02
+## 13   7.335183e-02
+## 14  -1.957488e-01
+## 15   5.566579e-02
+## 16  -1.082024e-01
+## 17   9.657759e-05
+## 18   1.090424e-02
+## 19  -5.359072e-02
+## 20  -5.536703e-02
+## 21  -9.113470e-02
+## 22   1.506566e-01
+## 23  -1.600259e-02
+## 24   5.579247e-02
+## 25  -2.060752e-01
+## 26  -9.151595e-02
+## 27  -2.541792e-01
+## 28  -5.099884e-02
+## 29  -2.268343e-02
+## 30   1.634443e-02
+## 31  -1.531493e-01
+## 32  -8.575474e-02
+## 33  -2.797440e-01
+## 34  -8.252060e-02
+## 35  -2.382546e-02
+## 36  -1.989695e-02
+## 37   1.011120e-03
+## 38  -4.617652e-03
+## 39  -2.365891e-02
+## 40  -1.049487e-01
+## 41  -2.034328e-01
+## 42  -3.829367e-02
+## 43   5.707318e-03
+## 44  -4.681294e-02
+## 45  -3.105569e-01
+## 46  -1.090763e-01
+## 47  -4.110375e-02
+## 48  -8.312431e-02
+## 49  -2.178735e-01
+## 50  -3.987725e-01
+## 51  -6.781026e-02
+## 52   5.064221e-03
+## 53   4.563155e-02
+## 54  -2.885022e-02
+## 55   7.449322e-03
+## 56  -1.779308e-01
+## 57   8.740943e-03
+## 58   1.540315e-01
+## 59  -2.660074e-01
+## 60  -4.253773e-02
+## 61  -2.243026e-01
+## 62  -1.259412e-03
+## 63   8.015359e-04
+## 64   4.158157e-02
+## 65   1.593462e-01
+## 66  -4.930071e-02
+## 67  -5.303281e-02
+## 68   8.274948e-03
+## 69   2.646340e-02
+## 70   2.979425e-03
+## 71  -1.500788e-03
+## 72   6.709181e-02
+## 73  -4.760879e-02
+## 74  -2.622653e-01
+## 75  -3.477444e-01
+## 76  -1.604726e-02
+## 77  -3.645784e-02
+## 78  -1.104091e-01
+## 79  -3.126919e-01
+## 80  -5.025972e-02
+## 81   9.194946e-03
+## 82  -9.140520e-02
+## 83  -4.873949e-02
+## 84   5.685027e-02
+## 85  -1.671308e-01
+## 86   1.342654e-01
+## 87  -7.589722e-02
+## 88   8.788591e-02
+## 89   2.218277e-03
+## 90   1.160701e-01
+## 91  -4.113151e-02
+## 92   1.454852e-02
+## 93  -1.349593e-01
+## 94  -1.949310e-01
+## 95  -2.386393e-01
+## 96  -6.063701e-02
+## 97   2.751312e-02
+## 98   3.831264e-02
+## 99  -1.202329e-01
+## 100 -1.011480e-01
+## 101 -6.307376e-02
+## 102  8.243971e-02
+## 103 -1.828151e-01
+## 104 -1.039601e-01
+## 105 -1.788959e-01
+## 106 -2.573468e-02
+## 107  7.355364e-02
+## 108 -4.628267e-02
+## 109 -7.140454e-02
+## 110  1.668683e-01
+## 111 -2.271817e-01
+## 112 -1.532404e-01
+## 113 -2.719451e-01
+## 114 -3.135804e-01
+## 115  9.882792e-03
+## 116  9.523383e-02
+## 117  1.640250e-02
+## 118 -1.976825e-03
+## 119 -1.669530e-02
+## 120  2.219842e-02
+## 121 -1.239230e-01
+## 122  5.994724e-02
+## 123 -8.527957e-02
+## 124 -1.840482e-02
+## 125 -1.586145e-04
+## 126 -5.191879e-03
+## 127 -5.050601e-02
+## 128 -1.432636e-01
+## 129 -8.577666e-02
+## 130 -3.042369e-02
+## 131 -1.665957e-03
+## 132 -4.064248e-03
+## 133 -1.616601e-01
+## 134 -2.057002e-01
+## 135 -3.807658e-02
+## 136 -6.017502e-02
+## 137 -2.973429e-02
+## 138 -5.604972e-02
+## 139  2.236169e-03
+## 140  9.581526e-03
+## 141  1.891959e-01
+## 142 -1.627062e-02
+## 143 -2.081829e-01
+## 144  1.708948e-02
+## 145  4.401753e-02
+## 146 -3.106155e-01
+## 147 -6.943131e-02
+## 148 -1.329255e-01
+## 149 -8.113299e-02
+## 150  1.201753e-01
+## 151 -6.057762e-02
+## 152 -4.658918e-02
+## 153 -1.617401e-01
+## 154 -2.433848e-01
+## 155  3.453417e-04
+## 156 -1.388421e-01
+## 157 -3.080909e-01
+## 158 -8.994929e-02
+## 159 -2.582082e-01
+## 160 -3.337329e-02
+## 161 -1.749194e-01
+## 162 -3.242222e-01
+## 163  6.305880e-02
+## 164 -4.511094e-02
+## 165 -1.028642e-01
+## 166 -1.510279e-01
+## 167 -1.527936e-01
+## 168 -4.625060e-02
+## 169  7.525387e-03
+## 170 -1.609942e-01
+## 171  5.259370e-02
+## 172  4.832492e-02
+## 173 -8.467875e-02
+## 174 -2.507281e-01
+## 175 -9.188228e-02
+## 176 -1.392743e-01
+## 177  4.150899e-02
+## 178 -2.931036e-01
+## 179 -3.582214e-02
+## 180  5.757836e-02
+## 181  6.976276e-03
+## 182 -8.002014e-02
+## 183  1.958164e-02
+## 184 -2.276619e-02
+## 185 -6.170308e-02
+## 186  1.346647e-01
+## 187  1.678745e-04
+## 188  9.236849e-04
+## 189  8.434009e-02
+## 190 -1.877609e-01
+## 191 -4.665337e-02
+## 192 -2.211067e-01
+## 193 -2.266122e-02
+## 194 -6.602388e-02
+## 195 -1.430517e-01
+## 196 -1.778412e-05
+## 197 -2.926160e-02
+## 198 -8.235980e-02
+## 199 -4.337447e-02
+## 200  7.315726e-02
+## 
+## $values
+## $values$entropy
+## [1] 573.5472
+## 
+## $values$iterations
+## function gradient 
+##     1001       NA 
+## 
+## $values$message
+## NULL
+## 
+## $values$method
+## [1] &quot;BFGS&quot;
+## 
+## 
+## $tol
+## [1] 1e-24
+## 
+## $v
+##      [,1]
+## [1,]   -1
+## [2,]    0
+## [3,]    1
+## 
+## $lambda
+##         X1         X2            X3        X4
+## 1 31.42586   6.169519 -7.450156e-05 -17.51268
+## 2 21.79873 -16.245905 -1.337929e-04  24.90991
+## 
+## $checkrestrictions
+## $checkrestrictions$g1
+##              [,1]
+## 1   -1.110223e-16
+## 2    0.000000e+00
+## 3    0.000000e+00
+## 4    0.000000e+00
+## 5    0.000000e+00
+## 6    0.000000e+00
+## 7    0.000000e+00
+## 8    0.000000e+00
+## 9    0.000000e+00
+## 10   0.000000e+00
+## 11   0.000000e+00
+## 12  -1.110223e-16
+## 13   0.000000e+00
+## 14   0.000000e+00
+## 15  -2.220446e-16
+## 16   0.000000e+00
+## 17   0.000000e+00
+## 18   0.000000e+00
+## 19   0.000000e+00
+## 20  -1.110223e-16
+## 21   0.000000e+00
+## 22   0.000000e+00
+## 23   0.000000e+00
+## 24   0.000000e+00
+## 25   0.000000e+00
+## 26   0.000000e+00
+## 27   0.000000e+00
+## 28   0.000000e+00
+## 29   0.000000e+00
+## 30   0.000000e+00
+## 31   0.000000e+00
+## 32  -1.110223e-16
+## 33   0.000000e+00
+## 34   0.000000e+00
+## 35   0.000000e+00
+## 36   0.000000e+00
+## 37   0.000000e+00
+## 38  -1.110223e-16
+## 39   0.000000e+00
+## 40   0.000000e+00
+## 41   0.000000e+00
+## 42   0.000000e+00
+## 43   0.000000e+00
+## 44   0.000000e+00
+## 45   0.000000e+00
+## 46   0.000000e+00
+## 47   0.000000e+00
+## 48   0.000000e+00
+## 49   0.000000e+00
+## 50   0.000000e+00
+## 51   0.000000e+00
+## 52   0.000000e+00
+## 53  -2.220446e-16
+## 54   0.000000e+00
+## 55   0.000000e+00
+## 56   0.000000e+00
+## 57   0.000000e+00
+## 58   0.000000e+00
+## 59   0.000000e+00
+## 60   0.000000e+00
+## 61   0.000000e+00
+## 62   0.000000e+00
+## 63   0.000000e+00
+## 64   0.000000e+00
+## 65   0.000000e+00
+## 66   0.000000e+00
+## 67   0.000000e+00
+## 68   0.000000e+00
+## 69   0.000000e+00
+## 70   0.000000e+00
+## 71   0.000000e+00
+## 72   0.000000e+00
+## 73   0.000000e+00
+## 74   0.000000e+00
+## 75   0.000000e+00
+## 76   0.000000e+00
+## 77   0.000000e+00
+## 78   0.000000e+00
+## 79   0.000000e+00
+## 80   0.000000e+00
+## 81   0.000000e+00
+## 82   0.000000e+00
+## 83   0.000000e+00
+## 84   0.000000e+00
+## 85   0.000000e+00
+## 86   0.000000e+00
+## 87   0.000000e+00
+## 88   0.000000e+00
+## 89   0.000000e+00
+## 90   0.000000e+00
+## 91   0.000000e+00
+## 92  -2.220446e-16
+## 93  -1.110223e-16
+## 94   0.000000e+00
+## 95   0.000000e+00
+## 96   0.000000e+00
+## 97   0.000000e+00
+## 98  -1.110223e-16
+## 99   0.000000e+00
+## 100  0.000000e+00
+## 101  0.000000e+00
+## 102  0.000000e+00
+## 103 -1.110223e-16
+## 104  0.000000e+00
+## 105  0.000000e+00
+## 106  0.000000e+00
+## 107  0.000000e+00
+## 108  0.000000e+00
+## 109  0.000000e+00
+## 110 -1.110223e-16
+## 111 -1.110223e-16
+## 112  0.000000e+00
+## 113  0.000000e+00
+## 114  0.000000e+00
+## 115  0.000000e+00
+## 116 -2.220446e-16
+## 117 -1.110223e-16
+## 118  0.000000e+00
+## 119  0.000000e+00
+## 120  0.000000e+00
+## 121  0.000000e+00
+## 122  0.000000e+00
+## 123  0.000000e+00
+## 124  0.000000e+00
+## 125  0.000000e+00
+## 126  0.000000e+00
+## 127 -1.110223e-16
+## 128  0.000000e+00
+## 129  0.000000e+00
+## 130  0.000000e+00
+## 131  0.000000e+00
+## 132  0.000000e+00
+## 133  0.000000e+00
+## 134  0.000000e+00
+## 135  2.220446e-16
+## 136  0.000000e+00
+## 137  0.000000e+00
+## 138  0.000000e+00
+## 139  0.000000e+00
+## 140  0.000000e+00
+## 141 -1.110223e-16
+## 142 -1.110223e-16
+## 143  0.000000e+00
+## 144  2.220446e-16
+## 145  0.000000e+00
+## 146  0.000000e+00
+## 147  0.000000e+00
+## 148  0.000000e+00
+## 149  0.000000e+00
+## 150  0.000000e+00
+## 151  0.000000e+00
+## 152  0.000000e+00
+## 153  0.000000e+00
+## 154  0.000000e+00
+## 155 -1.110223e-16
+## 156  0.000000e+00
+## 157  0.000000e+00
+## 158  0.000000e+00
+## 159  0.000000e+00
+## 160  0.000000e+00
+## 161  0.000000e+00
+## 162  0.000000e+00
+## 163  0.000000e+00
+## 164  0.000000e+00
+## 165  0.000000e+00
+## 166 -1.110223e-16
+## 167  0.000000e+00
+## 168  0.000000e+00
+## 169  0.000000e+00
+## 170  0.000000e+00
+## 171  0.000000e+00
+## 172 -1.110223e-16
+## 173  0.000000e+00
+## 174  0.000000e+00
+## 175  0.000000e+00
+## 176  0.000000e+00
+## 177  0.000000e+00
+## 178  0.000000e+00
+## 179  0.000000e+00
+## 180  0.000000e+00
+## 181 -1.110223e-16
+## 182  0.000000e+00
+## 183  0.000000e+00
+## 184 -1.110223e-16
+## 185  0.000000e+00
+## 186  0.000000e+00
+## 187 -1.110223e-16
+## 188 -1.110223e-16
+## 189  0.000000e+00
+## 190  0.000000e+00
+## 191  0.000000e+00
+## 192  0.000000e+00
+## 193  0.000000e+00
+## 194  0.000000e+00
+## 195  0.000000e+00
+## 196  0.000000e+00
+## 197  0.000000e+00
+## 198  0.000000e+00
+## 199  0.000000e+00
+## 200  0.000000e+00
+## 
+## $checkrestrictions$g2
+##              [,1]          [,2]
+## 1    0.000000e+00 -1.110223e-16
+## 2    0.000000e+00  0.000000e+00
+## 3    0.000000e+00  0.000000e+00
+## 4    0.000000e+00  0.000000e+00
+## 5    0.000000e+00  0.000000e+00
+## 6    0.000000e+00  0.000000e+00
+## 7    0.000000e+00  0.000000e+00
+## 8    0.000000e+00  0.000000e+00
+## 9    0.000000e+00  0.000000e+00
+## 10   0.000000e+00  0.000000e+00
+## 11   0.000000e+00  0.000000e+00
+## 12   0.000000e+00  0.000000e+00
+## 13   0.000000e+00  0.000000e+00
+## 14   0.000000e+00  0.000000e+00
+## 15   0.000000e+00  0.000000e+00
+## 16   0.000000e+00  0.000000e+00
+## 17   0.000000e+00  0.000000e+00
+## 18   0.000000e+00  0.000000e+00
+## 19   0.000000e+00  0.000000e+00
+## 20   0.000000e+00  0.000000e+00
+## 21   0.000000e+00  0.000000e+00
+## 22   0.000000e+00  0.000000e+00
+## 23   0.000000e+00  0.000000e+00
+## 24   0.000000e+00  0.000000e+00
+## 25   0.000000e+00  0.000000e+00
+## 26   0.000000e+00  0.000000e+00
+## 27   0.000000e+00 -1.110223e-16
+## 28   0.000000e+00  0.000000e+00
+## 29   0.000000e+00  0.000000e+00
+## 30  -1.110223e-16  0.000000e+00
+## 31  -1.110223e-16  0.000000e+00
+## 32  -1.110223e-16 -1.110223e-16
+## 33   0.000000e+00  0.000000e+00
+## 34   0.000000e+00 -1.110223e-16
+## 35   0.000000e+00  0.000000e+00
+## 36   0.000000e+00  0.000000e+00
+## 37   0.000000e+00 -1.110223e-16
+## 38   0.000000e+00  0.000000e+00
+## 39   0.000000e+00  0.000000e+00
+## 40   0.000000e+00  0.000000e+00
+## 41   2.220446e-16 -1.110223e-16
+## 42   0.000000e+00  0.000000e+00
+## 43   0.000000e+00  0.000000e+00
+## 44   2.220446e-16  0.000000e+00
+## 45   0.000000e+00  0.000000e+00
+## 46   0.000000e+00  0.000000e+00
+## 47   0.000000e+00  0.000000e+00
+## 48   0.000000e+00  0.000000e+00
+## 49  -1.110223e-16  0.000000e+00
+## 50   0.000000e+00  0.000000e+00
+## 51   0.000000e+00 -1.110223e-16
+## 52   0.000000e+00  0.000000e+00
+## 53   0.000000e+00  0.000000e+00
+## 54   0.000000e+00  0.000000e+00
+## 55   0.000000e+00  0.000000e+00
+## 56  -1.110223e-16  0.000000e+00
+## 57   0.000000e+00 -1.110223e-16
+## 58   0.000000e+00  0.000000e+00
+## 59   0.000000e+00  0.000000e+00
+## 60   0.000000e+00  0.000000e+00
+## 61   0.000000e+00  0.000000e+00
+## 62   0.000000e+00 -2.220446e-16
+## 63   0.000000e+00  0.000000e+00
+## 64   0.000000e+00  0.000000e+00
+## 65  -2.220446e-16  0.000000e+00
+## 66  -1.110223e-16 -1.110223e-16
+## 67   0.000000e+00  0.000000e+00
+## 68   0.000000e+00  0.000000e+00
+## 69   0.000000e+00  0.000000e+00
+## 70   0.000000e+00 -2.220446e-16
+## 71   0.000000e+00 -2.220446e-16
+## 72   0.000000e+00  2.220446e-16
+## 73   0.000000e+00  0.000000e+00
+## 74  -1.110223e-16  0.000000e+00
+## 75   0.000000e+00  0.000000e+00
+## 76   0.000000e+00  0.000000e+00
+## 77   0.000000e+00  0.000000e+00
+## 78   2.220446e-16  2.220446e-16
+## 79  -1.110223e-16  0.000000e+00
+## 80   0.000000e+00  0.000000e+00
+## 81  -2.220446e-16  0.000000e+00
+## 82   0.000000e+00  0.000000e+00
+## 83   0.000000e+00 -1.110223e-16
+## 84   0.000000e+00  0.000000e+00
+## 85   0.000000e+00 -1.110223e-16
+## 86   0.000000e+00  0.000000e+00
+## 87   0.000000e+00 -1.110223e-16
+## 88   0.000000e+00  0.000000e+00
+## 89   0.000000e+00  0.000000e+00
+## 90   0.000000e+00  0.000000e+00
+## 91   0.000000e+00 -2.220446e-16
+## 92   2.220446e-16  0.000000e+00
+## 93   0.000000e+00  0.000000e+00
+## 94   0.000000e+00 -1.110223e-16
+## 95   0.000000e+00  0.000000e+00
+## 96   0.000000e+00 -1.110223e-16
+## 97   0.000000e+00  0.000000e+00
+## 98   0.000000e+00  0.000000e+00
+## 99  -1.110223e-16  0.000000e+00
+## 100 -1.110223e-16  0.000000e+00
+## 101  0.000000e+00 -1.110223e-16
+## 102  0.000000e+00  0.000000e+00
+## 103  0.000000e+00  0.000000e+00
+## 104  0.000000e+00  0.000000e+00
+## 105  0.000000e+00  0.000000e+00
+## 106  0.000000e+00  0.000000e+00
+## 107 -2.220446e-16  0.000000e+00
+## 108 -1.110223e-16  0.000000e+00
+## 109  0.000000e+00  0.000000e+00
+## 110  0.000000e+00  0.000000e+00
+## 111  0.000000e+00  0.000000e+00
+## 112  2.220446e-16  0.000000e+00
+## 113  0.000000e+00  0.000000e+00
+## 114  0.000000e+00  0.000000e+00
+## 115  0.000000e+00  0.000000e+00
+## 116  0.000000e+00  0.000000e+00
+## 117  0.000000e+00  0.000000e+00
+## 118  0.000000e+00 -1.110223e-16
+## 119  0.000000e+00 -1.110223e-16
+## 120  0.000000e+00  0.000000e+00
+## 121  0.000000e+00  0.000000e+00
+## 122  0.000000e+00  0.000000e+00
+## 123  0.000000e+00  0.000000e+00
+## 124  2.220446e-16  0.000000e+00
+## 125  0.000000e+00  0.000000e+00
+## 126  0.000000e+00 -1.110223e-16
+## 127  0.000000e+00  0.000000e+00
+## 128  0.000000e+00  0.000000e+00
+## 129  0.000000e+00  2.220446e-16
+## 130  0.000000e+00  0.000000e+00
+## 131  0.000000e+00 -1.110223e-16
+## 132  0.000000e+00 -2.220446e-16
+## 133  0.000000e+00  0.000000e+00
+## 134 -2.220446e-16  0.000000e+00
+## 135  0.000000e+00  0.000000e+00
+## 136  0.000000e+00  0.000000e+00
+## 137  2.220446e-16  0.000000e+00
+## 138  0.000000e+00 -1.110223e-16
+## 139  0.000000e+00  0.000000e+00
+## 140  0.000000e+00  0.000000e+00
+## 141  0.000000e+00  0.000000e+00
+## 142 -1.110223e-16  0.000000e+00
+## 143  0.000000e+00  2.220446e-16
+## 144  0.000000e+00  0.000000e+00
+## 145  0.000000e+00  0.000000e+00
+## 146 -1.110223e-16  0.000000e+00
+## 147  0.000000e+00  0.000000e+00
+## 148  0.000000e+00 -1.110223e-16
+## 149  0.000000e+00  0.000000e+00
+## 150  0.000000e+00  0.000000e+00
+## 151  0.000000e+00  0.000000e+00
+## 152 -1.110223e-16  0.000000e+00
+## 153  0.000000e+00 -2.220446e-16
+## 154  0.000000e+00  0.000000e+00
+## 155  2.220446e-16  0.000000e+00
+## 156  0.000000e+00  0.000000e+00
+## 157  0.000000e+00  0.000000e+00
+## 158  0.000000e+00 -1.110223e-16
+## 159  0.000000e+00  0.000000e+00
+## 160  0.000000e+00  0.000000e+00
+## 161  0.000000e+00  0.000000e+00
+## 162  0.000000e+00 -1.110223e-16
+## 163  0.000000e+00  0.000000e+00
+## 164  0.000000e+00  0.000000e+00
+## 165 -2.220446e-16  0.000000e+00
+## 166  0.000000e+00  0.000000e+00
+## 167  0.000000e+00  0.000000e+00
+## 168 -2.220446e-16  0.000000e+00
+## 169  0.000000e+00  0.000000e+00
+## 170  0.000000e+00  0.000000e+00
+## 171  0.000000e+00  0.000000e+00
+## 172 -1.110223e-16  0.000000e+00
+## 173  0.000000e+00  0.000000e+00
+## 174  0.000000e+00 -1.110223e-16
+## 175  0.000000e+00  0.000000e+00
+## 176  0.000000e+00  0.000000e+00
+## 177 -1.110223e-16  0.000000e+00
+## 178 -1.110223e-16  0.000000e+00
+## 179  0.000000e+00 -1.110223e-16
+## 180  0.000000e+00  0.000000e+00
+## 181  0.000000e+00  0.000000e+00
+## 182  0.000000e+00  0.000000e+00
+## 183  0.000000e+00  0.000000e+00
+## 184  0.000000e+00  0.000000e+00
+## 185  0.000000e+00  0.000000e+00
+## 186  0.000000e+00  0.000000e+00
+## 187  0.000000e+00  0.000000e+00
+## 188  0.000000e+00  0.000000e+00
+## 189  0.000000e+00  0.000000e+00
+## 190  0.000000e+00  0.000000e+00
+## 191  0.000000e+00 -2.220446e-16
+## 192  0.000000e+00  0.000000e+00
+## 193  0.000000e+00  0.000000e+00
+## 194  0.000000e+00  2.220446e-16
+## 195 -1.110223e-16  0.000000e+00
+## 196  0.000000e+00  0.000000e+00
+## 197 -2.220446e-16 -2.220446e-16
+## 198  0.000000e+00  0.000000e+00
+## 199  0.000000e+00  0.000000e+00
+## 200  0.000000e+00  2.220446e-16
+## 
+## $checkrestrictions$g3
+##               factor(y)0    factor(y)1
+## (Intercept) 1.214107e-01   -0.03389694
+## Dcollege    1.440984e-01   -0.00305705
+## Totalincome 1.421231e+04 -751.50348277
+## Dunemp      6.863777e-02   -0.05350674
+## 
+## 
+## $cross_moments_hp
+##               factor(y)0   factor(y)1
+## (Intercept) 6.622217e-01 3.377783e-01
+## Dcollege    4.376594e-01 1.663265e-01
+## Totalincome 1.895948e+05 1.030366e+05
+## Dunemp      2.859345e-01 1.622465e-01
+## 
+## $cross_moments_hs
+##                     [,1]         [,2]
+## (Intercept) 5.408111e-01 3.716752e-01
+## Dcollege    2.935610e-01 1.693835e-01
+## Totalincome 1.753825e+05 1.037881e+05
+## Dunemp      2.172968e-01 2.157533e-01
+## 
+## $J
+## [1] 2
+## 
+## $fn
+## datahp$poor_liq ~ Dcollege + Totalincome + Dunemp
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;shannon&quot;</code></pre>
+<p>To make the results more visual, this package includes a personalized
+summary function which will resume the main results, providing the means
+for each category <span class="math inline">\(j\)</span> for the
+predictions, the probabilities and the error.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">summary</span>(<span class="at">object=</span>result3)</span></code></pre></div>
+<pre><code>## Iterationsfunction 
+##     1001 
+## Entropy value[1] 573.5472
+## [1] &quot;mean_estimations&quot;
+##       n predictions_j1 predictions_j2 p_dual_j1 p_dual_j2   e_dual_j1
+## 1 100.5      0.5311341      0.4081335 0.5265115 0.4734885 0.004622612
+##     e_dual_j2
+## 1 -0.06535502
+## [1] &quot;lambda&quot;
+##    intercept   Dcollege   Totalincome    Dunemp
+## j1  31.42586   6.169519 -7.450156e-05 -17.51268
+## j2  21.79873 -16.245905 -1.337929e-04  24.90991</code></pre>
+<p>Graphs are generated with the plot function, showing the averages of
+the predictions for each territorial unit and the 95% confidence
+interval associated with each of them.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>result3, <span class="at">reg=</span>datahs<span class="sc">$</span>reg)   </span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<p>Fernandez-Vazquez, E., Díaz-Dapena, A., Rubiera-Morollon, F.,
+Viñuela, A., (2020) Spatial Disaggregation of Social Indicators: An
+Info-Metrics Approach. Social Indicators Research, 152(2), 809–821. <a href="https://doi.org/10.1007/s11205-020-02455-z" class="uri">https://doi.org/10.1007/s11205-020-02455-z</a>.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
