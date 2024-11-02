@@ -2,20 +2,20 @@
 #' @title Ecologic Inference applying entropy
 #' @description
 #' The function ei_gme defines the Shannon entropy function which takes a vector of probabilities as input and returns the negative
-#' sum of p times the natural logarithm of p.The function will set the optimization parameters and using the "optim" function an optimal
+#' sum of p times the natural logarithm of p.The function will set the optimization parameters and using the "nlminb" function an optimal
 #' solution is obtained.
 #' The function defines the independent variables in the two databases needed, which we call datahp with "n_hp" observations and datahs
 #' with "n_hs" observations; and the function of the binary variable of interest y. Then the weights of each observation for the two
 #' databases used are defined, if there are no weights available it will be 1.
 #' The errors are calculated pondering the support vector of dimension \code{var, 0, -var}. This support vector can be specified by the user.
-#' The default support vector is based on variance.We recommend a wider interval with v(-1,0,1) as the maximum.
+#' The default support vector is based on variance.We recommend a wider interval with v(1,0,-1) as the maximum.
 #' The restrictions are defined to guarantee consistency.
-#' The optimization of the Shannon entropy function is solved with the "optim" function local solver "BFGS" and the tolerance by default is settled in
-#' 1e-24 but can be specified by the user.The model used in the optimization can be specified too between: "Nelder-Mead", "BFGS", "CG", "L-BFGS-B", "SANN",
-#' "Brent". The method by default and the recommended is BFGS
+#' The optimization of the Shannon entropy function is solved with "nlminb" function
+#' with maximum number of iterations 1000 and with tolerance
+#' defined by the user.
 #' @importFrom magrittr "%>%"
 #' @importFrom dplyr group_by summarize mutate
-#' @importFrom stats sd model.matrix model.frame model.response optim terms
+#' @importFrom stats sd model.matrix model.frame model.response nlminb terms
 #' @importFrom graphics segments
 #' @details
 #'To solve the optimization upper and lower bounds for p and w are settled, specifically, p and w must be above 0 and lower than 1.
@@ -24,16 +24,18 @@
 #' @param fn is the formula that represents the dependent variable in the optimization.
 #' In the context of this function, 'fn' is used to define the dependent variable
 #' to be optimized by the entropy function.
+#' Note: If the dependent variable is categorical the sorting criterion for the columns, and therefore for J, is alphabetical order.
 #' @param datahp The data where the variable of interest y is available and also the independent variables.
 #'  Note: The variables and weights used as independent variables must have the same name in 'datahp' and in 'datahs'
 #'        The variables in both databases need to match up in content.
 #' @param datahs The data with the information of the independent variables as a disaggregated level.
 #'        Note: The variables and weights used as independent variables must be the same and must have the same name in 'datahp' and in 'datahs'
-#' @param w The weights to be used in this function.
-#' @param tol The tolerance to be applied in the optimization function. If the tolerance is not specified, the default tolerance has been set in 1e-24
+#' @param weights The weights to be used in this function.
+#' @param tol The tolerance to be applied in the optimization function. If the tolerance is not specified, the default tolerance has been set in 1e-10
 #' @param v The support vector
-#' @param method The method used in the function optim.This can be selected by the user between: "Nelder-Mead", "BFGS", "CG", "L-BFGS-B", "SANN",
-#' "Brent". The method by default and the recommended is BFGS
+#' @param iter The maximum number of iterations allowed for the optimization algorithm to run 
+#' Increasing the number of iterations may improve the likelihood of finding an optimal solution, 
+#' but can also increases computation time.If the maximum number of iterations is not specified, it will default to 1000
 #' @return The function will provide you a dataframe called table with the next information:
 #'    \itemize{
 #'   \item \strong{probabilities}  Probabilities for each individual to each possibility j of the variable of interest y.
@@ -44,7 +46,6 @@
 #'   \item \strong{iterations} Indicates the times the objective function and the gradient has been evaluated during the optimization process
 #'   \item \strong{message} Indicates the message if it has been generated in the process of optimization
 #'   \item \strong{tol} Indicates the tolerance used in the optimization
-#'   \item \strong{method} Indicates the method used in the optimization
 #'   \item \strong{v} Indicates the vector of support used in the function
 #'   The function provides a dataframe containing the information about lambda:
 #'   \item  \strong{lambda} The estimated lambda values.
@@ -67,11 +68,11 @@
 #' #is the data where we have our variable of interest datahs is the data
 #' # where we have the information for the disaggregation.
 #' #w can be included if we have weights in both surveys
-#' #Tolerance in this example is fixed in 1e-20 and v will be (-1,0,1)
-#' v=matrix(c(-1, 0, 1), nrow = 1)
-#' result  <- ei_gme(fn=fn,datahp=datahp,datahs=datahs,w,tol=1e-20,method="BFGS",v=v)
+#' #Tolerance in this example is fixed in 1e-20 and v will be (1,0,-1)
+#' v=matrix(c(1, 0, -1), nrow = 1)
+#' result  <- ei_gme(fn=fn,datahp=datahp,datahs=datahs,weights=w,tol=1e-20,v=v)
 #' @export
-ei_gme <- function(fn,datahp,datahs,w,tol,method,v=NULL){
+ei_gme <- function(fn,datahp,datahs,weights,tol,v,iter){
 
   #Independent variables
   x_hp             <- model.matrix(fn,datahp)                         #Matrix of independent variables in hp - dimensions n_hs (observations in hp) and k (parameters)
@@ -80,9 +81,9 @@ ei_gme <- function(fn,datahp,datahs,w,tol,method,v=NULL){
   x_hs             <- model.matrix(fn_right,datahs)                   #Matrix of independent variables in hs - dimensions n_hp (observations in hs) and k (parameters)
 
   #loading and rescale of weights (by the total) in each survey
-  if ("w" %in% colnames(datahp) && "w" %in% colnames(datahs)) {
-    w_hp <- datahp$w / sum(datahp$w)   # vector with n_hp observations
-    w_hs <- datahs$w / sum(datahs$w)   # vector with n_hs observations
+  if ("weights" %in% colnames(datahp) && "weights" %in% colnames(datahs)) {
+    w_hp <- datahp$weights / sum(datahp$weights)   # vector with n_hp observations
+    w_hs <- datahs$weights / sum(datahs$weights)   # vector with n_hs observations
   } else {
     w_hp <- rep(1, nrow(datahp)) / nrow(datahp)
     w_hs <- rep(1, nrow(datahs)) / nrow(datahs)}
@@ -96,8 +97,13 @@ ei_gme <- function(fn,datahp,datahs,w,tol,method,v=NULL){
 
   #Definition of "y" as a matrix with n_hp observations by j categories.
   form <- model.frame(fn,datahp)
-  y          <- model.response(form)                            #First column of matrix y (2 columns in shannon disagg)
-  y_prev <- model.matrix(~ factor(y) - 1)
+  y          <- model.response(form) 
+  if (length(unique(y)) == 2 && all(sort(unique(y)) == c(0, 1))) {
+    y_factor <- factor(y, levels = c(1, 0))  
+  } else {
+    y_factor <- factor(y)
+  }
+  y_prev <- model.matrix(~ y_factor - 1)
 
   n_hp             <- dim(x_hp)[1]  ; n_hp                            #observations in hp
   n_hs             <- dim(x_hs)[1]  ; n_hs                            #Observations in hs
@@ -114,12 +120,17 @@ ei_gme <- function(fn,datahp,datahs,w,tol,method,v=NULL){
     stop("The variable must be numeric or categorical.")
   }
 
-  if (is.null(v)) {
-
-    v <- matrix(c(-var, 0, var), nrow = 1)
+  if (missing(v)|| is.null(v))  {
+    v <- matrix(c(var, 0, -var), nrow = 1)
+  }else {
+    if (length(v) != 3 || nrow(v) != 1) {
+      v <- matrix(as.vector(v)[1:3], nrow = 1)
+      warning("The matrix `v` was automatically reshaped to dimensions `1 x 3`.")
+    }
   }
+  
   #Three extreme values (L) to estimate the errors
-  l                <- dim(v)[1]                                       #Parameter L is equal to the number of values in vector v
+  l                <- dim(v)[2]                                       #Parameter L is equal to the number of values in vector v
   #Auxiliary matrixes
   L_ones           <- c(1,1,1)                                        #A matrix with L ones.    It is used in the restrictions for w
   N_ones_hs        <- matrix(1,n_hs,1)                                #A matrix with n_hs ones. It is used in the restrictions for p and w
@@ -139,25 +150,27 @@ ei_gme <- function(fn,datahp,datahs,w,tol,method,v=NULL){
 
 
   if (missing(tol) || is.null(tol)) {
-    tol <- 1e-24
+    tol <- 1e-10
   }
-
-  control = list(maxit=1000,reltol=tol)
-
-  if(missing(method)) {
-    method <- "BFGS"
+  if (missing(iter) || is.null(iter)) {
+    iter <- 1000
   }
-
-
-  llamar_optim <- function(par, fn, gr = NULL, method, tol, ...) {
-    resultado <- stats::optim(par, fn, gr, ...)
-    resultado$method <- method  # Guarda el metodo en el resultado
-    resultado$tol <- control$reltol  # Guarda la tolerancia en el resultado
+  
+  llamar_nlp <- function(par, fn, lower = -Inf, upper = Inf, ...) {
+    
+    
+    control = list(iter.max = iter, rel.tol = tol)
+    resultado <-stats::nlminb(start = par, objective = fn, lower = lower, upper = upper, control = control, ...)
+    
     return(resultado)
   }
-  res <- llamar_optim(par =lambda_v, fn = shannon_entropy_dual,method=method, control = control) ; res
-  tol<-res$tol
-  methodused=toString(res$method)
+  
+  res <- llamar_nlp(par = lambda_v, fn = shannon_entropy_dual)
+  
+  
+  
+  
+  
   lambda          <- matrix(res$par, nrow=J ,ncol=, byrow=F)
   #Final estimation of  and psi
   omega       <- rowSums(t(exp(lambda %*% t(x_hs * w_hs))))                                                                          #With J_ones they are multiplied to make the sum in J; t(x_hs * w_hs) this part is Xt(k,n_hs) times the weights of the HS
@@ -179,38 +192,68 @@ ei_gme <- function(fn,datahp,datahs,w,tol,method,v=NULL){
 
   #Cross moments in the hp. "y" is weighted with "w_hp" by a multiplication element by element (NOT a matrix multiplication)
   cross_moments_hp<- (t(x_hp) %*%  (y_prev  *  w_hp))
-
+  error_primal <- error_dual
+  
   #Cross moments in the hs. "y" is weighted with "w_hs" by a multiplication element by element (NOT a matrix multiplication)
-  cross_moments_hs<-  (t(x_hs) %*% ((p_dual * w_hs) + ( error_dual  * w_hs)))
-  g3              <- cross_moments_hp - cross_moments_hs   #Last set of restriction defines the cross moments in hp must be equal to hs
-
-  table <- data.frame(datahs$n,predictions, p_dual, error_dual)
-  assign_col_names <- function(df, j) {
-    n_names<-paste0("n")
-    prediction_names <- paste0("predictions_j", 1:j)
-    p_names <- paste0("p_dual_j", 1:j)
-    e_names <-paste0("e_dual_j", 1:j)
-    all<- c("n", prediction_names, p_names,e_names)
+  cross_moments_hs <- (t(x_hs) %*% ((p_dual * w_hs) + ( error_primal  * w_hs)))
+  
+  
+  g3 <- cross_moments_hp - cross_moments_hs  #Last set of restriction defines the cross moments in hp must be equal to hs
+  cross_moments_hs <- noquote(apply(cross_moments_hs, c(1, 2), function(x) sprintf("%10.2f", x)))
+  #Set the colnames for the table
+  table <- data.frame(w_hs,predictions, p_dual, error_dual)                                                                        #Joining all the relevant information in one table
+  category_names <- levels(y_factor)
+  assign_col_names <- function(df, y_factor) {
+    w_hs_names <-("weights")
+    prediction_names <- paste0("predictions_", category_names)  # Usamos los nombres de las categorías
+    p_names <- paste0("p_dual_", category_names)
+    e_names <- paste0("e_dual_", category_names)
+    all<- c("weights", prediction_names, p_names,e_names)
     colnames(df) <- all
     return(df)}
-
-  table <- assign_col_names(table, J)
+  
+  
+  
+  
+  colnames(cross_moments_hs) <- category_names
+  colnames(cross_moments_hp) <- category_names
+  colnames(g3)<-category_names
+  table <- assign_col_names(table, y_factor)
 
 
   values<- list(
-    entropy=res$value,
-    iterations = res$counts,
-    message= res$message,
-    method=toString(method)
+    entropy =res$objective,
+    iterations = res$iterations,
+    message= res$message
   )
-
-
+  
+  k_names <-  c("(Intercept)", attr(terms(fn), "term.labels"))
+  row.names(g3)<-k_names
+ 
   checkrestrictions<-list(g1=g1,g2=g2,g3=g3)
+  checkrestrictions <- lapply(checkrestrictions, function(x) {
+    
+    if (is.matrix(x) || is.data.frame(x)) {
+      apply(x, 2, function(y) round(as.numeric(y), 3))
+    } else {
+      round(as.numeric(x), 3)
+    }
+  })
 
+  
 
   table2<-data.frame(lambda)
+  
 
-  generate_output <- function(estimations, values, tol, v, lambda, checkrestrictions, cross_moments_hp, cross_moments_hs, J, fn) {
+
+  colnames(table2) <- k_names
+  rownames(table2)<-category_names
+  
+  
+  q <- matrix(1/J, n_hs, J)
+  divergencekl <- sum(p_dual * log(p_dual / q))
+                 
+  generate_output <- function(estimations, values, tol, v, lambda, checkrestrictions, cross_moments_hp, cross_moments_hs, J, fn,divergencekl) {
     output <- structure(list(
       estimations = estimations,
       values = values,
@@ -221,17 +264,20 @@ ei_gme <- function(fn,datahp,datahs,w,tol,method,v=NULL){
       cross_moments_hp = cross_moments_hp,
       cross_moments_hs = cross_moments_hs,
       J = J,
-      fn = fn
+      fn = fn,
+      divergencekl=divergencekl
     ), class = "shannon")
     return(output)
   }
+  row.names(checkrestrictions$g3)<-k_names
+  
 
-  output <- generate_output(estimations = table,values =values,tol=tol,v=v, lambda=table2,checkrestrictions=checkrestrictions,cross_moments_hp=cross_moments_hp,cross_moments_hs=cross_moments_hs,J=J,fn=fn)
+  output <- generate_output(estimations = table,values =values,tol=tol,v=v, lambda=table2,checkrestrictions=checkrestrictions,cross_moments_hp=cross_moments_hp,cross_moments_hs,J=J,fn=fn,divergencekl=divergencekl)
 
   class(output) <- "shannon"
   return(output)
 }
-
+utils::globalVariables(":=")
 
 #' Generate a Plot
 #'
@@ -249,35 +295,37 @@ plot.shannon <-  function(x,reg,...){
     stop("This package requires the 'dplyr' package. Please install and load it.")
   }
   output<-x
+  category_names <- rownames(output$lambda)
   table<-data.frame(reg,output$estimations)
-  J   <- output$J
-
-  regmeans<- table %>%
+  J=output$J
+  regmeans <- table %>%
     group_by(reg) %>%
-    summarise(across
-              (everything(),\(x) mean (x, na.rm = TRUE)))
-
+    summarise(across(
+      everything(), 
+      ~ weighted.mean(.x, w = weights, na.rm = TRUE)
+    ))
+  
+  
   ic_lower <- regmeans$reg
   ic_upper <- regmeans$reg
-
-  for (j in 1:J) {
-    col_name <- paste0("predictions_j", j)
+  
+  for (j in seq_along(category_names)) {
+    col_name <- paste0("predictions_", category_names[j])
+    ic_lower_col <- paste0("ic_lower_", category_names[j])
+    ic_upper_col <- paste0("ic_upper_", category_names[j])
+    
     regmeans <- regmeans %>%
       dplyr::mutate(
-        ic_lower = !!dplyr::sym(col_name) - 1.96 * sd(!!dplyr::sym(col_name)),
-        ic_upper = !!dplyr::sym(col_name) + 1.96 * sd(!!dplyr::sym(col_name))
+        !!ic_lower_col := !!dplyr::sym(col_name) - 1.96 * sd(!!dplyr::sym(col_name)),
+        !!ic_upper_col := !!dplyr::sym(col_name) + 1.96 * sd(!!dplyr::sym(col_name))
       )
-    regmeans <- regmeans %>%
-      dplyr::rename_with(~ paste0("ic_lower_", col_name), ic_lower) %>%
-      dplyr::rename_with(~ paste0("ic_upper_", col_name), ic_upper)
   }
-
-
-  ic_lower_col<- paste0("ic_lower_predictions_j", j)
-  ic_upper_col <- paste0("ic_upper_predictions_j", j)
-   for (j in 1:j) {
-    prediction_col <- paste0("predictions_j", j)
-
+  
+  
+  for (j in seq_along(category_names)){
+    prediction_col <- paste0("predictions_", category_names[j])
+    ic_lower_col <- paste0("ic_lower_", category_names[j])
+    ic_upper_col <- paste0("ic_upper_", category_names[j])
     # plot
     plot(regmeans$reg, regmeans[[ prediction_col]],
          type = "p",
@@ -285,20 +333,21 @@ plot.shannon <-  function(x,reg,...){
          ylab = prediction_col,
          main = "",
          ylim = c(min(regmeans[, ic_lower_col]), max(regmeans[, ic_upper_col])))
-
-
-
+    
+    
+    
     segments(regmeans$reg, regmeans[[ic_lower_col]],
              regmeans$reg, regmeans[[ic_upper_col]],
              lwd = 2)
-
+    
     segments(regmeans$reg - 0.1, regmeans[[ic_lower_col]],
              regmeans$reg + 0.1, regmeans[[ic_lower_col]],
              lwd = 2)
     segments(regmeans$reg - 0.1, regmeans[[ic_upper_col]],
              regmeans$reg + 0.1, regmeans[[ic_upper_col]],
              lwd = 2)
-  }}
+  }
+}
 
 #'Summary
 #'
@@ -318,7 +367,6 @@ plot.shannon <-  function(x,reg,...){
 #' @import dplyr
 #' @export
 summary.shannon <- function(object,...){
-
   output<-object
   fn=output$fn
   j=output$J
@@ -327,16 +375,15 @@ summary.shannon <- function(object,...){
   print(output$values$iterations[1])
   cat ("Entropy value")
   print(output$values$entropy[1])
-  prediction_col <- paste0("predictions_j", j)
-  error_col <- paste0("e_dual_j", 1:j)
-
-  mean_estimations<- output$estimations %>%
-    summarise(across(everything(), \(x) mean(x, na.rm = TRUE)))
+  print(output$divergencekl[1])
+  
+  
+  
+  mean_estimations <- output$estimations %>%
+    summarise(across(everything(), ~ weighted.mean(.x, w = output$estimations$weights, na.rm = TRUE)))
   print("mean_estimations")
   print(mean_estimations)
-
-  table2<-data.frame( output$lambda)
-  colnames(table2) <- c("intercept",attr(terms(fn), "term.labels"))
-  rownames(table2)<-( paste0("j", 1:nrow(table2)))
+  
   print ("lambda")
-  print(table2)}
+  print(output$lambda)}
+

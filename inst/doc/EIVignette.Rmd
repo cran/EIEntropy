@@ -38,14 +38,13 @@ This document introduces you to the functions ei_gme() and ei_gce(), which apply
 
 Once you've installed it, the vignette ("EIEntropy") will allow you to learn more.
 We will use the data included in this package to explore its functions.
-This data is a straightforward application of this methodology developed in...
 
 This package is on CRAN and can be installed from within R.
 
 ## 1. Methodology
 
 The problem assessed is the need to obtain a variable $Y$ at a spatial level that is not available.
-This variable $Y$ can take $j$ values.
+This variable $Y$ can take $J$ values.
 The method aims to obtain a matrix $P$ with dimension $n$ *x* $J$ being $n$ the number of observations.
 Matrix $P$ is compounded by the probabilities associated with each $j$ value for each observation.
 Taking advantage of the information that we have, the method introduces the cross-moments as a restriction to assure consistency.
@@ -56,17 +55,15 @@ The error term is built as a weighted mean of a support vector $V$ in which weig
 
 The support vector is the component of the noise defining the flexibility of the estimation.
 It represents the maximum and minimum error around a value in the center.
-By default, $V$ is defined as (-var, 0, var) where *var* represents the variance of the dependent variable.
-If the estimation requires more flexibility $V$ can be defined wider--with (-1,0,1) as the recommended maximum.
+By default, $V$ is defined as (var, 0, -var) where *var* represents the variance of the dependent variable.
+If the estimation requires more flexibility $V$ can be defined wider--with (1,0,-1) as the recommended maximum.
 
 We present two functions to apply ecological inference through entropy.
 The general case minimizes the Kullback-Leibler divergence to find the matrix of probabilities $P$ with the minimum divergence with a prior.
 This case is adequate even when we have prior information on the distribution of the probabilities of our variable of interest.
 This information refers to all existing knowledge previous to the data that can influence the expectations of the variable of interest.
 
-$$\[
-\text{{Min}}_{P} \text{{KL}}(P, Q) = \sum_{i=1}^{n} \sum_{j=1}^{J} P_{ij} \log\left(\frac{P_{ij}}{Q_{ij}}\right)\text{{ s.t.}}
-\]$$
+\$\$\\min\_{P} \\, \\text{KL}(P, Q) = \\sum\_{i=1}\^{n} \\sum\_{j=1}\^{J} p\_{ij} \\log\\left(\\frac{p\_{ij}}{q\_{ij}}\\right)+ \\sum\_{l=1}\^{L} \\sum\_{i=1}\^{n} \\sum\_{j=1}\^{J} w\_{ijl} \\log\\left(\\frac{w\_{ijl}}{wo\_{ijl}}\\right)\\quad \\text{s.t.}\$\$
 
 $$
 \frac{1}{n} \sum_{i=1}^{n} x_{s_{ik}} y_{ij} = \frac{1}{n} \sum_{i=1}^{n} x_{c_{ik}} (p_{ij} + u_{ij}) =\frac{1}{n} \sum_{i=1}^{n} x_{cik} [p_{ij} + w_{Lij} v_{l}];         
@@ -115,7 +112,7 @@ As it is known, some variables, such as education level, income, or employment s
 Hence, we will use these variables as regressors in the example.
 These variables are going to be our X.
 We have the same variables in both data frames with the same name.
-For this example, the financial survey includes 100 observations for the variables Dcollege, Dunemp, total income and the variable of interest:poor_liq.
+For this example, the financial survey includes 100 observations for the variables Dcollege, Dunemp, total income and the variable of interest: poor_liq.
 They are a dummy for college, a dummy for being unemployed, the household income (in euros) and a dummy for being poor in terms of liquid assets respectively.
 
 The data called social has the same variables but instead of the variable of interest, it has another variable with the region of each household.
@@ -135,8 +132,8 @@ fn <- datahp$poor_liq ~ Dcollege+Totalincome+Dunemp
 
 Note that the same name in both datasets for the independent variables is required.
 
-This function's arguments are the previously defined function, the databases used, the weights, the tolerance and the method applied in the optimization and the support vector.
-With this function, weights can be used and included with w.
+This function's arguments are the previously defined function, the databases used, the weights, the tolerance, the maximum number of iterations allowed and the support vector.
+With this function, weights can be used and included with *weights*.
 If there are no weights the function assumes a matrix of 1.
 Note that the weights used in this methodology are normalised so analytics and sampling weights can be used without distinction.
 
@@ -146,15 +143,16 @@ The arguments corresponding to the information a priori and the support vector c
 
 ```{r}
 q <- c(0.4,0.6) 
-v <- matrix(c(-1,0,1))
+v <- matrix(c(1,0,-1),nrow=1)
 ```
 
 In this example we assume a priori distribution of poverty equal to 0.4 for poor and 0.6 for non-poor.
-The support vector has been set to the maximum (-1,0,1).
+The support vector has been set to the maximum (1,0,-1).
 Applying the ei_gce() we can solve the estimation as:
 
 ```{r ei_gce}
-result <- ei_gce(fn,datahp,datahs,q=q,w=w,tol=NULL,method="BFGS",v=v)
+result <- ei_gce(fn,datahp,datahs,q=q,weights = w,v=v)
+result
 ```
 
 The function will produce a data frame called a table with the following information:
@@ -174,10 +172,6 @@ In addition, it provides an object with the restrictions checked which should be
 Being g1 the restriction related to the unit probability constraint, g2 to the error unit sum constraint, and g3 to the consistency restriction that implies that the difference between the cross moment in both datasets must be zero.
 The restriction g3 can be checked thoroughly with the objects separately which are to be provided in the output as cross moments hp (the cross moments in datahp) and cross moments hs (the cross moments in datahs).
 
-```         
-{r} result
-```
-
 To make the results more visual, this package includes a personalized summary function, providing the means for each category $j$ for the predictions, the probabilities and the error.
 
 ```{r}
@@ -191,9 +185,8 @@ Graphs included are generated with the plot function, showing the averages of th
 plot(x=result,datahs$reg)
 ```
 
-Notes: Arguments *tol* and *metho*d can be defined by the user.
-The default tolerance has been set in 1e-24 while the by-default method applied in the optimization is BFGS.
-Other acceptable methods are Nelder-Mead, CG, L-BFGS-B, SANN or Brent from the optim() function.
+Notes: Arguments *tol and iter* can be defined by the user.
+The default tolerance has been set in 1e-10 while the maximum number or iterations by default is settled in 1000.
 
 # 3.2 Without prior information
 
@@ -204,7 +197,7 @@ The function ei_gce() will include by default the uniform distribution as $Q$ if
 This would be:
 
 ```{r}
-result2 <- ei_gce(fn,datahp,datahs,q=NULL,w=w,method="BFGS",v=NULL)
+result2 <- ei_gce(fn,datahp,datahs,weights=w)
 result2
 ```
 
@@ -224,7 +217,7 @@ Using the same example, our variable of interest is the poverty rate in terms of
 In this case, we need to define the function
 
 ```{r}
-result3 <- ei_gme (fn,datahp,datahs,w,tol=NULL,method="BFGS",v)
+result3 <- ei_gme (fn,datahp,datahs,weights=w)
 ```
 
 The function will produce the same output as ei_gce(), see the previous section for further details.

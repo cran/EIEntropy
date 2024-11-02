@@ -4,6 +4,8 @@
 #' generated randomly for the purpose of exemplifying a database that could
 #' potentially be used with this function.
 #'
+#' @docType data
+#' @name financial
 #' @format A data frame with 100 observations of 6 variables called financial
 #' @keywords dataset example
 #' @return A data frame containing the loaded "financial" data from the .rds file.

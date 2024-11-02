@@ -12,12 +12,12 @@
 \item{...}{Additional arguments passed to the summary function.}
 }
 \value{
-This summary function returns the entropy value and the last iteration in the optimization process.
+This summary function returns the Kullback-Leibler divergence value and the last iteration in the optimization process.
 A dataframe with the means of the estimations for each characteristic j with the predictions the probabilities and the error estimated.
 A dataframe with the lambda estimated for each k.
 \itemize{
 \item \code{Iterations}:Indicates the times the objective function and the gradient has been evaluated during the optimization process
-\item \code{Entropy value}:The value of entropy resulting from the optimization.
+\item \code{divergencekl value}:The Kullback-Leibler divergence value resulting from the optimization.
 \item \code{mean_estimations}: The predictions, p_dual, and the error for each category j of the variable y
 \item \code{lambda}:The estimated lambda values.
 }

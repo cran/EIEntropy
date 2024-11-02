@@ -4,13 +4,13 @@
 \alias{ei_gce}
 \title{Ecologic Inference applying entropy}
 \usage{
-ei_gce(fn, datahp, datahs, q, w, tol, method, v)
+ei_gce(fn, datahp, datahs, q, weights, v, tol, iter)
 }
 \arguments{
-\item{fn}{is the formula that represents the dependent variable in the
-optimization.
+\item{fn}{is the formula that represents the dependent variable in the optimization.
 In the context of this function, 'fn' is used to define the dependent variable
-to be optimized by the entropy function.}
+to be optimized by the Kullback-Leibler divergence function.
+Note: If the dependent variable is categorical the sorting criterion for the columns, and therefore for J, is alphabetical order.}
 
 \item{datahp}{The data where the variable of interest y is available and also the independent variables.
 Note: The variables and weights used as independent variables must have the same name in 'datahp' and in 'datahs'}
@@ -21,15 +21,15 @@ Note: The variables and weights used as independent variables must have the same
 
 \item{q}{The prior distribution Q}
 
-\item{w}{The weights to be used in this function}
-
-\item{tol}{The tolerance to be applied in the optimization function. If the tolerance is not specified, the default tolerance has been set in 1e-24}
-
-\item{method}{The method used in the function optim. It can be selected by
-the user between: "Nelder-Mead", "BFGS", "CG", "L-BFGS-B", "SANN",
-"Brent". The method by default and the recommended is BFGS}
+\item{weights}{The weights to be used in this function}
 
 \item{v}{The support vector}
+
+\item{tol}{The tolerance to be applied in the optimization function. If the tolerance is not specified, the default tolerance has been set in 1e-10}
+
+\item{iter}{The maximum number of iterations allowed for the optimization algorithm to run
+Increasing the number of iterations may improve the likelihood of finding an optimal solution,
+but can also increases computation time.If the maximum number of iterations is not specified, it will default to 1000}
 }
 \value{
 The function will provide you a dataframe called table with the next information:
@@ -38,15 +38,14 @@ The function will provide you a dataframe called table with the next information
 \item \strong{error dual}  Errors calculated to the \code{j} possibilities of \code{y}.
 \item \strong{predictions}  The prediction for each individual is calculated as the sum of the probability plus the error.
 The function provides information about the optimization process as:
-\item \strong{value_of_entropy}The value of entropy resulting from the optimization.
+\item \strong{divergencekl}The Kullback-Leibler divergence value resulting from the optimization.
 \item \strong{iterations} Indicates the times the objective function and the gradient has been evaluated during the optimization process,if any.
 \item \strong{message} Indicates the message if it has been generated in the process of optimization.
 \item \strong{tol} Indicates the tolerance of the optimization process.
-\item \strong{method} Indicates the method used in the optimization
 \item \strong{v} Indicates the support vector used in the function.
 The function provides a dataframe containing the information about lambda:
 \item  \strong{lambda} The estimated lambda values.
-It is provided an object with the restrictions checked which should be approximately zero.
+It is provided an object with the restrictions checked which should be zero.
 \item  \strong{check restrictions} Being  \code{g1}  the restriction related to the unit probability constraint, \code{g2}  to the error unit sum constraint, and \code{g3}  to the consistency restriction that implies that the difference between the cross moment in both datasets must be zero.
 The restriction g3 can be checked thoroughly with the objects by separate.
 \item  \strong{cross moments hp} Cross moments in \code{datahp}.
@@ -58,24 +57,25 @@ The function ei_gce defines the Kullback-Leibler function which
 minimises the distance between the distribution of probabilities P and the
 distribution Q. The distribution Q is based on prior information that we have
 of our variable of interest previous to the analysis. The function will set
-the optimization parameters and, using the "optim" function, an optimal
-solution is obtained. The function defines the independent variables in the two databases
+the optimization parameters and, using the "nlminb"
+function, an optimal solution is obtained.
+The function defines the independent variables in the two databases
 needed, which we call datahp with "n_hp" observations and datahs with "n_hs"
-observations; and the function of the binary variable of interest y. Then the
+observations; and the function of the variable of interest y. Then the
 weights of each observation for the two databases used are defined, if there
 are not weights available it will be 1 by default. The errors are calculated
 pondering the support vector of dimension \code{var, 0, -var}. This support vector
 can be specified by the user. The default support vector is based on variance.
-We recommend a wider interval with v(-1,0,1) as the maximum.
+We recommend a wider interval with v(1,0,-1) as the maximum.
 The restrictions are defined in order to guarantee consistency. The
-minimization of Kullback_Leibler distance is solved with "optim" function with
-the method "BFGS", with maximum number of iterations 100 and with tolerance
-defined by the user. If the user did not define tolerance it will be 1e-24 by
+minimization of Kullback_Leibler distance is solved with "nlminb" function
+with maximum number of iterations 1000 and with tolerance
+defined by the user. If the user did not define tolerance it will be 1e-10 by
 default. For additional details about the methodology see Fernández-Vazquez, et al. (2020)
 }
 \details{
 To solve the optimization upper and lower bounds for p and w are settled, specifically, p and w must be above 0 and lower than 1.
-In addition, the initial values of p are settled as the defined prior and the errors (w) as 1/3.
+In addition, the initial values of p are settled as the defined prior and the errors (w) as 1/L.
 }
 \examples{
 #In this example we use the data of this package
@@ -87,13 +87,12 @@ fn               <- datahp$poor_liq ~ Dcollege+Totalincome+Dunemp
 #we can add the information as information a priori. This information a priori correspond to the
 #Q distribution and in this function is called q for the sake of simplicity:
 q<- c(0.5,0.5)
-v<- matrix(c(-0.2,0,0.2))
+v<- matrix(c(0.2,0,-0.2))
 #Applying the function ei_gce to our databases. In this case datahp is the
 # data where we have our variable of interest
 #datahs is the data where we have the information for the disaggregation.
 #w can be included if we have weights in both surveys
-#Tolerance in this example is fixed in 1e-20
-result  <- ei_gce(fn,datahp,datahs,q=q,w=w,method="BFGS",v=v)
+result  <- ei_gce(fn,datahp,datahs,q=q,weights=w,v=v)
 }
 \references{
 Fernandez-Vazquez, E., Diaz-Dapena, A., Rubiera-Morollon, F., Viñuela, A., (2020) Spatial Disaggregation of Social Indicators: An Info-Metrics Approach. Social Indicators Research, 152(2), 809–821. https://doi.org/10.1007/s11205-020-02455-z.

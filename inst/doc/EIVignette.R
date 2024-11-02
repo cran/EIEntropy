@@ -13,10 +13,11 @@ fn <- datahp$poor_liq ~ Dcollege+Totalincome+Dunemp
 
 ## -----------------------------------------------------------------------------
 q <- c(0.4,0.6) 
-v <- matrix(c(-1,0,1))
+v <- matrix(c(1,0,-1),nrow=1)
 
 ## ----ei_gce-------------------------------------------------------------------
-result <- ei_gce(fn,datahp,datahs,q=q,w=w,tol=NULL,method="BFGS",v=v)
+result <- ei_gce(fn,datahp,datahs,q=q,weights = w,v=v)
+result
 
 ## -----------------------------------------------------------------------------
 library(dplyr)
@@ -26,11 +27,11 @@ summary(result)
 plot(x=result,datahs$reg)
 
 ## -----------------------------------------------------------------------------
-result2 <- ei_gce(fn,datahp,datahs,q=NULL,w=w,method="BFGS",v=NULL)
+result2 <- ei_gce(fn,datahp,datahs,weights=w)
 result2
 
 ## -----------------------------------------------------------------------------
-result3 <- ei_gme (fn,datahp,datahs,w,tol=NULL,method="BFGS",v)
+result3 <- ei_gme (fn,datahp,datahs,weights=w)
 
 ## -----------------------------------------------------------------------------
 result3

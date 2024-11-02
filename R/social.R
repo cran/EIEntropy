@@ -4,7 +4,8 @@
 #' generated randomly for the purpose of exemplifying a database that could
 #' potentially be used with this function.
 #'
-#'
+#' @docType data
+#' @name social
 #' @format A data frame with 200 observations of 6 variables called social
 #' @keywords dataset example
 #' @return A data frame containing the loaded "social" data from the .rds file.

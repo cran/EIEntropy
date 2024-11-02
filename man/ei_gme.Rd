@@ -4,12 +4,13 @@
 \alias{ei_gme}
 \title{Ecologic Inference applying entropy}
 \usage{
-ei_gme(fn, datahp, datahs, w, tol, method, v = NULL)
+ei_gme(fn, datahp, datahs, weights, tol, v, iter)
 }
 \arguments{
 \item{fn}{is the formula that represents the dependent variable in the optimization.
 In the context of this function, 'fn' is used to define the dependent variable
-to be optimized by the entropy function.}
+to be optimized by the entropy function.
+Note: If the dependent variable is categorical the sorting criterion for the columns, and therefore for J, is alphabetical order.}
 
 \item{datahp}{The data where the variable of interest y is available and also the independent variables.
 Note: The variables and weights used as independent variables must have the same name in 'datahp' and in 'datahs'
@@ -18,14 +19,15 @@ The variables in both databases need to match up in content.}
 \item{datahs}{The data with the information of the independent variables as a disaggregated level.
 Note: The variables and weights used as independent variables must be the same and must have the same name in 'datahp' and in 'datahs'}
 
-\item{w}{The weights to be used in this function.}
+\item{weights}{The weights to be used in this function.}
 
-\item{tol}{The tolerance to be applied in the optimization function. If the tolerance is not specified, the default tolerance has been set in 1e-24}
-
-\item{method}{The method used in the function optim.This can be selected by the user between: "Nelder-Mead", "BFGS", "CG", "L-BFGS-B", "SANN",
-"Brent". The method by default and the recommended is BFGS}
+\item{tol}{The tolerance to be applied in the optimization function. If the tolerance is not specified, the default tolerance has been set in 1e-10}
 
 \item{v}{The support vector}
+
+\item{iter}{The maximum number of iterations allowed for the optimization algorithm to run
+Increasing the number of iterations may improve the likelihood of finding an optimal solution,
+but can also increases computation time.If the maximum number of iterations is not specified, it will default to 1000}
 }
 \value{
 The function will provide you a dataframe called table with the next information:
@@ -38,7 +40,6 @@ The function provides information about the optimization process as :
 \item \strong{iterations} Indicates the times the objective function and the gradient has been evaluated during the optimization process
 \item \strong{message} Indicates the message if it has been generated in the process of optimization
 \item \strong{tol} Indicates the tolerance used in the optimization
-\item \strong{method} Indicates the method used in the optimization
 \item \strong{v} Indicates the vector of support used in the function
 The function provides a dataframe containing the information about lambda:
 \item  \strong{lambda} The estimated lambda values.
@@ -52,17 +53,17 @@ The restriction g3 can be checked thoroughly with the objects by separate.
 }
 \description{
 The function ei_gme defines the Shannon entropy function which takes a vector of probabilities as input and returns the negative
-sum of p times the natural logarithm of p.The function will set the optimization parameters and using the "optim" function an optimal
+sum of p times the natural logarithm of p.The function will set the optimization parameters and using the "nlminb" function an optimal
 solution is obtained.
 The function defines the independent variables in the two databases needed, which we call datahp with "n_hp" observations and datahs
 with "n_hs" observations; and the function of the binary variable of interest y. Then the weights of each observation for the two
 databases used are defined, if there are no weights available it will be 1.
 The errors are calculated pondering the support vector of dimension \code{var, 0, -var}. This support vector can be specified by the user.
-The default support vector is based on variance.We recommend a wider interval with v(-1,0,1) as the maximum.
+The default support vector is based on variance.We recommend a wider interval with v(1,0,-1) as the maximum.
 The restrictions are defined to guarantee consistency.
-The optimization of the Shannon entropy function is solved with the "optim" function local solver "BFGS" and the tolerance by default is settled in
-1e-24 but can be specified by the user.The model used in the optimization can be specified too between: "Nelder-Mead", "BFGS", "CG", "L-BFGS-B", "SANN",
-"Brent". The method by default and the recommended is BFGS
+The optimization of the Shannon entropy function is solved with "nlminb" function
+with maximum number of iterations 1000 and with tolerance
+defined by the user.
 }
 \details{
 To solve the optimization upper and lower bounds for p and w are settled, specifically, p and w must be above 0 and lower than 1.
@@ -78,9 +79,9 @@ fn               <- datahp$poor_liq ~ Dcollege+Totalincome+Dunemp
 #is the data where we have our variable of interest datahs is the data
 # where we have the information for the disaggregation.
 #w can be included if we have weights in both surveys
-#Tolerance in this example is fixed in 1e-20 and v will be (-1,0,1)
-v=matrix(c(-1, 0, 1), nrow = 1)
-result  <- ei_gme(fn=fn,datahp=datahp,datahs=datahs,w,tol=1e-20,method="BFGS",v=v)
+#Tolerance in this example is fixed in 1e-20 and v will be (1,0,-1)
+v=matrix(c(1, 0, -1), nrow = 1)
+result  <- ei_gme(fn=fn,datahp=datahp,datahs=datahs,weights=w,tol=1e-20,v=v)
 }
 \references{
 Fernandez-Vazquez, E., Díaz-Dapena, A., Rubiera-Morollon, F., Viñuela, A., (2020) Spatial Disaggregation of Social Indicators: An Info-Metrics Approach. Social Indicators Research, 152(2), 809–821. https://doi.org/10.1007/s11205-020-02455-z.
