@@ -18,7 +18,7 @@ A dataframe with the lambda estimated for each k.
 \itemize{
 \item \code{Iterations}:Indicates the times the objective function and the gradient has been evaluated during the optimization process
 \item \code{Entropy value}:The value of entropy resulting from the optimization.
-\item \code{mean_estimations}: The predictions, p_dual, and the error for each category j of the variable y
+\item \code{mean_estimations}: The weighted mean of predictions, p_dual, and the error for each category j of the variable y
 \item \code{lambda}:The estimated lambda values.
 }
 }

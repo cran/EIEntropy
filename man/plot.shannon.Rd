@@ -14,7 +14,7 @@
 \item{...}{Additional arguments passed to the plotting function.}
 }
 \value{
-This function provides a graph representing the mean and confidence interval of each disaggregated territorial unit
+This function provides a graph representing the weighted mean and confidence interval of each disaggregated territorial unit
 }
 \description{
 This  function generates a descriptive plot using the result obtained in ei_gme.

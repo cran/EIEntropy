@@ -1,6 +1,6 @@
 Package: EIEntropy
 Title: Ecological Inference Applying Entropy
-Version: 0.0.1.2
+Version: 0.0.1.3
 Depends: R (>= 3.5.0)
 Authors@R: c(
     person("Alberto", "Díaz-Dapena", role = c("aut", "cph")),
@@ -16,9 +16,9 @@ Imports: dplyr, magrittr
 Suggests: devtools, knitr, rmarkdown, here
 VignetteBuilder: knitr, rmarkdown
 NeedsCompilation: no
-Packaged: 2024-11-02 15:20:05 UTC; pc
+Packaged: 2024-11-03 14:50:28 UTC; pc
 Author: Alberto Díaz-Dapena [aut, cph],
   Esteban Fernández-Vázquez [aut, cph],
   Silvia María Franco Anaya [aut, cre, cph]
 Repository: CRAN
-Date/Publication: 2024-11-02 15:40:02 UTC
+Date/Publication: 2024-11-04 08:30:09 UTC

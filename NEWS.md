@@ -1,3 +1,9 @@
+# EIEntropy 0.0.1.3 (2024-11-03)
+
+### Bug Fixes
+
+-Fixed an issue with the weights argument where, in some cases, custom weight columns were not recognized, causing equal weights to be assigned to all observations. Now, users can specify any column name as a string for weights in datahp and datahs, with the function correctly applying the specified weights for improved flexibility and usability.
+
 # EIEntropy 0.0.1.2 (2024-11-02)
 
 ## Main changes

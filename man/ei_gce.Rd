@@ -4,7 +4,7 @@
 \alias{ei_gce}
 \title{Ecologic Inference applying entropy}
 \usage{
-ei_gce(fn, datahp, datahs, q, weights, v, tol, iter)
+ei_gce(fn, datahp, datahs, q, weights = NULL, v, tol, iter)
 }
 \arguments{
 \item{fn}{is the formula that represents the dependent variable in the optimization.
@@ -21,7 +21,9 @@ Note: The variables and weights used as independent variables must have the same
 
 \item{q}{The prior distribution Q}
 
-\item{weights}{The weights to be used in this function}
+\item{weights}{A character string specifying the column name to be used as weights in both \code{datahp} and \code{datahs} datasets.
+If \code{weights} is provided and exists in both datasets, each dataset's weights will be normalized by the sum of the weights in that dataset.
+If \code{weights} is NULL or the specified column does not exist in both datasets, equal weights are applied across all observations.}
 
 \item{v}{The support vector}
 
@@ -92,7 +94,7 @@ v<- matrix(c(0.2,0,-0.2))
 # data where we have our variable of interest
 #datahs is the data where we have the information for the disaggregation.
 #w can be included if we have weights in both surveys
-result  <- ei_gce(fn,datahp,datahs,q=q,weights=w,v=v)
+result  <- ei_gce(fn,datahp,datahs,q=q,weights="w",v=v)
 }
 \references{
 Fernandez-Vazquez, E., Diaz-Dapena, A., Rubiera-Morollon, F., Viñuela, A., (2020) Spatial Disaggregation of Social Indicators: An Info-Metrics Approach. Social Indicators Research, 152(2), 809–821. https://doi.org/10.1007/s11205-020-02455-z.

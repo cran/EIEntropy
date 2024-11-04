@@ -4,7 +4,7 @@
 \alias{ei_gme}
 \title{Ecologic Inference applying entropy}
 \usage{
-ei_gme(fn, datahp, datahs, weights, tol, v, iter)
+ei_gme(fn, datahp, datahs, weights = NULL, tol, v, iter)
 }
 \arguments{
 \item{fn}{is the formula that represents the dependent variable in the optimization.
@@ -19,7 +19,9 @@ The variables in both databases need to match up in content.}
 \item{datahs}{The data with the information of the independent variables as a disaggregated level.
 Note: The variables and weights used as independent variables must be the same and must have the same name in 'datahp' and in 'datahs'}
 
-\item{weights}{The weights to be used in this function.}
+\item{weights}{A character string specifying the column name to be used as weights in both \code{datahp} and \code{datahs} datasets.
+If \code{weights} is provided and exists in both datasets, each dataset's weights will be normalized by the sum of the weights in that dataset.
+If \code{weights} is NULL or the specified column does not exist in both datasets, equal weights are applied across all observations.}
 
 \item{tol}{The tolerance to be applied in the optimization function. If the tolerance is not specified, the default tolerance has been set in 1e-10}
 
@@ -79,9 +81,9 @@ fn               <- datahp$poor_liq ~ Dcollege+Totalincome+Dunemp
 #is the data where we have our variable of interest datahs is the data
 # where we have the information for the disaggregation.
 #w can be included if we have weights in both surveys
-#Tolerance in this example is fixed in 1e-20 and v will be (1,0,-1)
+#Tolerance in this example is fixed in 1e-10 and v will be (1,0,-1)
 v=matrix(c(1, 0, -1), nrow = 1)
-result  <- ei_gme(fn=fn,datahp=datahp,datahs=datahs,weights=w,tol=1e-20,v=v)
+result  <- ei_gme(fn=fn,datahp=datahp,datahs=datahs,weights="w",v=v)
 }
 \references{
 Fernandez-Vazquez, E., Díaz-Dapena, A., Rubiera-Morollon, F., Viñuela, A., (2020) Spatial Disaggregation of Social Indicators: An Info-Metrics Approach. Social Indicators Research, 152(2), 809–821. https://doi.org/10.1007/s11205-020-02455-z.

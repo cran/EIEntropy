@@ -30,7 +30,9 @@
 #'        The variables in both databases need to match up in content.
 #' @param datahs The data with the information of the independent variables as a disaggregated level.
 #'        Note: The variables and weights used as independent variables must be the same and must have the same name in 'datahp' and in 'datahs'
-#' @param weights The weights to be used in this function.
+#' @param weights A character string specifying the column name to be used as weights in both `datahp` and `datahs` datasets.
+#' If `weights` is provided and exists in both datasets, each dataset's weights will be normalized by the sum of the weights in that dataset.
+#' If `weights` is NULL or the specified column does not exist in both datasets, equal weights are applied across all observations.
 #' @param tol The tolerance to be applied in the optimization function. If the tolerance is not specified, the default tolerance has been set in 1e-10
 #' @param v The support vector
 #' @param iter The maximum number of iterations allowed for the optimization algorithm to run 
@@ -68,11 +70,11 @@
 #' #is the data where we have our variable of interest datahs is the data
 #' # where we have the information for the disaggregation.
 #' #w can be included if we have weights in both surveys
-#' #Tolerance in this example is fixed in 1e-20 and v will be (1,0,-1)
+#' #Tolerance in this example is fixed in 1e-10 and v will be (1,0,-1)
 #' v=matrix(c(1, 0, -1), nrow = 1)
-#' result  <- ei_gme(fn=fn,datahp=datahp,datahs=datahs,weights=w,tol=1e-20,v=v)
+#' result  <- ei_gme(fn=fn,datahp=datahp,datahs=datahs,weights="w",v=v)
 #' @export
-ei_gme <- function(fn,datahp,datahs,weights,tol,v,iter){
+ei_gme <- function(fn,datahp,datahs,weights=NULL,tol,v,iter){
 
   #Independent variables
   x_hp             <- model.matrix(fn,datahp)                         #Matrix of independent variables in hp - dimensions n_hs (observations in hp) and k (parameters)
@@ -80,14 +82,15 @@ ei_gme <- function(fn,datahp,datahs,weights,tol,v,iter){
   fn_right         <- fn[-2]                                          #hs does not have dependent variable. It is needed a formula without the left hand side
   x_hs             <- model.matrix(fn_right,datahs)                   #Matrix of independent variables in hs - dimensions n_hp (observations in hs) and k (parameters)
 
-  #loading and rescale of weights (by the total) in each survey
-  if ("weights" %in% colnames(datahp) && "weights" %in% colnames(datahs)) {
-    w_hp <- datahp$weights / sum(datahp$weights)   # vector with n_hp observations
-    w_hs <- datahs$weights / sum(datahs$weights)   # vector with n_hs observations
+  if (!is.null(weights) && weights %in% colnames(datahp) && weights %in% colnames(datahs)) {
+    # Use the specified column for weights, normalizing by the sum of weights
+    w_hp <- datahp[[weights]] / sum(datahp[[weights]], na.rm = TRUE)
+    w_hs <- datahs[[weights]] / sum(datahs[[weights]], na.rm = TRUE)
   } else {
-    w_hp <- rep(1, nrow(datahp)) / nrow(datahp)
-    w_hs <- rep(1, nrow(datahs)) / nrow(datahs)}
-
+    # If no weights or column is missing, apply equal weights
+    w_hp <- rep(1 / nrow(datahp), nrow(datahp))
+    w_hs <- rep(1 / nrow(datahs), nrow(datahs))
+  }
   if (any(is.na(x_hs))) {
     stop("NA (missing) values have been found in the dataset")
   }
@@ -200,6 +203,8 @@ ei_gme <- function(fn,datahp,datahs,weights,tol,v,iter){
   
   g3 <- cross_moments_hp - cross_moments_hs  #Last set of restriction defines the cross moments in hp must be equal to hs
   cross_moments_hs <- noquote(apply(cross_moments_hs, c(1, 2), function(x) sprintf("%10.2f", x)))
+  cross_moments_hp <- noquote(apply(cross_moments_hp, c(1, 2), function(x) sprintf("%10.2f", x)))
+  
   #Set the colnames for the table
   table <- data.frame(w_hs,predictions, p_dual, error_dual)                                                                        #Joining all the relevant information in one table
   category_names <- levels(y_factor)
@@ -287,7 +292,7 @@ utils::globalVariables(":=")
 #' @param x The output produced by ei_gme
 #' @param reg The data column containing the disaggregated territorial units
 #' @param ... Additional arguments passed to the plotting function.
-#' @return This function provides a graph representing the mean and confidence interval of each disaggregated territorial unit
+#' @return This function provides a graph representing the weighted mean and confidence interval of each disaggregated territorial unit
 
 #' @export
 plot.shannon <-  function(x,reg,...){
@@ -361,7 +366,7 @@ plot.shannon <-  function(x,reg,...){
 #' \itemize{
 #'   \item \code{Iterations}:Indicates the times the objective function and the gradient has been evaluated during the optimization process
 #'   \item \code{Entropy value}:The value of entropy resulting from the optimization.
-#'   \item \code{mean_estimations}: The predictions, p_dual, and the error for each category j of the variable y
+#'   \item \code{mean_estimations}: The weighted mean of predictions, p_dual, and the error for each category j of the variable y
 #'   \item \code{lambda}:The estimated lambda values.
 #' }
 #' @import dplyr

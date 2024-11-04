@@ -16,22 +16,22 @@ q <- c(0.4,0.6)
 v <- matrix(c(1,0,-1),nrow=1)
 
 ## ----ei_gce-------------------------------------------------------------------
-result <- ei_gce(fn,datahp,datahs,q=q,weights = w,v=v)
+result <- ei_gce(fn,datahp,datahs,q=q,weights = "w",v=v)
 result
 
 ## -----------------------------------------------------------------------------
-library(dplyr)
+suppressPackageStartupMessages(library(dplyr))
 summary(result)
 
 ## ----echo=TRUE----------------------------------------------------------------
 plot(x=result,datahs$reg)
 
 ## -----------------------------------------------------------------------------
-result2 <- ei_gce(fn,datahp,datahs,weights=w)
+result2 <- ei_gce(fn,datahp,datahs,weights= "w")
 result2
 
 ## -----------------------------------------------------------------------------
-result3 <- ei_gme (fn,datahp,datahs,weights=w)
+result3 <- ei_gme (fn,datahp,datahs,weights="w")
 
 ## -----------------------------------------------------------------------------
 result3

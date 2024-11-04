@@ -151,7 +151,7 @@ The support vector has been set to the maximum (1,0,-1).
 Applying the ei_gce() we can solve the estimation as:
 
 ```{r ei_gce}
-result <- ei_gce(fn,datahp,datahs,q=q,weights = w,v=v)
+result <- ei_gce(fn,datahp,datahs,q=q,weights = "w",v=v)
 result
 ```
 
@@ -175,7 +175,7 @@ The restriction g3 can be checked thoroughly with the objects separately which a
 To make the results more visual, this package includes a personalized summary function, providing the means for each category $j$ for the predictions, the probabilities and the error.
 
 ```{r}
-library(dplyr)
+suppressPackageStartupMessages(library(dplyr))
 summary(result)
 ```
 
@@ -197,7 +197,7 @@ The function ei_gce() will include by default the uniform distribution as $Q$ if
 This would be:
 
 ```{r}
-result2 <- ei_gce(fn,datahp,datahs,weights=w)
+result2 <- ei_gce(fn,datahp,datahs,weights= "w")
 result2
 ```
 
@@ -217,7 +217,7 @@ Using the same example, our variable of interest is the poverty rate in terms of
 In this case, we need to define the function
 
 ```{r}
-result3 <- ei_gme (fn,datahp,datahs,weights=w)
+result3 <- ei_gme (fn,datahp,datahs,weights="w")
 ```
 
 The function will produce the same output as ei_gce(), see the previous section for further details.
