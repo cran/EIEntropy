@@ -339,47 +339,32 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Vignette EIEntropy</h1>
 
 
-<div id="TOC">
-<ul>
-<li><a href="#methodology" id="toc-methodology">1. Methodology</a></li>
-<li><a href="#data" id="toc-data">2. Data</a></li>
-<li><a href="#examples" id="toc-examples">3. Examples</a></li>
-<li><a href="#generalized-cross-entropy-ei_gce" id="toc-generalized-cross-entropy-ei_gce">3.1 Generalized Cross entropy:
-ei_gce()</a></li>
-<li><a href="#without-prior-information" id="toc-without-prior-information">3.2 Without prior
-information</a></li>
-<li><a href="#another-option-when-we-do-not-have-prior-information-ei_gme" id="toc-another-option-when-we-do-not-have-prior-information-ei_gme">3.2.1
-Another option when we do not have prior information: ei_gme()</a></li>
-<li><a href="#references" id="toc-references">References</a></li>
-</ul>
-</div>
 
 <p>In a wide range of analyses, there is a common problem.  The data is
 usually not available at the desired spatial scale that researchers
 need.  Ecological inference allows us to recover incomplete or
 unavailable data by inferring individual behaviours based on the
-aggregated information. In some cases, the database containing the
-variable of interest does not have it at the needed spatial level. 
-Entropy allows us to obtain the best solution according to the
-information that we have.  To learn more about the methodology, see
-Fernández-Vázquez et al. (2020)</p>
-<p>The package extrapolates the value of the variable of interest above
-a data frame with more detailed geographical information, being
-consistent with the aggregates available. This package contains two
-functions, ei_gce() and ei_gme(). The method that the function ei_gce()
-applies is framed between GCE (Generalized Cross entropy), minimising
-the distance between the two distributions <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span>, being this <span class="math inline">\(Q\)</span> the prior information we can initially
+aggregated information. Sometimes, the database containing the variable
+of interest does not have it at the needed spatial level.  Entropy
+allows us to obtain the best solution according to the information that
+we have.  To learn more about the methodology, see Fernández-Vázquez et
+al. (2020)</p>
+<p>The package estimates the variable of interest using a second data
+frame that provides more detailed geographical information, ensuring
+consistency with the aggregates available in the first database. This
+package contains two functions, ei_gce() and ei_gme(). The method that
+the function ei_gce() applies is framed between GCE (Generalized Cross
+entropy), minimising the distance between the two distributions <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span>, being this <span class="math inline">\(Q\)</span> the prior information we can initially
 have.  If the user does not have prior information can choose ei_gme()
 for computational reasons which will use GME (Generalized maximum
 entropy) since our distribution a priori will be the uniform
-distribution.  These two kinds of problems will be explained in
-the next sections. </p>
+distribution.  These two kinds of problems will be explained in the</p>
 <p>The EIentropy package makes the process of assessing uncertainty to
 estimate information at the desired level of disaggregation into one
 function. It gathers all the steps making it easy to apply this
 methodology to problems of absence of data. This document introduces you
 to the functions ei_gme() and ei_gce(), which apply entropy to solve
-issues of ecological inference, providing, consistent disaggregated
+issues of ecological inference while providing consistent disaggregated
 indicators with observable aggregated data and cross moments.</p>
 <p>Once you’ve installed it, the vignette (“EIEntropy”) will allow you
 to learn more. We will use the data included in this package to explore
@@ -393,15 +378,15 @@ available. This variable <span class="math inline">\(Y\)</span> can take
 a matrix <span class="math inline">\(P\)</span> with dimension <span class="math inline">\(n\)</span> <em>x</em> <span class="math inline">\(J\)</span> being <span class="math inline">\(n\)</span> the number of observations. Matrix
 <span class="math inline">\(P\)</span> is compounded by the
 probabilities associated with each <span class="math inline">\(j\)</span> value for each observation. Taking
-advantage of the information that we have, the method introduces the
+advantage of the information that we have, the method introduces
 cross-moments as a restriction to assure consistency.</p>
 <p>Taking into account <span class="math inline">\(Y\)</span> is the sum
 of <span class="math inline">\(P\)</span> and <span class="math inline">\(U\)</span>, being <span class="math inline">\(U\)</span> the random noise. Once we have
 estimated matrix <span class="math inline">\(P\)</span> and the error
 term, we can obtain <span class="math inline">\(Y\)</span> as <span class="math inline">\(Y=P+U\)</span>. The error term is built as a
 weighted mean of a support vector <span class="math inline">\(V\)</span>
-in which weights <span class="math inline">\(W\)</span> are
-estimated.</p>
+in which weights <span class="math inline">\(W\)</span> are estimated in
+the optimization.</p>
 <p>The support vector is the component of the noise defining the
 flexibility of the estimation. It represents the maximum and minimum
 error around a value in the center. By default, <span class="math inline">\(V\)</span> is defined as (var, 0, -var) where
@@ -411,11 +396,11 @@ the recommended maximum.</p>
 <p>We present two functions to apply ecological inference through
 entropy. The general case minimizes the Kullback-Leibler divergence to
 find the matrix of probabilities <span class="math inline">\(P\)</span>
-with the minimum divergence with a prior. This case is adequate even
-when we have prior information on the distribution of the probabilities
-of our variable of interest. This information refers to all existing
-knowledge previous to the data that can influence the expectations of
-the variable of interest.</p>
+with the minimum divergence with a prior. This case is adequate when we
+have prior information on the distribution of the probabilities of our
+variable of interest. This information refers to all existing knowledge
+previous to the data that can influence the expectations of the variable
+of interest.</p>
 <p>$$\min_{P} \, \text{KL}(P, Q) = \sum_{i=1}^{n} \sum_{j=1}^{J} p_{ij}
 \log\left(\frac{p_{ij}}{q_{ij}}\right)+ \sum_{l=1}^{L} \sum_{i=1}^{n}
 \sum_{j=1}^{J} w_{ijl} \log\left(\frac{w_{ijl}}{wo_{ijl}}\right)\quad
@@ -445,8 +430,8 @@ same probability for each possibility <span class="math inline">\(j\)</span> of 
 sense, we minimize the divergence with a uniform distribution.</p>
 <p>Solving the optimization problem, we obtain estimations as <span class="math inline">\(\hat{Y}= \hat{P} + \hat{W}V\)</span>. The solution
 should be consistent with the restrictions. In this case, the
-restrictions will contain information from two data sources, datahp and
-datahs. If there were divergences between the two sources of data, they
+restrictions will contain information from two data sources, dataA and
+dataB. If there were divergences between the two sources of data, they
 would be captured in the error term. This is one of the main advantages
 of the methodology because it allows the user to use two databases with
 divergences between them.</p>
@@ -455,14 +440,14 @@ divergences between them.</p>
 <h2>2. Data</h2>
 <p>To explore the functions we will use data included in the package. In
 our example, we want to obtain microdata about poverty, in terms of
-wealth, with an indication of location at regional level. We have the
-variable of interest in one official database but without information
-about location. At the same time, in other database, the variable of
-interest is not available but the household location is.</p>
+wealth, with an indication of location at the regional level. We have
+the variable of interest in one official database but without
+information about location. At the same time, in another database, the
+variable of interest is not available but the household location is.</p>
 <p>The data can be loaded by calling the functions financial() and
 social().</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>datahp <span class="ot">&lt;-</span> <span class="fu">financial</span>()</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>datahs <span class="ot">&lt;-</span> <span class="fu">social</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>dataA <span class="ot">&lt;-</span> <span class="fu">financial</span>()</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>dataB <span class="ot">&lt;-</span> <span class="fu">social</span>()</span></code></pre></div>
 <p>In this example, we aim to obtain probabilities of being poor in
 terms of wealth for each individual or observation in the survey with
 detailed information about location. With this procedure, we will have
@@ -490,7 +475,7 @@ in the estimation. In this example, we keep using the databases included
 in this package <em>financial</em> and <em>social</em>. Once we have
 chosen the best function for our case note that we need to specify our
 function :</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>fn <span class="ot">&lt;-</span> datahp<span class="sc">$</span>poor_liq <span class="sc">~</span> Dcollege<span class="sc">+</span>Totalincome<span class="sc">+</span>Dunemp</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>fn <span class="ot">&lt;-</span> dataA<span class="sc">$</span>poor_liq <span class="sc">~</span> Dcollege<span class="sc">+</span>Totalincome<span class="sc">+</span>Dunemp</span></code></pre></div>
 <p>Note that the same name in both datasets for the independent
 variables is required.</p>
 <p>This function’s arguments are the previously defined function, the
@@ -500,431 +485,634 @@ can be used and included with <em>weights</em>. If there are no weights
 the function assumes a matrix of 1. Note that the weights used in this
 methodology are normalised so analytics and sampling weights can be used
 without distinction.</p>
-<p>In this example the variable of interest (poor_liq) is defined with a
-function in the argument <em>fn</em> (see previous section)</p>
+<p>In this example, the variable of interest (poor_liq) is defined with
+a function in the argument <em>fn</em> (see previous section)</p>
 <p>The arguments corresponding to the information a priori and the
 support vector can be included as :</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>q <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.4</span>,<span class="fl">0.6</span>) </span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>q <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.2</span>,<span class="fl">0.8</span>) </span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>v <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>),<span class="at">nrow=</span><span class="dv">1</span>)</span></code></pre></div>
 <p>In this example we assume a priori distribution of poverty equal to
-0.4 for poor and 0.6 for non-poor. The support vector has been set to
+0.2 for poor and 0.8 for non-poor. The support vector has been set to
 the maximum (1,0,-1). Applying the ei_gce() we can solve the estimation
 as:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">ei_gce</span>(fn,datahp,datahs,<span class="at">q=</span>q,<span class="at">weights =</span> <span class="st">&quot;w&quot;</span>,<span class="at">v=</span>v)</span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">ei_gce</span>(fn,dataA,dataB,<span class="at">q=</span>q,<span class="at">weights =</span> <span class="st">&quot;w&quot;</span>,<span class="at">v=</span>v)</span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>result</span></code></pre></div>
 <pre><code>## $estimations
-##          weights predictions_1 predictions_0  p_dual_1  p_dual_0      e_dual_1
-## 1   6.408614e-03     0.3575529    1.03035531 0.3533453 0.6466547  4.207600e-03
-## 2   4.069074e-03     0.4579585    0.91127758 0.4010201 0.5989799  5.693835e-02
-## 3   8.478890e-05     0.4980404    0.49778909 0.5000539 0.4999461 -2.013444e-03
-## 4   6.019554e-03     0.2913950    0.73681840 0.4048727 0.5951273 -1.134777e-01
-## 5   8.529959e-03     0.2570936    0.34752226 0.4801269 0.5198731 -2.230333e-01
-## 6   3.466777e-03     0.4219567    0.52532582 0.4778437 0.5221563 -5.588704e-02
-## 7   7.143169e-03     0.3431462    0.56578211 0.4522699 0.5477301 -1.091237e-01
-## 8   6.728993e-03     0.3636107    1.09291525 0.3396642 0.6603358  2.394653e-02
-## 9   9.459067e-03     0.1850652    0.90009340 0.3479844 0.6520156 -1.629192e-01
-## 10  1.952733e-03     0.4375274    0.53932941 0.4781874 0.5218126 -4.065995e-02
-## 11  6.884772e-03     0.3409616    1.04467668 0.3467600 0.6532400 -5.798477e-03
-## 12  1.046638e-03     0.4666128    0.46897415 0.4994937 0.5005063 -3.288084e-02
-## 13  6.632154e-03     0.4399613    0.88538227 0.4032222 0.5967778  3.673911e-02
-## 14  5.694566e-03     0.3141421    0.76872110 0.4028355 0.5971645 -8.869346e-02
-## 15  8.199805e-03     0.3571763    0.46767551 0.4762093 0.5237907 -1.190331e-01
-## 16  7.974757e-03     0.2816642    0.79319558 0.3907911 0.6092089 -1.091269e-01
-## 17  1.016052e-05     0.4998977    0.50057350 0.4998552 0.5001448  4.250031e-05
-## 18  1.077733e-03     0.4830352    0.50320499 0.4956778 0.5043222 -1.264258e-02
-## 19  4.555596e-03     0.4076707    0.92290286 0.3881158 0.6118842  1.955487e-02
-## 20  1.797040e-03     0.4339845    0.50252953 0.4853035 0.5146965 -5.131899e-02
-## 21  7.726297e-03     0.2935406    0.17974856 0.5255118 0.4744882 -2.319712e-01
-## 22  7.537852e-03     0.4341515    1.22718192 0.3188256 0.6811744  1.153259e-01
-## 23  5.078895e-04     0.4841946    0.52781386 0.4906531 0.5093469 -6.458534e-03
-## 24  8.673474e-03     0.3593059    1.13535515 0.3285121 0.6714879  3.079385e-02
-## 25  6.743411e-03     0.2907658    0.31328671 0.4950497 0.5049503 -2.042839e-01
-## 26  2.597985e-03     0.4125180    0.40418162 0.5017961 0.4982039 -8.927805e-02
-## 27  7.946911e-03     0.2515483    0.90304051 0.3608937 0.6391063 -1.093455e-01
-## 28  3.132542e-03     0.4258019    0.50837696 0.4822951 0.5177049 -5.649326e-02
-## 29  1.413325e-03     0.4676132    0.62261814 0.4667551 0.5332449  8.581649e-04
-## 30  1.952905e-03     0.4791886    0.60540294 0.4729304 0.5270696  6.258114e-03
-## 31  7.786354e-03     0.3123513    1.07949941 0.3330677 0.6669323 -2.071634e-02
-## 32  6.412179e-03     0.3224583    0.21187503 0.5245444 0.4754556 -2.020861e-01
-## 33  8.813903e-03     0.1744411    0.47787052 0.4337934 0.5662066 -2.593523e-01
-## 34  3.104395e-03     0.3929576    0.53148299 0.4702987 0.5297013 -7.734104e-02
-## 35  1.494452e-03     0.4658449    0.62994654 0.4648000 0.5352000  1.044982e-03
-## 36  1.979537e-03     0.4596092    0.53104697 0.4846930 0.5153070 -2.508389e-02
-## 37  1.781772e-03     0.4629720    0.46984859 0.4985254 0.5014746 -3.555338e-02
-## 38  8.631740e-04     0.4799027    0.54706088 0.4856084 0.5143916 -5.705702e-03
-## 39  2.624354e-03     0.4338919    0.62277842 0.4595287 0.5404713 -2.563679e-02
-## 40  7.278409e-03     0.3458576    1.11245751 0.3315672 0.6684328  1.429038e-02
-## 41  9.198636e-03     0.2555792    0.40702125 0.4669569 0.5330431 -2.113777e-01
-## 42  8.939710e-04     0.4668206    0.52781825 0.4869299 0.5130701 -2.010927e-02
-## 43  5.755561e-03     0.3821616    0.40800275 0.4944232 0.5055768 -1.122616e-01
-## 44  9.197598e-03     0.2856064    0.24177718 0.5097401 0.4902599 -2.241337e-01
-## 45  7.835590e-03     0.2200148    0.76804886 0.3831829 0.6168171 -1.631681e-01
-## 46  7.304276e-03     0.3432004    1.10800671 0.3321399 0.6678601  1.106050e-02
-## 47  2.825585e-03     0.4205479    0.59973606 0.4616216 0.5383784 -4.107370e-02
-## 48  5.701607e-03     0.3381367    0.22895736 0.5241154 0.4758846 -1.859787e-01
-## 49  9.403839e-03     0.1950073    0.65400027 0.4016438 0.5983562 -2.066365e-01
-## 50  8.874280e-03     0.1537330    0.68043562 0.3871797 0.6128203 -2.334467e-01
-## 51  5.856153e-03     0.3426623    0.25676738 0.5188898 0.4811102 -1.762275e-01
-## 52  7.506319e-04     0.4913477    0.53804405 0.4899926 0.5100074  1.355092e-03
-## 53  2.829871e-03     0.4666364    0.77707485 0.4329467 0.5670533  3.368972e-02
-## 54  1.403796e-03     0.4635638    0.49129089 0.4940566 0.5059434 -3.049279e-02
-## 55  2.256222e-03     0.4578912    0.66298076 0.4559810 0.5440190  1.910172e-03
-## 56  8.706739e-03     0.2877420    1.12679437 0.3171980 0.6828020 -2.945600e-02
-## 57  6.495227e-04     0.4948178    0.54199819 0.4898881 0.5101119  4.929705e-03
-## 58  7.423215e-03     0.4258442    0.68832847 0.4437029 0.5562971 -1.785870e-02
-## 59  9.409367e-03     0.1696855    0.54761923 0.4181584 0.5818416 -2.484729e-01
-## 60  3.467645e-03     0.4281809    0.82286327 0.4147862 0.5852138  1.339475e-02
-## 61  4.891585e-03     0.3094782    0.61218077 0.4351751 0.5648249 -1.256968e-01
-## 62  5.191919e-05     0.4985833    0.50362845 0.4989189 0.5010811 -3.356238e-04
-## 63  6.960881e-04     0.4903666    0.58538986 0.4796223 0.5203777  1.074432e-02
-## 64  3.234067e-03     0.4538027    0.52812847 0.4840737 0.5159263 -3.027108e-02
-## 65  8.095405e-03     0.4292160    1.26609141 0.3074113 0.6925887  1.218047e-01
-## 66  2.123864e-03     0.4419034    0.47499073 0.4929021 0.5070979 -5.099873e-02
-## 67  3.309518e-03     0.4220628    0.51060734 0.4810149 0.5189851 -5.895213e-02
-## 68  5.300329e-03     0.4246752    0.70986982 0.4387951 0.5612049 -1.411988e-02
-## 69  7.890242e-03     0.3960628    0.83750670 0.4048858 0.5951142 -8.822979e-03
-## 70  5.248723e-03     0.4226222    0.69722224 0.4410983 0.5589017 -1.847615e-02
-## 71  9.625057e-04     0.4846789    0.53212961 0.4898319 0.5101681 -5.153011e-03
-## 72  3.609097e-03     0.4625682    0.86757745 0.4119065 0.5880935  5.066161e-02
-## 73  5.617329e-03     0.3577380    0.30144701 0.5122907 0.4877093 -1.545528e-01
-## 74  9.237887e-03     0.2252319    0.28192336 0.4873609 0.5126391 -2.621291e-01
-## 75  9.275353e-03     0.1791909    0.84931095 0.3575241 0.6424759 -1.783332e-01
-## 76  7.561670e-04     0.4805848    0.55759372 0.4834959 0.5165041 -2.911156e-03
-## 77  1.374263e-03     0.4608683    0.58938189 0.4724582 0.5275418 -1.158981e-02
-## 78  2.232129e-03     0.4092009    0.53765948 0.4724686 0.5275314 -6.326770e-02
-## 79  7.759625e-03     0.2197842    0.75433479 0.3860175 0.6139825 -1.662333e-01
-## 80  3.268253e-03     0.4049686    0.33721202 0.5146747 0.4853253 -1.097062e-01
-## 81  5.423895e-03     0.3908737    0.42116173 0.4934728 0.5065272 -1.025991e-01
-## 82  3.519797e-03     0.4011023    0.73079072 0.4292882 0.5707118 -2.818593e-02
-## 83  3.686690e-03     0.4218566    0.83555868 0.4106558 0.5893442  1.120087e-02
-## 84  8.770650e-03     0.3581336    1.14214132 0.3266198 0.6733802  3.151379e-02
-## 85  4.499834e-03     0.3443989    0.31503811 0.5064108 0.4935892 -1.620119e-01
-## 86  6.913635e-03     0.4258167    0.65587542 0.4506944 0.5493056 -2.487767e-02
-## 87  7.423989e-03     0.3099141    0.82357517 0.3901214 0.6098786 -8.020731e-02
-## 88  9.184997e-03     0.3684764    1.21182672 0.3109395 0.6890605  5.753690e-02
-## 89  9.934938e-04     0.4868356    0.62392292 0.4705757 0.5294243  1.625986e-02
-## 90  7.108557e-03     0.4118898    0.61412264 0.4566907 0.5433093 -4.480091e-02
-## 91  6.307975e-03     0.3930564    1.12477321 0.3374866 0.6625134  5.556981e-02
-## 92  5.444530e-03     0.4341244    1.13301054 0.3432290 0.6567710  9.089543e-02
-## 93  5.708904e-03     0.3478416    0.89381629 0.3824980 0.6175020 -3.465645e-02
-## 94  7.141561e-03     0.2905477    0.35111313 0.4867496 0.5132504 -1.962019e-01
-## 95  7.903713e-03     0.2139224    0.51056251 0.4357452 0.5642548 -2.218228e-01
-## 96  5.645807e-03     0.3900043    1.02568098 0.3608053 0.6391947  2.919899e-02
-## 97  3.539554e-03     0.4426765    0.78565031 0.4260337 0.5739663  1.664282e-02
-## 98  2.396317e-03     0.4714752    0.73488553 0.4432337 0.5567663  2.824150e-02
-## 99  3.785424e-03     0.3795824    0.38732481 0.4983263 0.5016737 -1.187439e-01
-## 100 6.899727e-03     0.3066195    0.73935628 0.4075441 0.5924559 -1.009246e-01
-## 101 1.963958e-03     0.4265032    0.49737141 0.4848011 0.5151989 -5.829796e-02
-## 102 4.301069e-03     0.4530187    0.59420200 0.4697461 0.5302539 -1.672744e-02
-## 103 8.824290e-03     0.2297311   -0.00600991 0.5558381 0.4441619 -3.261069e-01
-## 104 9.245072e-03     0.3264854    1.29020432 0.2829568 0.7170432  4.352858e-02
-## 105 7.604964e-03     0.2918822    0.40191763 0.4760656 0.5239344 -1.841834e-01
-## 106 7.759268e-04     0.4705220    0.49732782 0.4942550 0.5057450 -2.373305e-02
-## 107 6.426895e-03     0.4035626    0.53715873 0.4713650 0.5286350 -6.780241e-02
-## 108 5.150249e-03     0.3680239    0.31226925 0.5121460 0.4878540 -1.441221e-01
-## 109 5.158771e-03     0.3572536    0.68868816 0.4290909 0.5709091 -7.183732e-02
-## 110 7.247160e-03     0.4366023    0.71837996 0.4394684 0.5605316 -2.866135e-03
-## 111 7.664692e-03     0.2662707    0.30129632 0.4922628 0.5077372 -2.259921e-01
-## 112 4.033598e-03     0.3604464    0.66287701 0.4352917 0.5647083 -7.484528e-02
-## 113 8.610544e-03     0.2296532    0.23937375 0.4978186 0.5021814 -2.681654e-01
-## 114 9.173485e-03     0.2011518    0.91364398 0.3483646 0.6516354 -1.472128e-01
-## 115 2.312141e-03     0.4580485    0.67159450 0.4541525 0.5458475  3.895999e-03
-## 116 5.785912e-03     0.4354567    1.04645532 0.3647918 0.6352082  7.066491e-02
-## 117 3.133029e-03     0.4449077    0.73761547 0.4370324 0.5629676  7.875294e-03
-## 118 3.027803e-04     0.4943845    0.50697314 0.4973024 0.5026976 -2.917965e-03
-## 119 6.494774e-04     0.4813709    0.48900016 0.4983649 0.5016351 -1.699403e-02
-## 120 2.627321e-03     0.4582145    0.71701929 0.4443312 0.5556688  1.388325e-02
-## 121 6.300118e-03     0.3465760    0.97917269 0.3630121 0.6369879 -1.643610e-02
-## 122 5.009005e-03     0.4261547    0.53435546 0.4768131 0.5231869 -5.065832e-02
-## 123 8.546357e-03     0.2830230    0.87443956 0.3735353 0.6264647 -9.051237e-02
-## 124 5.935042e-03     0.4100825    1.12623889 0.3403531 0.6596469  6.972946e-02
-## 125 5.670056e-05     0.4987561    0.50339404 0.4990062 0.5009938 -2.500707e-04
-## 126 1.956694e-04     0.4944252    0.51274589 0.4960741 0.5039259 -1.648898e-03
-## 127 3.491569e-03     0.4206538    0.52255350 0.4781570 0.5218430 -5.750318e-02
-## 128 6.018842e-03     0.3018051    0.59415171 0.4373386 0.5626614 -1.355335e-01
-## 129 2.453778e-03     0.4191594    0.61602633 0.4578344 0.5421656 -3.867505e-02
-## 130 3.330195e-03     0.4159693    0.65473492 0.4488458 0.5511542 -3.287646e-02
-## 131 4.568058e-04     0.4897739    0.52653218 0.4921231 0.5078769 -2.349181e-03
-## 132 1.878873e-03     0.4594599    0.61469855 0.4667192 0.5332808 -7.259238e-03
-## 133 7.274750e-03     0.3133444    1.01181033 0.3489821 0.6510179 -3.563774e-02
-## 134 8.055270e-03     0.2281101    0.59283789 0.4216196 0.5783804 -1.935095e-01
-## 135 7.918719e-03     0.3609859    0.70923352 0.4254748 0.5745252 -6.448891e-02
-## 136 1.613960e-03     0.4448348    0.56875674 0.4734516 0.5265484 -2.861684e-02
-## 137 4.043005e-03     0.4019309    0.70224165 0.4356366 0.5643634 -3.370567e-02
-## 138 2.836492e-03     0.4275994    0.48698201 0.4872610 0.5127390 -5.966163e-02
-## 139 8.648536e-03     0.3718296    0.81616112 0.4045683 0.5954317 -3.273870e-02
-## 140 7.121030e-03     0.3625358    0.96901121 0.3685135 0.6314865 -5.977651e-03
-## 141 7.015624e-03     0.4538467    0.76906468 0.4320253 0.5679747  2.182137e-02
-## 142 2.042604e-03     0.4605752    0.54091166 0.4827870 0.5172130 -2.221182e-02
-## 143 7.276373e-03     0.2817443    0.32781445 0.4898809 0.5101191 -2.081365e-01
-## 144 8.504937e-03     0.4043297    1.38999062 0.2677250 0.7322750  1.366047e-01
-## 145 9.535921e-03     0.3816151    0.92709379 0.3818853 0.6181147 -2.702406e-04
-## 146 8.545091e-03     0.2113708    0.15552943 0.5127836 0.4872164 -3.014129e-01
-## 147 2.254398e-03     0.4172127    0.50313127 0.4815725 0.5184275 -6.435976e-02
-## 148 5.514651e-03     0.3174289    0.58313547 0.4430424 0.5569576 -1.256136e-01
-## 149 6.254560e-03     0.3712000    1.05174495 0.3509693 0.6490307  2.023067e-02
-## 150 6.128050e-03     0.4347501    0.64036291 0.4559327 0.5440673 -2.118256e-02
-## 151 1.952048e-03     0.4280647    0.50181151 0.4841861 0.5158139 -5.612141e-02
-## 152 8.239200e-03     0.3517008    0.70331437 0.4247808 0.5752192 -7.308004e-02
-## 153 4.212187e-03     0.3515106    0.31600127 0.5077464 0.4922536 -1.562358e-01
-## 154 6.562633e-03     0.2743976    0.22852289 0.5102348 0.4897652 -2.358372e-01
-## 155 8.529452e-05     0.4988950    0.50384451 0.4989394 0.5010606 -4.435972e-05
-## 156 4.627415e-03     0.3572116    0.37883525 0.4953140 0.5046860 -1.381024e-01
-## 157 7.506022e-03     0.2258758    0.73509945 0.3913517 0.6086483 -1.654759e-01
-## 158 5.802968e-03     0.3326783    0.21378770 0.5263388 0.4736612 -1.936605e-01
-## 159 8.889093e-03     0.1840713    0.53123535 0.4247793 0.5752207 -2.407080e-01
-## 160 3.338891e-03     0.4122694    0.37061400 0.5089940 0.4910060 -9.672460e-02
-## 161 5.739428e-03     0.3218069    0.34309822 0.4953539 0.5046461 -1.735470e-01
-## 162 9.051019e-03     0.1962323    0.87674376 0.3552434 0.6447566 -1.590110e-01
-## 163 7.187216e-03     0.4262288    0.88441285 0.4006216 0.5993784  2.560716e-02
-## 164 2.371262e-03     0.4263674    0.36367919 0.5135281 0.4864719 -8.716064e-02
-## 165 5.791201e-03     0.3278009    0.66440013 0.4280142 0.5719858 -1.002133e-01
-## 166 5.959915e-03     0.3356347    0.89016181 0.3808226 0.6191774 -4.518790e-02
-## 167 8.379680e-03     0.2497505    0.72702560 0.3981276 0.6018724 -1.483771e-01
-## 168 8.564844e-03     0.2985353    0.25356496 0.5099562 0.4900438 -2.114209e-01
-## 169 1.064177e-03     0.4879185    0.55464122 0.4856992 0.5143008  2.219255e-03
-## 170 6.110630e-03     0.2906057    0.56232070 0.4416470 0.5583530 -1.510413e-01
-## 171 1.771706e-03     0.4904742    0.57754032 0.4813316 0.5186684  9.142649e-03
-## 172 3.746941e-03     0.4465673    0.53292064 0.4814969 0.5185031 -3.492955e-02
-## 173 8.344937e-03     0.3299483    0.62833628 0.4361416 0.5638584 -1.061933e-01
-## 174 8.671874e-03     0.1922838    0.53379538 0.4260720 0.5739280 -2.337882e-01
-## 175 5.165876e-03     0.3736916    0.49715960 0.4734785 0.5265215 -9.978687e-02
-## 176 6.250491e-03     0.3326476    0.43684454 0.4774841 0.5225159 -1.448365e-01
-## 177 5.663535e-03     0.4370600    0.78968458 0.4239700 0.5760300  1.308996e-02
-## 178 8.189466e-03     0.2252951    0.18025593 0.5102286 0.4897714 -2.849335e-01
-## 179 5.172787e-03     0.4031454    0.61457571 0.4547267 0.5452733 -5.158130e-02
-## 180 2.048906e-03     0.4872749    0.58292540 0.4794905 0.5205095  7.784434e-03
-## 181 6.680525e-03     0.3636182    0.39408263 0.4934099 0.5065901 -1.297917e-01
-## 182 4.062967e-03     0.3965050    0.48170582 0.4817014 0.5182986 -8.519636e-02
-## 183 8.424910e-03     0.3340574    0.38892729 0.4880961 0.5119039 -1.540387e-01
-## 184 7.709358e-03     0.3274224    0.31523483 0.5026662 0.4973338 -1.752438e-01
-## 185 2.544983e-03     0.4290130    0.46450097 0.4923817 0.5076183 -6.336872e-02
-## 186 5.364966e-03     0.4586811    0.68428768 0.4515392 0.5484608  7.141898e-03
-## 187 5.934410e-04     0.4911311    0.52208943 0.4933660 0.5066340 -2.234906e-03
-## 188 5.020772e-05     0.4994611    0.50522291 0.4987653 0.5012347  6.957686e-04
-## 189 2.873655e-03     0.4841331    0.62383339 0.4700182 0.5299818  1.411487e-02
-## 190 5.514606e-03     0.3185310    0.30808449 0.5022897 0.4977103 -1.837587e-01
-## 191 2.057597e-03     0.4332664    0.53784410 0.4775918 0.5224082 -4.432537e-02
-## 192 8.173496e-03     0.2176725    0.56684663 0.4247719 0.5752281 -2.070994e-01
-## 193 2.086392e-03     0.4565365    0.52919858 0.4844305 0.5155695 -2.789395e-02
-## 194 3.212343e-03     0.4190469    0.74650843 0.4296499 0.5703501 -1.060297e-02
-## 195 7.999160e-03     0.3045436    0.49258759 0.4594613 0.5405387 -1.549176e-01
-## 196 9.251449e-07     0.4999717    0.50002371 0.4999888 0.5000112 -1.717811e-05
-## 197 2.268155e-03     0.4381742    0.58788484 0.4679282 0.5320718 -2.975401e-02
-## 198 7.367501e-03     0.3075208    0.80712880 0.3931824 0.6068176 -8.566162e-02
-## 199 2.263759e-03     0.4295249    0.36917011 0.5130171 0.4869829 -8.349220e-02
-## 200 3.956566e-03     0.4589564    0.90024359 0.4037468 0.5962532  5.520959e-02
-##          e_dual_0
-## 1    3.837006e-01
-## 2    3.122977e-01
-## 3   -2.157056e-03
-## 4    1.416911e-01
-## 5   -1.723508e-01
-## 6    3.169524e-03
-## 7    1.805202e-02
-## 8    4.325794e-01
-## 9    2.480778e-01
-## 10   1.751678e-02
-## 11   3.914367e-01
-## 12  -3.153219e-02
-## 13   2.886044e-01
-## 14   1.715566e-01
-## 15  -5.611517e-02
-## 16   1.839867e-01
-## 17   4.286818e-04
-## 18  -1.117203e-03
-## 19   3.110187e-01
-## 20  -1.216701e-02
-## 21  -2.947397e-01
-## 22   5.460075e-01
-## 23   1.846696e-02
-## 24   4.638672e-01
-## 25  -1.916636e-01
-## 26  -9.402232e-02
-## 27   2.639343e-01
-## 28  -9.327924e-03
-## 29   8.937321e-02
-## 30   7.833338e-02
-## 31   4.125671e-01
-## 32  -2.635806e-01
-## 33  -8.833603e-02
-## 34   1.781675e-03
-## 35   9.474650e-02
-## 36   1.574002e-02
-## 37  -3.162603e-02
-## 38   3.266930e-02
-## 39   8.230708e-02
-## 40   4.440247e-01
-## 41  -1.260219e-01
-## 42   1.474812e-02
-## 43  -9.757400e-02
-## 44  -2.484827e-01
-## 45   1.512318e-01
-## 46   4.401467e-01
-## 47   6.135763e-02
-## 48  -2.469273e-01
-## 49   5.564408e-02
-## 50   6.761532e-02
-## 51  -2.243429e-01
-## 52   2.803669e-02
-## 53   2.100216e-01
-## 54  -1.465249e-02
-## 55   1.189618e-01
-## 56   4.439923e-01
-## 57   3.188630e-02
-## 58   1.320313e-01
-## 59  -3.422240e-02
-## 60   2.376494e-01
-## 61   4.735585e-02
-## 62   2.547340e-03
-## 63   6.501215e-02
-## 64   1.220222e-02
-## 65   5.735027e-01
-## 66  -3.210716e-02
-## 67  -8.377725e-03
-## 68   1.486649e-01
-## 69   2.423925e-01
-## 70   1.383206e-01
-## 71   2.196155e-02
-## 72   2.794840e-01
-## 73  -1.862622e-01
-## 74  -2.307157e-01
-## 75   2.068351e-01
-## 76   4.108965e-02
-## 77   6.184004e-02
-## 78   1.012808e-02
-## 79   1.403523e-01
-## 80  -1.481132e-01
-## 81  -8.536550e-02
-## 82   1.600789e-01
-## 83   2.462144e-01
-## 84   4.687611e-01
-## 85  -1.785511e-01
-## 86   1.065698e-01
-## 87   2.136966e-01
-## 88   5.227662e-01
-## 89   9.449866e-02
-## 90   7.081334e-02
-## 91   4.622598e-01
-## 92   4.762395e-01
-## 93   2.763143e-01
-## 94  -1.621373e-01
-## 95  -5.369225e-02
-## 96   3.864862e-01
-## 97   2.116840e-01
-## 98   1.781192e-01
-## 99  -1.143489e-01
-## 100  1.469003e-01
-## 101 -1.782747e-02
-## 102  6.394813e-02
-## 103 -4.501718e-01
-## 104  5.731611e-01
-## 105 -1.220168e-01
-## 106 -8.417176e-03
-## 107  8.523744e-03
-## 108 -1.755847e-01
-## 109  1.177791e-01
-## 110  1.578484e-01
-## 111 -2.064409e-01
-## 112  9.816867e-02
-## 113 -2.628076e-01
-## 114  2.620085e-01
-## 115  1.257470e-01
-## 116  4.112471e-01
-## 117  1.746479e-01
-## 118  4.275572e-03
-## 119 -1.263491e-02
-## 120  1.613505e-01
-## 121  3.421848e-01
-## 122  1.116853e-02
-## 123  2.479749e-01
-## 124  4.665919e-01
-## 125  2.400191e-03
-## 126  8.820023e-03
-## 127  7.104875e-04
-## 128  3.149030e-02
-## 129  7.386078e-02
-## 130  1.035807e-01
-## 131  1.865525e-02
-## 132  8.141771e-02
-## 133  3.607924e-01
-## 134  1.445750e-02
-## 135  1.347083e-01
-## 136  4.220839e-02
-## 137  1.378783e-01
-## 138 -2.575700e-02
-## 139  2.207294e-01
-## 140  3.375247e-01
-## 141  2.010900e-01
-## 142  2.369863e-02
-## 143 -1.823047e-01
-## 144  6.577156e-01
-## 145  3.089791e-01
-## 146 -3.316870e-01
-## 147 -1.529627e-02
-## 148  2.617790e-02
-## 149  4.027143e-01
-## 150  9.629559e-02
-## 151 -1.400237e-02
-## 152  1.280952e-01
-## 153 -1.762524e-01
-## 154 -2.612423e-01
-## 155  2.783906e-03
-## 156 -1.258508e-01
-## 157  1.264512e-01
-## 158 -2.598735e-01
-## 159 -4.398533e-02
-## 160 -1.203920e-01
-## 161 -1.615479e-01
-## 162  2.319871e-01
-## 163  2.850345e-01
-## 164 -1.227927e-01
-## 165  9.241436e-02
-## 166  2.709845e-01
-## 167  1.251532e-01
-## 168 -2.364789e-01
-## 169  4.034044e-02
-## 170  3.967703e-03
-## 171  5.887189e-02
-## 172  1.441752e-02
-## 173  6.447784e-02
-## 174 -4.013264e-02
-## 175 -2.936191e-02
-## 176 -8.567136e-02
-## 177  2.136546e-01
-## 178 -3.095155e-01
-## 179  6.930239e-02
-## 180  6.241590e-02
-## 181 -1.125075e-01
-## 182 -3.659280e-02
-## 183 -1.229766e-01
-## 184 -1.820989e-01
-## 185 -4.311731e-02
-## 186  1.358269e-01
-## 187  1.545543e-02
-## 188  3.988234e-03
-## 189  9.385161e-02
-## 190 -1.896258e-01
-## 191  1.543588e-02
-## 192 -8.381430e-03
-## 193  1.362907e-02
-## 194  1.761583e-01
-## 195 -4.795113e-02
-## 196  1.255961e-05
-## 197  5.581308e-02
-## 198  2.003112e-01
-## 199 -1.178128e-01
-## 200  3.039904e-01
+##          weights predictions_1 predictions_0 probabilities_1 probabilities_0
+## 1   6.408614e-03     0.3526612    1.03997932       0.1856802       0.8143198
+## 2   4.069074e-03     0.3611852    1.00659540       0.1925139       0.8074861
+## 3   8.478890e-05     0.2018007    0.79389077       0.2012848       0.7987152
+## 4   6.019554e-03     0.2482836    0.77140431       0.2126642       0.7873358
+## 5   8.529959e-03     0.3377428    0.27358677       0.3258196       0.6741804
+## 6   3.466777e-03     0.2798052    0.66129187       0.2370367       0.7629633
+## 7   7.143169e-03     0.3733840    0.52415554       0.2796025       0.7203975
+## 8   6.728993e-03     0.3756344    1.09117708       0.1809317       0.8190683
+## 9   9.459067e-03     0.2877814    0.78702116       0.2166944       0.7833056
+## 10  1.952733e-03     0.2226752    0.75146695       0.2117173       0.7882827
+## 11  6.884772e-03     0.3555312    1.03582456       0.1868151       0.8131849
+## 12  1.046638e-03     0.2106771    0.72337741       0.2144218       0.7855782
+## 13  6.632154e-03     0.4639106    0.85053121       0.2368135       0.7631865
+## 14  5.694566e-03     0.2609696    0.81452272       0.2076120       0.7923880
+## 15  8.199805e-03     0.4555912    0.36432259       0.3283205       0.6716795
+## 16  7.974757e-03     0.3397106    0.72431237       0.2364912       0.7635088
+## 17  1.016052e-05     0.2003965    0.80005099       0.2000560       0.7999440
+## 18  1.077733e-03     0.2337937    0.75041296       0.2137528       0.7862472
+## 19  4.555596e-03     0.3224837    1.00715977       0.1862268       0.8137732
+## 20  1.797040e-03     0.2095780    0.72479111       0.2139996       0.7860004
+## 21  7.726297e-03     0.3498615    0.14997501       0.3584095       0.6415905
+## 22  7.537852e-03     0.4983089    1.18914834       0.1841440       0.8158560
+## 23  5.078895e-04     0.2066423    0.80453438       0.2003420       0.7996580
+## 24  8.673474e-03     0.4659097    1.04261104       0.2039921       0.7960079
+## 25  6.743411e-03     0.2848000    0.32400748       0.3043771       0.6956229
+## 26  2.597985e-03     0.2216336    0.59251985       0.2391501       0.7608499
+## 27  7.946911e-03     0.2965673    0.85155155       0.2073982       0.7926018
+## 28  3.132542e-03     0.2671697    0.66162186       0.2347626       0.7652374
+## 29  1.413325e-03     0.2339130    0.85377483       0.1967876       0.8032124
+## 30  1.952905e-03     0.2747870    0.80538222       0.2114290       0.7885710
+## 31  7.786354e-03     0.3641713    1.03627013       0.1881235       0.8118765
+## 32  6.412179e-03     0.3141028    0.23559225       0.3302812       0.6697188
+## 33  8.813903e-03     0.2427698    0.40473956       0.2792660       0.7207340
+## 34  3.104395e-03     0.2259749    0.69449306       0.2219212       0.7780788
+## 35  1.494452e-03     0.2359713    0.85715421       0.1965743       0.8034257
+## 36  1.979537e-03     0.2505294    0.73628529       0.2189597       0.7810403
+## 37  1.781772e-03     0.2445111    0.68548055       0.2266515       0.7733485
+## 38  8.631740e-04     0.2199829    0.80551695       0.2023531       0.7976469
+## 39  2.624354e-03     0.2540498    0.79849383       0.2091165       0.7908835
+## 40  7.278409e-03     0.3803848    1.09029772       0.1818259       0.8181741
+## 41  9.198636e-03     0.3721894    0.29280984       0.3279855       0.6720145
+## 42  8.939710e-04     0.2045391    0.78882755       0.2025561       0.7974439
+## 43  5.755561e-03     0.3538831    0.43337648       0.2940743       0.7059257
+## 44  9.197598e-03     0.4221829    0.13263798       0.3767581       0.6232419
+## 45  7.835590e-03     0.2497892    0.72658450       0.2204847       0.7795153
+## 46  7.304276e-03     0.3784180    1.08466672       0.1824422       0.8175578
+## 47  2.825585e-03     0.2473003    0.76871006       0.2129502       0.7870498
+## 48  5.701607e-03     0.2950633    0.28273923       0.3156210       0.6843790
+## 49  9.403839e-03     0.3027989    0.53329222       0.2647413       0.7352587
+## 50  8.874280e-03     0.2153520    0.60381911       0.2360101       0.7639899
+## 51  5.856153e-03     0.3093848    0.29888952       0.3146391       0.6853609
+## 52  7.506319e-04     0.2278652    0.79982179       0.2045744       0.7954256
+## 53  2.829871e-03     0.3079285    0.93203077       0.1960680       0.8039320
+## 54  1.403796e-03     0.2254491    0.72701196       0.2162915       0.7837085
+## 55  2.256222e-03     0.2659105    0.85121088       0.2023972       0.7976028
+## 56  8.706739e-03     0.3780882    1.05008290       0.1880874       0.8119126
+## 57  6.495227e-04     0.2271737    0.80808595       0.2031082       0.7968918
+## 58  7.423215e-03     0.4947906    0.60169178       0.2880435       0.7119565
+## 59  9.409367e-03     0.2688901    0.43967038       0.2769284       0.7230716
+## 60  3.467645e-03     0.2922539    0.95545377       0.1897663       0.8102337
+## 61  4.891585e-03     0.2119124    0.70263851       0.2181418       0.7818582
+## 62  5.191919e-05     0.2009450    0.80117419       0.1999628       0.8000372
+## 63  6.960881e-04     0.2251791    0.84905269       0.1961436       0.8038564
+## 64  3.234067e-03     0.3093491    0.66643422       0.2413431       0.7586569
+## 65  8.095405e-03     0.5170827    1.21099845       0.1834243       0.8165757
+## 66  2.123864e-03     0.2349545    0.67860615       0.2262012       0.7737988
+## 67  3.309518e-03     0.2716568    0.65532966       0.2366639       0.7633361
+## 68  5.300329e-03     0.3787056    0.74454595       0.2398998       0.7601002
+## 69  7.890242e-03     0.4749215    0.74281574       0.2580209       0.7419791
+## 70  5.248723e-03     0.3735130    0.73513441       0.2406247       0.7593753
+## 71  9.625057e-04     0.2301381    0.78463504       0.2074481       0.7925519
+## 72  3.609097e-03     0.3434140    0.98412877       0.1933175       0.8066825
+## 73  5.617329e-03     0.3155370    0.34811668       0.3048609       0.6951391
+## 74  9.237887e-03     0.3340911    0.19039502       0.3451287       0.6548713
+## 75  9.275353e-03     0.2707651    0.74512726       0.2208981       0.7791019
+## 76  7.561670e-04     0.2153829    0.82142421       0.1990213       0.8009787
+## 77  1.374263e-03     0.2227906    0.82514861       0.1996176       0.8003824
+## 78  2.232129e-03     0.2006943    0.74323505       0.2094332       0.7905668
+## 79  7.759625e-03     0.2454837    0.71683753       0.2214161       0.7785839
+## 80  3.268253e-03     0.2485843    0.49296628       0.2626450       0.7373550
+## 81  5.423895e-03     0.3468515    0.46127656       0.2870675       0.7129325
+## 82  3.519797e-03     0.2595236    0.86757856       0.1986919       0.8013081
+## 83  3.686690e-03     0.2955618    0.95862538       0.1897817       0.8102183
+## 84  8.770650e-03     0.4690099    1.04597156       0.2039524       0.7960476
+## 85  4.499834e-03     0.2341002    0.42601309       0.2733101       0.7266899
+## 86  6.913635e-03     0.4683562    0.59760543       0.2836355       0.7163645
+## 87  7.423989e-03     0.3468818    0.77757893       0.2284887       0.7715113
+## 88  9.184997e-03     0.4987431    1.10650907       0.1986493       0.8013507
+## 89  9.934938e-04     0.2367018    0.87195615       0.1943118       0.8056882
+## 90  7.108557e-03     0.4622404    0.54914224       0.2917684       0.7082316
+## 91  6.307975e-03     0.3911718    1.13991627       0.1753216       0.8246784
+## 92  5.444530e-03     0.3998260    1.18037638       0.1699324       0.8300676
+## 93  5.708904e-03     0.3052747    0.93315246       0.1954563       0.8045437
+## 94  7.141561e-03     0.3061271    0.33806639       0.3052852       0.6947148
+## 95  7.903713e-03     0.2472353    0.47049796       0.2667997       0.7332003
+## 96  5.645807e-03     0.3552547    1.06499349       0.1820116       0.8179884
+## 97  3.539554e-03     0.3141657    0.90981346       0.2007132       0.7992868
+## 98  2.396317e-03     0.2912799    0.91136892       0.1967303       0.8032697
+## 99  3.785424e-03     0.2417960    0.52237233       0.2557632       0.7442368
+## 100 6.899727e-03     0.3156277    0.72045937       0.2329166       0.7670834
+## 101 1.963958e-03     0.2087034    0.71289891       0.2158593       0.7841407
+## 102 4.301069e-03     0.3645696    0.67341825       0.2500181       0.7499819
+## 103 8.824290e-03     0.3261669   -0.03881251       0.4082048       0.5917952
+## 104 9.245072e-03     0.4464166    1.21046119       0.1720583       0.8279417
+## 105 7.604964e-03     0.3329462    0.36007955       0.3055547       0.6944453
+## 106 7.759268e-04     0.2027814    0.76416679       0.2063128       0.7936872
+## 107 6.426895e-03     0.4162794    0.51408413       0.2897314       0.7102686
+## 108 5.150249e-03     0.3031295    0.37982774       0.2957041       0.7042959
+## 109 5.158771e-03     0.2891811    0.74918109       0.2233589       0.7766411
+## 110 7.247160e-03     0.4980240    0.63910815       0.2815973       0.7184027
+## 111 7.664692e-03     0.3025904    0.27356754       0.3191574       0.6808426
+## 112 4.033598e-03     0.2334386    0.78399010       0.2081005       0.7918995
+## 113 8.610544e-03     0.3053493    0.18321237       0.3414836       0.6585164
+## 114 9.173485e-03     0.2940720    0.81201873       0.2135588       0.7864412
+## 115 2.312141e-03     0.2691141    0.85671036       0.2020226       0.7979774
+## 116 5.785912e-03     0.4188237    1.06871442       0.1916173       0.8083827
+## 117 3.133029e-03     0.2956236    0.88240503       0.2021624       0.7978376
+## 118 3.027803e-04     0.2084002    0.79234649       0.2026119       0.7973881
+## 119 6.494774e-04     0.2093135    0.75999868       0.2080793       0.7919207
+## 120 2.627321e-03     0.2861652    0.88500640       0.2001890       0.7998110
+## 121 6.300118e-03     0.3336324    0.99310646       0.1902779       0.8097221
+## 122 5.009005e-03     0.3685685    0.58307821       0.2674109       0.7325891
+## 123 8.546357e-03     0.3704561    0.77785852       0.2325978       0.7674022
+## 124 5.935042e-03     0.3940190    1.15535834       0.1732020       0.8267980
+## 125 5.670056e-05     0.2014143    0.80063612       0.2001262       0.7998738
+## 126 1.956694e-04     0.2032467    0.80358449       0.1999452       0.8000548
+## 127 3.491569e-03     0.2794290    0.65760766       0.2376250       0.7623750
+## 128 6.018842e-03     0.2627353    0.62510304       0.2404979       0.7595021
+## 129 2.453778e-03     0.2259674    0.80548388       0.2033363       0.7966637
+## 130 3.330195e-03     0.2683302    0.79726813       0.2117010       0.7882990
+## 131 4.568058e-04     0.2111221    0.80439055       0.2010932       0.7989068
+## 132 1.878873e-03     0.2477050    0.82329167       0.2039826       0.7960174
+## 133 7.274750e-03     0.3405975    0.98709349       0.1923777       0.8076223
+## 134 8.055270e-03     0.2745838    0.53634544       0.2590232       0.7409768
+## 135 7.918719e-03     0.4353217    0.61834072       0.2733463       0.7266537
+## 136 1.613960e-03     0.2144844    0.79665876       0.2029013       0.7970987
+## 137 4.043005e-03     0.2879625    0.81027751       0.2128218       0.7871782
+## 138 2.836492e-03     0.2538897    0.65611859       0.2334166       0.7665834
+## 139 8.648536e-03     0.4846480    0.68513474       0.2704146       0.7295854
+## 140 7.121030e-03     0.3961932    0.93421757       0.2103945       0.7896055
+## 141 7.015624e-03     0.5058364    0.69956868       0.2718862       0.7281138
+## 142 2.042604e-03     0.2551071    0.74232019       0.2187118       0.7812882
+## 143 7.276373e-03     0.3018862    0.31256601       0.3101411       0.6898589
+## 144 8.504937e-03     0.5003336    1.35088013       0.1555554       0.8444446
+## 145 9.535921e-03     0.5385621    0.75287924       0.2685723       0.7314277
+## 146 8.545091e-03     0.2764052    0.12028652       0.3523898       0.6476102
+## 147 2.254398e-03     0.2121143    0.70556433       0.2176782       0.7823218
+## 148 5.514651e-03     0.2562337    0.63694474       0.2372313       0.7627687
+## 149 6.254560e-03     0.3619402    1.06753869       0.1826486       0.8173514
+## 150 6.128050e-03     0.4379638    0.62340439       0.2729012       0.7270988
+## 151 1.952048e-03     0.2101247    0.71743948       0.2153307       0.7846693
+## 152 8.239200e-03     0.4406327    0.59736423       0.2783196       0.7216804
+## 153 4.212187e-03     0.2279876    0.43988768       0.2693878       0.7306122
+## 154 6.562633e-03     0.2531823    0.26134605       0.3127073       0.6872927
+## 155 8.529452e-05     0.2030006    0.79954935       0.2005601       0.7994399
+## 156 4.627415e-03     0.2576408    0.47604039       0.2676041       0.7323959
+## 157 7.506022e-03     0.2401970    0.70922982       0.2218173       0.7781827
+## 158 5.802968e-03     0.2936117    0.26531464       0.3193805       0.6806195
+## 159 8.889093e-03     0.2602357    0.44721693       0.2738143       0.7261857
+## 160 3.338891e-03     0.2617620    0.51924880       0.2599626       0.7400374
+## 161 5.739428e-03     0.2712092    0.39425265       0.2867068       0.7132932
+## 162 9.051019e-03     0.2815232    0.78083149       0.2166774       0.7833226
+## 163 7.187216e-03     0.4751212    0.82312417       0.2437179       0.7562821
+## 164 2.371262e-03     0.2282200    0.56049334       0.2461808       0.7538192
+## 165 5.791201e-03     0.2845418    0.69915869       0.2312005       0.7687995
+## 166 5.959915e-03     0.3025625    0.91951367       0.1972349       0.8027651
+## 167 8.379680e-03     0.3201382    0.64428357       0.2472515       0.7527485
+## 168 8.564844e-03     0.4032622    0.17058495       0.3633409       0.6366591
+## 169 1.064177e-03     0.2397631    0.80037867       0.2064403       0.7935597
+## 170 6.110630e-03     0.2528938    0.59245418       0.2446785       0.7553215
+## 171 1.771706e-03     0.2798718    0.78408124       0.2158507       0.7841493
+## 172 3.746941e-03     0.3272598    0.64516408       0.2483730       0.7516270
+## 173 8.344937e-03     0.4199695    0.52340535       0.2886073       0.7113927
+## 174 8.671874e-03     0.2596263    0.45848872       0.2714455       0.7285545
+## 175 5.165876e-03     0.3075600    0.55592095       0.2613064       0.7386936
+## 176 6.250491e-03     0.3127140    0.45204052       0.2825430       0.7174570
+## 177 5.663535e-03     0.4123456    0.80308309       0.2357036       0.7642964
+## 178 8.189466e-03     0.2759854    0.15405783       0.3433981       0.6566019
+## 179 5.172787e-03     0.3452574    0.66206765       0.2485639       0.7514361
+## 180 2.048906e-03     0.2901851    0.77536258       0.2190730       0.7809270
+## 181 6.680525e-03     0.3810045    0.37593491       0.3113022       0.6886978
+## 182 4.062967e-03     0.2784500    0.59382459       0.2489797       0.7510203
+## 183 8.424910e-03     0.4398690    0.28689916       0.3424716       0.6575284
+## 184 7.709358e-03     0.3922657    0.26015467       0.3394052       0.6605948
+## 185 2.544983e-03     0.2403428    0.64941468       0.2322429       0.7677571
+## 186 5.364966e-03     0.4269838    0.70328495       0.2561229       0.7438771
+## 187 5.934410e-04     0.2193280    0.79261670       0.2043554       0.7956446
+## 188 5.020772e-05     0.2020039    0.80257121       0.1999080       0.8000920
+## 189 2.873655e-03     0.3291788    0.77215338       0.2263324       0.7736676
+## 190 5.514606e-03     0.2547930    0.37431759       0.2878637       0.7121363
+## 191 2.057597e-03     0.2227030    0.74558140       0.2127063       0.7872937
+## 192 8.173496e-03     0.2669813    0.50831713       0.2630116       0.7369884
+## 193 2.086392e-03     0.2521224    0.72960624       0.2203666       0.7796334
+## 194 3.212343e-03     0.2666968    0.89458238       0.1954817       0.8045183
+## 195 7.999160e-03     0.3703026    0.41959045       0.3000417       0.6999583
+## 196 9.251449e-07     0.2000123    0.79998171       0.2000050       0.7999950
+## 197 2.268155e-03     0.2405407    0.78202127       0.2096044       0.7903956
+## 198 7.367501e-03     0.3409921    0.76424679       0.2297589       0.7702411
+## 199 2.263759e-03     0.2265856    0.57070106       0.2440073       0.7559927
+## 200 3.956566e-03     0.3566956    1.00071089       0.1927522       0.8072478
+##          errors_1      errors_0
+## 1    1.669810e-01  2.256595e-01
+## 2    1.686714e-01  1.991093e-01
+## 3    5.159031e-04 -4.824456e-03
+## 4    3.561938e-02 -1.593148e-02
+## 5    1.192317e-02 -4.005936e-01
+## 6    4.276853e-02 -1.016715e-01
+## 7    9.378146e-02 -1.962420e-01
+## 8    1.947027e-01  2.721088e-01
+## 9    7.108698e-02  3.715604e-03
+## 10   1.095793e-02 -3.681577e-02
+## 11   1.687161e-01  2.226396e-01
+## 12  -3.744729e-03 -6.220075e-02
+## 13   2.270971e-01  8.734476e-02
+## 14   5.335760e-02  2.213468e-02
+## 15   1.272707e-01 -3.073569e-01
+## 16   1.032194e-01 -3.919645e-02
+## 17   3.404876e-04  1.070271e-04
+## 18   2.004089e-02 -3.583426e-02
+## 19   1.362569e-01  1.933865e-01
+## 20  -4.421543e-03 -6.120934e-02
+## 21  -8.547965e-03 -4.916155e-01
+## 22   3.141649e-01  3.732923e-01
+## 23   6.300331e-03  4.876363e-03
+## 24   2.619176e-01  2.466031e-01
+## 25  -1.957708e-02 -3.716154e-01
+## 26  -1.751655e-02 -1.683300e-01
+## 27   8.916904e-02  5.894978e-02
+## 28   3.240708e-02 -1.036155e-01
+## 29   3.712536e-02  5.056246e-02
+## 30   6.335803e-02  1.681119e-02
+## 31   1.760478e-01  2.243937e-01
+## 32  -1.617845e-02 -4.341265e-01
+## 33  -3.649623e-02 -3.159944e-01
+## 34   4.053699e-03 -8.358571e-02
+## 35   3.939703e-02  5.372847e-02
+## 36   3.156971e-02 -4.475502e-02
+## 37   1.785960e-02 -8.786797e-02
+## 38   1.762980e-02  7.870039e-03
+## 39   4.493328e-02  7.610342e-03
+## 40   1.985589e-01  2.721236e-01
+## 41   4.420394e-02 -3.792047e-01
+## 42   1.983003e-03 -8.616400e-03
+## 43   5.980881e-02 -2.725492e-01
+## 44   4.542486e-02 -4.906039e-01
+## 45   2.930445e-02 -5.293077e-02
+## 46   1.959758e-01  2.671089e-01
+## 47   3.435014e-02 -1.833975e-02
+## 48  -2.055770e-02 -4.016397e-01
+## 49   3.805753e-02 -2.019664e-01
+## 50  -2.065807e-02 -1.601708e-01
+## 51  -5.254278e-03 -3.864714e-01
+## 52   2.329081e-02  4.396221e-03
+## 53   1.118605e-01  1.280988e-01
+## 54   9.157626e-03 -5.669652e-02
+## 55   6.351329e-02  5.360805e-02
+## 56   1.900008e-01  2.381703e-01
+## 57   2.406550e-02  1.119412e-02
+## 58   2.067472e-01 -1.102648e-01
+## 59  -8.038289e-03 -2.834013e-01
+## 60   1.024877e-01  1.452200e-01
+## 61  -6.229375e-03 -7.921971e-02
+## 62   9.821428e-04  1.137020e-03
+## 63   2.903555e-02  4.519628e-02
+## 64   6.800602e-02 -9.222271e-02
+## 65   3.336584e-01  3.944227e-01
+## 66   8.753335e-03 -9.519264e-02
+## 67   3.499288e-02 -1.080064e-01
+## 68   1.388058e-01 -1.555427e-02
+## 69   2.169006e-01  8.366844e-04
+## 70   1.328882e-01 -2.424088e-02
+## 71   2.269006e-02 -7.916899e-03
+## 72   1.500966e-01  1.774462e-01
+## 73   1.067611e-02 -3.470224e-01
+## 74  -1.103761e-02 -4.644763e-01
+## 75   4.986696e-02 -3.397460e-02
+## 76   1.636157e-02  2.044549e-02
+## 77   2.317298e-02  2.476625e-02
+## 78  -8.738872e-03 -4.733180e-02
+## 79   2.406756e-02 -6.174635e-02
+## 80  -1.406064e-02 -2.443887e-01
+## 81   5.978399e-02 -2.516559e-01
+## 82   6.083168e-02  6.627050e-02
+## 83   1.057801e-01  1.484071e-01
+## 84   2.650575e-01  2.499240e-01
+## 85  -3.920990e-02 -3.006768e-01
+## 86   1.847207e-01 -1.187591e-01
+## 87   1.183930e-01  6.067645e-03
+## 88   3.000939e-01  3.051583e-01
+## 89   4.238995e-02  6.626796e-02
+## 90   1.704720e-01 -1.590894e-01
+## 91   2.158503e-01  3.152379e-01
+## 92   2.298936e-01  3.503088e-01
+## 93   1.098184e-01  1.286088e-01
+## 94   8.418825e-04 -3.566484e-01
+## 95  -1.956444e-02 -2.627024e-01
+## 96   1.732431e-01  2.470051e-01
+## 97   1.134525e-01  1.105267e-01
+## 98   9.454955e-02  1.080992e-01
+## 99  -1.396728e-02 -2.218644e-01
+## 100  8.271109e-02 -4.662401e-02
+## 101 -7.155890e-03 -7.124179e-02
+## 102  1.145515e-01 -7.656362e-02
+## 103 -8.203790e-02 -6.306077e-01
+## 104  2.743583e-01  3.825194e-01
+## 105  2.739151e-02 -3.343657e-01
+## 106 -3.531368e-03 -2.952046e-02
+## 107  1.265481e-01 -1.961845e-01
+## 108  7.425400e-03 -3.244682e-01
+## 109  6.582218e-02 -2.746003e-02
+## 110  2.164267e-01 -7.929454e-02
+## 111 -1.656696e-02 -4.072751e-01
+## 112  2.533811e-02 -7.909438e-03
+## 113 -3.613434e-02 -4.753040e-01
+## 114  8.051320e-02  2.557757e-02
+## 115  6.709150e-02  5.873300e-02
+## 116  2.272063e-01  2.603318e-01
+## 117  9.346121e-02  8.456744e-02
+## 118  5.788276e-03 -5.041632e-03
+## 119  1.234150e-03 -3.192199e-02
+## 120  8.597619e-02  8.519541e-02
+## 121  1.433545e-01  1.833844e-01
+## 122  1.011576e-01 -1.495109e-01
+## 123  1.378583e-01  1.045633e-02
+## 124  2.208170e-01  3.285603e-01
+## 125  1.288115e-03  7.623374e-04
+## 126  3.301463e-03  3.529715e-03
+## 127  4.180397e-02 -1.047673e-01
+## 128  2.223747e-02 -1.343991e-01
+## 129  2.263117e-02  8.820135e-03
+## 130  5.662917e-02  8.969157e-03
+## 131  1.002890e-02  5.483702e-03
+## 132  4.372239e-02  2.727425e-02
+## 133  1.482198e-01  1.794712e-01
+## 134  1.556060e-02 -2.046313e-01
+## 135  1.619754e-01 -1.083130e-01
+## 136  1.158314e-02 -4.399418e-04
+## 137  7.514075e-02  2.309929e-02
+## 138  2.047307e-02 -1.104648e-01
+## 139  2.142335e-01 -4.445071e-02
+## 140  1.857988e-01  1.446121e-01
+## 141  2.339502e-01 -2.854512e-02
+## 142  3.639523e-02 -3.896799e-02
+## 143 -8.254948e-03 -3.772929e-01
+## 144  3.447782e-01  5.064356e-01
+## 145  2.699898e-01  2.145156e-02
+## 146 -7.598455e-02 -5.273237e-01
+## 147 -5.563841e-03 -7.675751e-02
+## 148  1.900240e-02 -1.258239e-01
+## 149  1.792917e-01  2.501873e-01
+## 150  1.650626e-01 -1.036944e-01
+## 151 -5.206043e-03 -6.722982e-02
+## 152  1.623131e-01 -1.243162e-01
+## 153 -4.140015e-02 -2.907246e-01
+## 154 -5.952496e-02 -4.259466e-01
+## 155  2.440506e-03  1.094046e-04
+## 156 -9.963320e-03 -2.563555e-01
+## 157  1.837966e-02 -6.895286e-02
+## 158 -2.576878e-02 -4.153049e-01
+## 159 -1.357867e-02 -2.789687e-01
+## 160  1.799375e-03 -2.207886e-01
+## 161 -1.549752e-02 -3.190406e-01
+## 162  6.484579e-02 -2.491135e-03
+## 163  2.314033e-01  6.684205e-02
+## 164 -1.796080e-02 -1.933258e-01
+## 165  5.334131e-02 -6.964084e-02
+## 166  1.053276e-01  1.167486e-01
+## 167  7.288674e-02 -1.084649e-01
+## 168  3.992137e-02 -4.660742e-01
+## 169  3.332289e-02  6.818926e-03
+## 170  8.215303e-03 -1.628673e-01
+## 171  6.402109e-02 -6.807999e-05
+## 172  7.888682e-02 -1.064630e-01
+## 173  1.313622e-01 -1.879873e-01
+## 174 -1.181920e-02 -2.700658e-01
+## 175  4.625360e-02 -1.827727e-01
+## 176  3.017096e-02 -2.654164e-01
+## 177  1.766420e-01  3.878666e-02
+## 178 -6.741271e-02 -5.025440e-01
+## 179  9.669354e-02 -8.936845e-02
+## 180  7.111207e-02 -5.564414e-03
+## 181  6.970230e-02 -3.127629e-01
+## 182  2.947025e-02 -1.571957e-01
+## 183  9.739743e-02 -3.706292e-01
+## 184  5.286048e-02 -4.004401e-01
+## 185  8.099941e-03 -1.183424e-01
+## 186  1.708608e-01 -4.059210e-02
+## 187  1.497253e-02 -3.027878e-03
+## 188  2.095865e-03  2.479219e-03
+## 189  1.028464e-01 -1.514197e-03
+## 190 -3.307066e-02 -3.378188e-01
+## 191  9.996759e-03 -4.171234e-02
+## 192  3.969631e-03 -2.286712e-01
+## 193  3.175584e-02 -5.002716e-02
+## 194  7.121516e-02  9.006407e-02
+## 195  7.026087e-02 -2.803678e-01
+## 196  7.376057e-06 -1.332560e-05
+## 197  3.093626e-02 -8.374312e-03
+## 198  1.112331e-01 -5.994262e-03
+## 199 -1.742168e-02 -1.852916e-01
+## 200  1.639433e-01  1.934631e-01
 ## 
 ## $values
 ## $values$divergencekl
-## [1] -15.35471
+## [1] -10.87511
 ## 
 ## $values$iterations
-## [1] 69
+## [1] 66
 ## 
 ## $values$message
 ## [1] &quot;relative convergence (4)&quot;
+## 
+## $values$q
+##        [,1] [,2]
+##   [1,]  0.2  0.8
+##   [2,]  0.2  0.8
+##   [3,]  0.2  0.8
+##   [4,]  0.2  0.8
+##   [5,]  0.2  0.8
+##   [6,]  0.2  0.8
+##   [7,]  0.2  0.8
+##   [8,]  0.2  0.8
+##   [9,]  0.2  0.8
+##  [10,]  0.2  0.8
+##  [11,]  0.2  0.8
+##  [12,]  0.2  0.8
+##  [13,]  0.2  0.8
+##  [14,]  0.2  0.8
+##  [15,]  0.2  0.8
+##  [16,]  0.2  0.8
+##  [17,]  0.2  0.8
+##  [18,]  0.2  0.8
+##  [19,]  0.2  0.8
+##  [20,]  0.2  0.8
+##  [21,]  0.2  0.8
+##  [22,]  0.2  0.8
+##  [23,]  0.2  0.8
+##  [24,]  0.2  0.8
+##  [25,]  0.2  0.8
+##  [26,]  0.2  0.8
+##  [27,]  0.2  0.8
+##  [28,]  0.2  0.8
+##  [29,]  0.2  0.8
+##  [30,]  0.2  0.8
+##  [31,]  0.2  0.8
+##  [32,]  0.2  0.8
+##  [33,]  0.2  0.8
+##  [34,]  0.2  0.8
+##  [35,]  0.2  0.8
+##  [36,]  0.2  0.8
+##  [37,]  0.2  0.8
+##  [38,]  0.2  0.8
+##  [39,]  0.2  0.8
+##  [40,]  0.2  0.8
+##  [41,]  0.2  0.8
+##  [42,]  0.2  0.8
+##  [43,]  0.2  0.8
+##  [44,]  0.2  0.8
+##  [45,]  0.2  0.8
+##  [46,]  0.2  0.8
+##  [47,]  0.2  0.8
+##  [48,]  0.2  0.8
+##  [49,]  0.2  0.8
+##  [50,]  0.2  0.8
+##  [51,]  0.2  0.8
+##  [52,]  0.2  0.8
+##  [53,]  0.2  0.8
+##  [54,]  0.2  0.8
+##  [55,]  0.2  0.8
+##  [56,]  0.2  0.8
+##  [57,]  0.2  0.8
+##  [58,]  0.2  0.8
+##  [59,]  0.2  0.8
+##  [60,]  0.2  0.8
+##  [61,]  0.2  0.8
+##  [62,]  0.2  0.8
+##  [63,]  0.2  0.8
+##  [64,]  0.2  0.8
+##  [65,]  0.2  0.8
+##  [66,]  0.2  0.8
+##  [67,]  0.2  0.8
+##  [68,]  0.2  0.8
+##  [69,]  0.2  0.8
+##  [70,]  0.2  0.8
+##  [71,]  0.2  0.8
+##  [72,]  0.2  0.8
+##  [73,]  0.2  0.8
+##  [74,]  0.2  0.8
+##  [75,]  0.2  0.8
+##  [76,]  0.2  0.8
+##  [77,]  0.2  0.8
+##  [78,]  0.2  0.8
+##  [79,]  0.2  0.8
+##  [80,]  0.2  0.8
+##  [81,]  0.2  0.8
+##  [82,]  0.2  0.8
+##  [83,]  0.2  0.8
+##  [84,]  0.2  0.8
+##  [85,]  0.2  0.8
+##  [86,]  0.2  0.8
+##  [87,]  0.2  0.8
+##  [88,]  0.2  0.8
+##  [89,]  0.2  0.8
+##  [90,]  0.2  0.8
+##  [91,]  0.2  0.8
+##  [92,]  0.2  0.8
+##  [93,]  0.2  0.8
+##  [94,]  0.2  0.8
+##  [95,]  0.2  0.8
+##  [96,]  0.2  0.8
+##  [97,]  0.2  0.8
+##  [98,]  0.2  0.8
+##  [99,]  0.2  0.8
+## [100,]  0.2  0.8
+## [101,]  0.2  0.8
+## [102,]  0.2  0.8
+## [103,]  0.2  0.8
+## [104,]  0.2  0.8
+## [105,]  0.2  0.8
+## [106,]  0.2  0.8
+## [107,]  0.2  0.8
+## [108,]  0.2  0.8
+## [109,]  0.2  0.8
+## [110,]  0.2  0.8
+## [111,]  0.2  0.8
+## [112,]  0.2  0.8
+## [113,]  0.2  0.8
+## [114,]  0.2  0.8
+## [115,]  0.2  0.8
+## [116,]  0.2  0.8
+## [117,]  0.2  0.8
+## [118,]  0.2  0.8
+## [119,]  0.2  0.8
+## [120,]  0.2  0.8
+## [121,]  0.2  0.8
+## [122,]  0.2  0.8
+## [123,]  0.2  0.8
+## [124,]  0.2  0.8
+## [125,]  0.2  0.8
+## [126,]  0.2  0.8
+## [127,]  0.2  0.8
+## [128,]  0.2  0.8
+## [129,]  0.2  0.8
+## [130,]  0.2  0.8
+## [131,]  0.2  0.8
+## [132,]  0.2  0.8
+## [133,]  0.2  0.8
+## [134,]  0.2  0.8
+## [135,]  0.2  0.8
+## [136,]  0.2  0.8
+## [137,]  0.2  0.8
+## [138,]  0.2  0.8
+## [139,]  0.2  0.8
+## [140,]  0.2  0.8
+## [141,]  0.2  0.8
+## [142,]  0.2  0.8
+## [143,]  0.2  0.8
+## [144,]  0.2  0.8
+## [145,]  0.2  0.8
+## [146,]  0.2  0.8
+## [147,]  0.2  0.8
+## [148,]  0.2  0.8
+## [149,]  0.2  0.8
+## [150,]  0.2  0.8
+## [151,]  0.2  0.8
+## [152,]  0.2  0.8
+## [153,]  0.2  0.8
+## [154,]  0.2  0.8
+## [155,]  0.2  0.8
+## [156,]  0.2  0.8
+## [157,]  0.2  0.8
+## [158,]  0.2  0.8
+## [159,]  0.2  0.8
+## [160,]  0.2  0.8
+## [161,]  0.2  0.8
+## [162,]  0.2  0.8
+## [163,]  0.2  0.8
+## [164,]  0.2  0.8
+## [165,]  0.2  0.8
+## [166,]  0.2  0.8
+## [167,]  0.2  0.8
+## [168,]  0.2  0.8
+## [169,]  0.2  0.8
+## [170,]  0.2  0.8
+## [171,]  0.2  0.8
+## [172,]  0.2  0.8
+## [173,]  0.2  0.8
+## [174,]  0.2  0.8
+## [175,]  0.2  0.8
+## [176,]  0.2  0.8
+## [177,]  0.2  0.8
+## [178,]  0.2  0.8
+## [179,]  0.2  0.8
+## [180,]  0.2  0.8
+## [181,]  0.2  0.8
+## [182,]  0.2  0.8
+## [183,]  0.2  0.8
+## [184,]  0.2  0.8
+## [185,]  0.2  0.8
+## [186,]  0.2  0.8
+## [187,]  0.2  0.8
+## [188,]  0.2  0.8
+## [189,]  0.2  0.8
+## [190,]  0.2  0.8
+## [191,]  0.2  0.8
+## [192,]  0.2  0.8
+## [193,]  0.2  0.8
+## [194,]  0.2  0.8
+## [195,]  0.2  0.8
+## [196,]  0.2  0.8
+## [197,]  0.2  0.8
+## [198,]  0.2  0.8
+## [199,]  0.2  0.8
+## [200,]  0.2  0.8
 ## 
 ## 
 ## $tol
@@ -935,9 +1123,9 @@ as:</p>
 ## [1,]    1    0   -1
 ## 
 ## $lambda
-##   (Intercept) Dcollege   Totalincome     Dunemp
-## 1    12.77406 13.67724 -0.0001153192  -3.193615
-## 0    76.48782 70.52669 -0.0002342221 -22.843038
+##   (Intercept)  Dcollege   Totalincome      Dunemp
+## 1    57.03564  8.987007 -0.0001201035  -0.8332262
+## 0    28.58571 75.368523 -0.0002268384 -25.0246657
 ## 
 ## $checkrestrictions
 ## $checkrestrictions$g1
@@ -1354,14 +1542,14 @@ as:</p>
 ## Dunemp              0         0
 ## 
 ## 
-## $cross_moments_hp
+## $cross_moments_A
 ##             1          0         
 ## (Intercept)       0.34       0.66
 ## Dcollege          0.17       0.44
 ## Totalincome  103036.63  189594.78
 ## Dunemp            0.16       0.29
 ## 
-## $cross_moments_hs
+## $cross_moments_B
 ##             1          0         
 ## (Intercept)       0.34       0.66
 ## Dcollege          0.17       0.44
@@ -1372,25 +1560,29 @@ as:</p>
 ## [1] 2
 ## 
 ## $fn
-## datahp$poor_liq ~ Dcollege + Totalincome + Dunemp
+## dataA$poor_liq ~ Dcollege + Totalincome + Dunemp
 ## 
 ## attr(,&quot;class&quot;)
 ## [1] &quot;kl&quot;</code></pre>
-<p>The function will produce a data frame called a table with the
+<p>The function will produce a data frame called estimations with the
 following information:</p>
+<ul>
+<li>The prediction for each individual is the result of the sum of the
+probability plus the error.</li>
+</ul>
+<!-- -->
 <ul>
 <li><p>Probabilities for each individual to each possibility <span class="math inline">\(j\)</span> of the variable of interest <span class="math inline">\(Y\)</span>.</p></li>
 <li><p>The errors are calculated to the <span class="math inline">\(j\)</span> possibilities of <span class="math inline">\(Y\)</span>.</p></li>
-<li><p>The prediction for each individual is the result of the sum of
-the probability plus the error.</p></li>
 </ul>
 <p>The function provides information about the optimization process, in
 concrete:</p>
 <ul>
 <li>The value of entropy resulting from the optimization, the
 iterations, which indicate the times the objective function and the
-gradient have been evaluated during the optimization process and a
-message in case something went wrong.</li>
+gradient have been evaluated during the optimization process, a message
+in case something went wrong and the prior included in the
+optimization.</li>
 </ul>
 <p>Lagrange multipliers <span class="math inline">\(\lambda\)</span>
 associated to each independent variables are also provided in the form
@@ -1400,30 +1592,30 @@ restriction related to the unit probability constraint, g2 to the error
 unit sum constraint, and g3 to the consistency restriction that implies
 that the difference between the cross moment in both datasets must be
 zero. The restriction g3 can be checked thoroughly with the objects
-separately which are to be provided in the output as cross moments hp
-(the cross moments in datahp) and cross moments hs (the cross moments in
-datahs).</p>
+separately which are to be provided in the output as cross moments A
+(the cross moments in dataA) and cross moments B (the cross moments in
+dataB).</p>
 <p>To make the results more visual, this package includes a personalized
 summary function, providing the means for each category <span class="math inline">\(j\)</span> for the predictions, the probabilities
 and the error.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(dplyr))</span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">summary</span>(result)</span></code></pre></div>
-<pre><code>## Iterations[1] 69
-## Kullback-Leibler divergence value[1] -15.35471
+<pre><code>## Iterations[1] 66
+## Kullback-Leibler divergence value[1] -10.87511
 ## [1] &quot;mean_estimations&quot;
-##       weights predictions_1 predictions_0  p_dual_1  p_dual_0    e_dual_1
-## 1 0.006608031     0.3377783     0.6622217 0.4294887 0.5705113 -0.09171036
-##     e_dual_0
-## 1 0.09171038
+##       weights predictions_1 predictions_0 probabilities_1 probabilities_0
+## 1 0.006608031     0.3377783     0.6622217       0.2507808       0.7492192
+##     errors_1    errors_0
+## 1 0.08699743 -0.08699743
 ## [1] &quot;lambda&quot;
-##   (Intercept) Dcollege   Totalincome     Dunemp
-## 1    12.77406 13.67724 -0.0001153192  -3.193615
-## 0    76.48782 70.52669 -0.0002342221 -22.843038</code></pre>
+##   (Intercept)  Dcollege   Totalincome      Dunemp
+## 1    57.03564  8.987007 -0.0001201035  -0.8332262
+## 0    28.58571 75.368523 -0.0002268384 -25.0246657</code></pre>
 <p>Graphs included are generated with the plot function, showing the
 averages of the predictions for each territorial unit and the 95%
 confidence interval associated with each of them.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>result,datahs<span class="sc">$</span>reg)</span></code></pre></div>
-<p><img role="img" src="data:image/png;base64,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" /><!-- --><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>result,dataB<span class="sc">$</span>reg)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --><img role="img" src="data:image/png;base64,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" /><!-- --></p>
 <p>Notes: Arguments <em>tol and iter</em> can be defined by the user.
 The default tolerance has been set in 1e-10 while the maximum number or
 iterations by default is settled in 1000.</p>
@@ -1432,416 +1624,416 @@ iterations by default is settled in 1000.</p>
 <h1>3.2 Without prior information</h1>
 <p>Suppose we do not have prior information about our variable of
 interest. In that case, the process starting point will be the uniform
-distribution as we do not have information to think one characteristic
-is more likely than the other.</p>
+distribution as we do not have the information to think one
+characteristic is more likely than the other.</p>
 <p>The function ei_gce() will include by default the uniform
 distribution as <span class="math inline">\(Q\)</span> if the user does
 not specify any other. This would be:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>result2 <span class="ot">&lt;-</span> <span class="fu">ei_gce</span>(fn,datahp,datahs,<span class="at">weights=</span> <span class="st">&quot;w&quot;</span>)</span>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>result2 <span class="ot">&lt;-</span> <span class="fu">ei_gce</span>(fn,dataA,dataB,<span class="at">weights=</span> <span class="st">&quot;w&quot;</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>result2</span></code></pre></div>
 <pre><code>## $estimations
-##          weights predictions_1 predictions_0   p_dual_1  p_dual_0      e_dual_1
-## 1   6.408614e-03    0.37714125     1.0373453 0.17143080 0.8285692  2.057104e-01
-## 2   4.069074e-03    0.46516838     0.9465387 0.26050109 0.7394989  2.046673e-01
-## 3   8.478890e-05    0.49554427     0.4949818 0.50026475 0.4997352 -4.720487e-03
-## 4   6.019554e-03    0.29425456     0.7815640 0.27116773 0.7288323  2.308683e-02
-## 5   8.529959e-03    0.24792086     0.3351759 0.45651989 0.5434801 -2.085990e-01
-## 6   3.466777e-03    0.37076597     0.4876873 0.44458711 0.5554129 -7.382114e-02
-## 7   7.143169e-03    0.25980107     0.5065021 0.38173083 0.6182692 -1.219298e-01
-## 8   6.728993e-03    0.36038533     1.0624024 0.14987220 0.8501278  2.105131e-01
-## 9   9.459067e-03    0.24653141     0.9526972 0.16596553 0.8340345  8.056588e-02
-## 10  1.952733e-03    0.42547709     0.5404905 0.44585291 0.5541471 -2.037582e-02
-## 11  6.884772e-03    0.36676136     1.0476604 0.16115983 0.8388402  2.056015e-01
-## 12  1.046638e-03    0.42656461     0.4268691 0.49985561 0.5001444 -7.329100e-02
-## 13  6.632154e-03    0.45686702     0.9334005 0.26416701 0.7358330  1.927000e-01
-## 14  5.694566e-03    0.34661343     0.8392470 0.26618187 0.7338181  8.043156e-02
-## 15  8.199805e-03    0.29044879     0.3979352 0.44769091 0.5523091 -1.572421e-01
-## 16  7.974757e-03    0.34208516     0.8763006 0.24538694 0.7546131  9.669821e-02
-## 17  1.016052e-05    0.50008404     0.5008871 0.49962202 0.5003780  4.620245e-04
-## 18  1.077733e-03    0.47310069     0.4945723 0.48988963 0.5101104 -1.678894e-02
-## 19  4.555596e-03    0.43194367     0.9691883 0.23344952 0.7665505  1.984941e-01
-## 20  1.797040e-03    0.40140327     0.4763705 0.46452977 0.5354702 -6.312650e-02
-## 21  7.726297e-03    0.36613331     0.2079584 0.57897919 0.4210208 -2.128459e-01
-## 22  7.537852e-03    0.33716479     1.0938416 0.12177907 0.8782209  2.153857e-01
-## 23  5.078895e-04    0.48835958     0.5396067 0.47587229 0.5241277  1.248730e-02
-## 24  8.673474e-03    0.34928903     1.0777078 0.13630039 0.8636996  2.129886e-01
-## 25  6.743411e-03    0.28645585     0.2974432 0.49452584 0.5054742 -2.080700e-01
-## 26  2.597985e-03    0.34630227     0.3301959 0.50785849 0.4921415 -1.615562e-01
-## 27  7.946911e-03    0.32381881     0.9735060 0.18622722 0.8137728  1.375916e-01
-## 28  3.132542e-03    0.37158327     0.4640120 0.45608396 0.5439160 -8.450068e-02
-## 29  1.413325e-03    0.50486840     0.6852096 0.41406952 0.5859305  9.079888e-02
-## 30  1.952905e-03    0.50803523     0.6558099 0.42980542 0.5701946  7.822981e-02
-## 31  7.786354e-03    0.34741236     1.0685414 0.14103857 0.8589614  2.063738e-01
-## 32  6.412179e-03    0.36399171     0.2144078 0.57461752 0.4253825 -2.106258e-01
-## 33  8.813903e-03    0.14764168     0.4589503 0.34574856 0.6542514 -1.981069e-01
-## 34  3.104395e-03    0.35538687     0.5085653 0.42745368 0.5725463 -7.206681e-02
-## 35  1.494452e-03    0.50471084     0.6952247 0.40910466 0.5908953  9.560617e-02
-## 36  1.979537e-03    0.43997262     0.5224387 0.46116813 0.5388319 -2.119550e-02
-## 37  1.781772e-03    0.42523291     0.4282943 0.49854806 0.5014519 -7.331516e-02
-## 38  8.631740e-04    0.49491102     0.5728497 0.46325832 0.5367417  3.165269e-02
-## 39  2.624354e-03    0.46497183     0.6798734 0.39816837 0.6018316  6.680346e-02
-## 40  7.278409e-03    0.34905418     1.0741074 0.13836260 0.8616374  2.106916e-01
-## 41  9.198636e-03    0.21786461     0.3741713 0.42227208 0.5777279 -2.044075e-01
-## 42  8.939710e-04    0.45949760     0.5303565 0.46664821 0.5333518 -7.150611e-03
-## 43  5.755561e-03    0.32270787     0.3367562 0.49312040 0.5068796 -1.704125e-01
-## 44  9.197598e-03    0.32806665     0.2496263 0.53913535 0.4608646 -2.110687e-01
-## 45  7.835590e-03    0.20378551     0.7852619 0.22815796 0.7718420 -2.437245e-02
-## 46  7.304276e-03    0.34955434     1.0730092 0.13921843 0.8607816  2.103359e-01
-## 47  2.825585e-03    0.43352583     0.6371530 0.40405005 0.5959499  2.947577e-02
-## 48  5.701607e-03    0.36363400     0.2181770 0.57250290 0.4274971 -2.088689e-01
-## 49  9.403839e-03    0.14601797     0.6247015 0.27122818 0.7287718 -1.252102e-01
-## 50  8.874280e-03    0.08319604     0.6259964 0.23775918 0.7622408 -1.545631e-01
-## 51  5.856153e-03    0.35220680     0.2339843 0.55886956 0.4411304 -2.066628e-01
-## 52  7.506319e-04    0.50195984     0.5572225 0.47395691 0.5260431  2.800293e-02
-## 53  2.829871e-03    0.51333910     0.8552131 0.33161744 0.6683826  1.817217e-01
-## 54  1.403796e-03    0.42963844     0.4600167 0.48563963 0.5143604 -5.600119e-02
-## 55  2.256222e-03    0.50956486     0.7420473 0.38819982 0.6118002  1.213650e-01
-## 56  8.706739e-03    0.32821719     1.0912941 0.11983046 0.8801695  2.083867e-01
-## 57  6.495227e-04    0.51007566     0.5661375 0.47355883 0.5264412  3.651684e-02
-## 58  7.423215e-03    0.46620774     0.7547749 0.36198157 0.6380184  1.042262e-01
-## 59  9.409367e-03    0.12397261     0.5121636 0.30905232 0.6909477 -1.850797e-01
-## 60  3.467645e-03    0.47043120     0.8983506 0.28929940 0.7107006  1.811318e-01
-## 61  4.891585e-03    0.25236016     0.5896630 0.34011455 0.6598855 -8.775439e-02
-## 62  5.191919e-05    0.49955438     0.5055161 0.49719380 0.5028062  2.360581e-03
-## 63  6.960881e-04    0.52499287     0.6371782 0.44671371 0.5532863  7.827916e-02
-## 64  3.234067e-03    0.43693106     0.5181213 0.46176054 0.5382395 -2.482948e-02
-## 65  8.095405e-03    0.32338768     1.1079813 0.10778777 0.8922122  2.155999e-01
-## 66  2.123864e-03    0.38804726     0.4229340 0.48337200 0.5166280 -9.532473e-02
-## 67  3.309518e-03    0.36617689     0.4653322 0.45286639 0.5471336 -8.668950e-02
-## 68  5.300329e-03    0.45370052     0.7757856 0.34578402 0.6542160  1.079165e-01
-## 69  7.890242e-03    0.43151836     0.9045737 0.26894812 0.7310519  1.625702e-01
-## 70  5.248723e-03    0.44718763     0.7585647 0.35144311 0.6485569  9.574452e-02
-## 71  9.625057e-04    0.48690886     0.5426170 0.47377134 0.5262287  1.313751e-02
-## 72  3.609097e-03    0.48364078     0.9192295 0.28373016 0.7162698  1.999106e-01
-## 73  5.617329e-03    0.34034003     0.2579076 0.54093438 0.4590656 -2.005943e-01
-## 74  9.237887e-03    0.26393393     0.3105135 0.47674372 0.5232563 -2.128098e-01
-## 75  9.275353e-03    0.20156879     0.8823507 0.18190526 0.8180947  1.966353e-02
-## 76  7.561670e-04    0.49760860     0.5883611 0.45717689 0.5428231  4.043171e-02
-## 77  1.374263e-03    0.48128816     0.6314624 0.42902088 0.5709791  5.226728e-02
-## 78  2.232129e-03    0.37084550     0.5174122 0.43073033 0.5692697 -5.988483e-02
-## 79  7.759625e-03    0.19416138     0.7630443 0.23377581 0.7662242 -3.961444e-02
-## 80  3.268253e-03    0.35954595     0.2702605 0.54401485 0.4559852 -1.844689e-01
-## 81  5.423895e-03    0.32883027     0.3491396 0.49009389 0.5099061 -1.612636e-01
-## 82  3.519797e-03    0.44627564     0.8133954 0.32337015 0.6766299  1.229055e-01
-## 83  3.686690e-03    0.46329523     0.9091087 0.28031363 0.7196864  1.829816e-01
-## 84  8.770650e-03    0.34686168     1.0804290 0.13370219 0.8662978  2.131595e-01
-## 85  4.499834e-03    0.32020854     0.2749703 0.52248058 0.4775194 -2.022720e-01
-## 86  6.913635e-03    0.45482457     0.7095721 0.37906307 0.6209369  7.576150e-02
-## 87  7.423989e-03    0.38267173     0.9137446 0.24307454 0.7569255  1.395972e-01
-## 88  9.184997e-03    0.32784976     1.1020921 0.11311844 0.8868816  2.147313e-01
-## 89  9.934938e-04    0.53182183     0.6919862 0.42330355 0.5766964  1.085183e-01
-## 90  7.108557e-03    0.41232918     0.6358960 0.39477027 0.6052297  1.755891e-02
-## 91  6.307975e-03    0.35899760     1.0677309 0.14614703 0.8538530  2.128506e-01
-## 92  5.444530e-03    0.36801098     1.0605664 0.15404711 0.8459529  2.139639e-01
-## 93  5.708904e-03    0.40224861     0.9639683 0.22381773 0.7761823  1.784309e-01
-## 94  7.141561e-03    0.26731227     0.3222444 0.47266687 0.5273331 -2.053546e-01
-## 95  7.903713e-03    0.16503977     0.4725605 0.34873889 0.6512611 -1.836991e-01
-## 96  5.645807e-03    0.39114729     1.0268658 0.18329921 0.8167008  2.078481e-01
-## 97  3.539554e-03    0.49407716     0.8675386 0.31638400 0.6836160  1.776932e-01
-## 98  2.396317e-03    0.52472961     0.8185412 0.35610946 0.6438905  1.686202e-01
-## 99  3.785424e-03    0.31833636     0.3185355 0.49990197 0.5000980 -1.815656e-01
-## 100 6.899727e-03    0.34665495     0.8118087 0.27989298 0.7201070  6.676197e-02
-## 101 1.963958e-03    0.38847654     0.4653266 0.46355677 0.5364432 -7.508023e-02
-## 102 4.301069e-03    0.46970567     0.6283352 0.42510995 0.5748901  4.459572e-02
-## 103 8.824290e-03    0.44210578     0.1264227 0.65781858 0.3421814 -2.157128e-01
-## 104 9.245072e-03    0.29598217     1.1344334 0.08099393 0.9190061  2.149882e-01
-## 105 7.604964e-03    0.24465134     0.3562680 0.44460827 0.5553917 -1.999569e-01
-## 106 7.759268e-04    0.45320405     0.4823024 0.48628343 0.5137166 -3.307938e-02
-## 107 6.426895e-03    0.36017770     0.5030301 0.43233607 0.5676639 -7.215837e-02
-## 108 5.150249e-03    0.34234848     0.2619044 0.53989153 0.4601085 -1.975430e-01
-## 109 5.158771e-03    0.38924139     0.7550982 0.32689679 0.6731032  6.234460e-02
-## 110 7.247160e-03    0.48560880     0.7937026 0.35114912 0.6488509  1.344597e-01
-## 111 7.664692e-03    0.27774103     0.3016060 0.48809770 0.5119023 -2.103567e-01
-## 112 4.033598e-03    0.35902332     0.7016212 0.33886187 0.6611381  2.016145e-02
-## 113 8.610544e-03    0.29051865     0.2822042 0.50415282 0.4958472 -2.136342e-01
-## 114 9.173485e-03    0.27410838     0.9733603 0.16627370 0.8337263  1.078347e-01
-## 115 2.312141e-03    0.51128192     0.7527716 0.38361563 0.6163844  1.276663e-01
-## 116 5.785912e-03    0.40348498     1.0217407 0.19141205 0.8085879  2.120729e-01
-## 117 3.133029e-03    0.50150724     0.8249308 0.34222256 0.6577774  1.592847e-01
-## 118 3.027803e-04    0.49290501     0.5075815 0.49309179 0.5069082 -1.867798e-04
-## 119 6.494774e-04    0.46052427     0.4682541 0.49635504 0.5036450 -3.583076e-02
-## 120 2.627321e-03    0.51441103     0.8032533 0.35933654 0.6406635  1.550745e-01
-## 121 6.300118e-03    0.38606931     1.0151756 0.18797894 0.8120211  1.980904e-01
-## 122 5.009005e-03    0.39456016     0.5113977 0.44484480 0.5551552 -5.028463e-02
-## 123 8.546357e-03    0.36682710     0.9593040 0.21165629 0.7883437  1.551708e-01
-## 124 5.935042e-03    0.36343500     1.0640665 0.15011602 0.8498840  2.133190e-01
-## 125 5.670056e-05    0.49996438     0.5053768 0.49745234 0.5025477  2.512032e-03
-## 126 1.956694e-04    0.49743772     0.5190521 0.48982517 0.5101748  7.612545e-03
-## 127 3.491569e-03    0.36763750     0.4826404 0.44545031 0.5545497 -7.781280e-02
-## 128 6.018842e-03    0.25616411     0.5745524 0.34884899 0.6511510 -9.268488e-02
-## 129 2.453778e-03    0.42789201     0.6552214 0.39282715 0.6071729  3.506486e-02
-## 130 3.330195e-03    0.45417305     0.7229733 0.37220846 0.6277915  8.196459e-02
-## 131 4.568058e-04    0.49890141     0.5417206 0.47983381 0.5201662  1.906760e-02
-## 132 1.878873e-03    0.49715241     0.6752413 0.41533263 0.5846674  8.181978e-02
-## 133 7.274750e-03    0.36343791     1.0385279 0.16518574 0.8348143  1.982522e-01
-## 134 8.055270e-03    0.17014299     0.5542960 0.31464697 0.6853530 -1.445040e-01
-## 135 7.918719e-03    0.35004369     0.7405532 0.31614416 0.6838558  3.389953e-02
-## 136 1.613960e-03    0.44481836     0.5890183 0.43212130 0.5678787  1.269706e-02
-## 137 4.043005e-03    0.45292971     0.7853299 0.34062783 0.6593722  1.123019e-01
-## 138 2.836492e-03    0.36867919     0.4335517 0.46904473 0.5309553 -1.003655e-01
-## 139 8.648536e-03    0.40487932     0.8830264 0.26894496 0.7310550  1.359344e-01
-## 140 7.121030e-03    0.40200465     1.0056064 0.20009289 0.7999071  2.019118e-01
-## 141 7.015624e-03    0.50187230     0.8437294 0.33252515 0.6674748  1.693471e-01
-## 142 2.042604e-03    0.44644732     0.5396343 0.45614015 0.5438598 -9.692835e-03
-## 143 7.276373e-03    0.27335984     0.3110208 0.48123851 0.5187615 -2.078787e-01
-## 144 8.504937e-03    0.28247517     1.1493785 0.06658550 0.9334145  2.158897e-01
-## 145 9.535921e-03    0.40889049     0.9714828 0.22238905 0.7776110  1.865014e-01
-## 146 8.545091e-03    0.32920843     0.2406706 0.54424966 0.4557503 -2.150412e-01
-## 147 2.254398e-03    0.37776176     0.4714298 0.45556209 0.5444379 -7.780032e-02
-## 148 5.514651e-03    0.27258801     0.5631967 0.36208360 0.6379164 -8.949558e-02
-## 149 6.254560e-03    0.37577593     1.0434209 0.16731376 0.8326862  2.084622e-01
-## 150 6.128050e-03    0.46189360     0.6907313 0.39148614 0.6085139  7.040746e-02
-## 151 1.952048e-03    0.39256313     0.4730384 0.46188233 0.5381177 -6.931920e-02
-## 152 8.239200e-03    0.33030142     0.7244077 0.31481580 0.6851842  1.548562e-02
-## 153 4.212187e-03    0.32458168     0.2727708 0.52573386 0.4742661 -2.011522e-01
-## 154 6.562633e-03    0.32256037     0.2521837 0.53513537 0.4648646 -2.125750e-01
-## 155 8.529452e-05    0.49978515     0.5056391 0.49724449 0.5027555  2.540660e-03
-## 156 4.627415e-03    0.30253610     0.3171597 0.49277405 0.5072260 -1.902379e-01
-## 157 7.506022e-03    0.19114462     0.7362700 0.24439886 0.7556011 -5.325424e-02
-## 158 5.802968e-03    0.36849401     0.2110728 0.57850615 0.4214939 -2.100121e-01
-## 159 8.889093e-03    0.13810196     0.4959950 0.32384848 0.6761515 -1.857465e-01
-## 160 3.338891e-03    0.35704129     0.2980884 0.52889689 0.4711031 -1.718556e-01
-## 161 5.739428e-03    0.29183905     0.3035596 0.49417589 0.5058241 -2.023368e-01
-## 162 9.051019e-03    0.24618977     0.9294581 0.17769374 0.8223063  6.849603e-02
-## 163 7.187216e-03    0.44810276     0.9357911 0.25904136 0.7409586  1.890614e-01
-## 164 2.371262e-03    0.37102330     0.2899472 0.53968911 0.4603109 -1.686658e-01
-## 165 5.791201e-03    0.33183351     0.7032194 0.32554578 0.6744542  6.287725e-03
-## 166 5.959915e-03    0.39382659     0.9629482 0.22086087 0.7791391  1.729657e-01
-## 167 8.379680e-03    0.25726600     0.7659295 0.26171938 0.7382806 -4.453383e-03
-## 168 8.564844e-03    0.32893640     0.2510774 0.53882508 0.4611749 -2.098887e-01
-## 169 1.064177e-03    0.50320864     0.5820375 0.46280363 0.5371964  4.040500e-02
-## 170 6.110630e-03    0.23336254     0.5255237 0.35980767 0.6401923 -1.264451e-01
-## 171 1.771706e-03    0.52165766     0.6221197 0.45237445 0.5476256  6.928322e-02
-## 172 3.746941e-03    0.42731665     0.5216065 0.45558329 0.5444167 -2.826664e-02
-## 173 8.344937e-03    0.25568851     0.5881502 0.34243333 0.6575667 -8.674482e-02
-## 174 8.671874e-03    0.14356028     0.4964644 0.32654345 0.6734566 -1.829832e-01
-## 175 5.165876e-03    0.29467774     0.4293383 0.43492991 0.5650701 -1.402522e-01
-## 176 6.250491e-03    0.26256158     0.3704982 0.44683128 0.5531687 -1.842697e-01
-## 177 5.663535e-03    0.47401131     0.8621297 0.31031897 0.6896810  1.636923e-01
-## 178 8.189466e-03    0.32238324     0.2483320 0.53700277 0.4629972 -2.146195e-01
-## 179 5.172787e-03    0.37674556     0.6194582 0.38587109 0.6141289 -9.125533e-03
-## 180 2.048906e-03    0.51888456     0.6288527 0.44784838 0.5521516  7.103619e-02
-## 181 6.680525e-03    0.31019463     0.3270606 0.49169947 0.5083005 -1.815048e-01
-## 182 4.062967e-03    0.32344524     0.4156342 0.45557096 0.5444290 -1.321257e-01
-## 183 8.424910e-03    0.28920352     0.3299449 0.47986599 0.5201340 -1.906625e-01
-## 184 7.709358e-03    0.31518486     0.2788500 0.51806096 0.4819390 -2.028761e-01
-## 185 2.544983e-03    0.36650207     0.4030769 0.48246229 0.5175377 -1.159602e-01
-## 186 5.364966e-03    0.50714408     0.7578390 0.37916478 0.6208352  1.279793e-01
-## 187 5.934410e-04    0.49408196     0.5305317 0.48283973 0.5171603  1.124223e-02
-## 188 5.020772e-05    0.50207164     0.5088920 0.49678951 0.5032105  5.282130e-03
-## 189 2.873655e-03    0.52784565     0.6870685 0.42385754 0.5761425  1.039881e-01
-## 190 5.514606e-03    0.30662476     0.2813498 0.51258088 0.4874191 -2.059561e-01
-## 191 2.057597e-03    0.41814279     0.5359942 0.44449887 0.5555011 -2.635608e-02
-## 192 8.173496e-03    0.15968125     0.5246355 0.32242309 0.6775769 -1.627418e-01
-## 193 2.086392e-03    0.43346769     0.5171342 0.46058870 0.5394113 -2.712101e-02
-## 194 3.212343e-03    0.46856269     0.8320486 0.32370141 0.6762986  1.448613e-01
-## 195 7.999160e-03    0.22223376     0.4232661 0.40126814 0.5987319 -1.790344e-01
-## 196 9.251449e-07    0.49996937     0.5000287 0.49997206 0.5000279 -2.691493e-06
-## 197 2.268155e-03    0.45362675     0.6246519 0.41936308 0.5806369  3.426368e-02
-## 198 7.367501e-03    0.37636981     0.8968114 0.24939839 0.7506016  1.269714e-01
-## 199 2.263759e-03    0.37305021     0.2949578 0.53817011 0.4618299 -1.651199e-01
-## 200 3.956566e-03    0.46982353     0.9399072 0.26622578 0.7337742  2.035978e-01
-##          e_dual_0
-## 1    2.087761e-01
-## 2    2.070398e-01
-## 3   -4.753428e-03
-## 4    5.273171e-02
-## 5   -2.083042e-01
-## 6   -6.772560e-02
-## 7   -1.117670e-01
-## 8    2.122746e-01
-## 9    1.186627e-01
-## 10  -1.365657e-02
-## 11   2.088203e-01
-## 12  -7.327534e-02
-## 13   1.975675e-01
-## 14   1.054288e-01
-## 15  -1.543739e-01
-## 16   1.216876e-01
-## 17   5.090774e-04
-## 18  -1.553809e-02
-## 19   2.026378e-01
-## 20  -5.909976e-02
-## 21  -2.130624e-01
-## 22   2.156207e-01
-## 23   1.547897e-02
-## 24   2.140081e-01
-## 25  -2.080310e-01
-## 26  -1.619456e-01
-## 27   1.597333e-01
-## 28  -7.990403e-02
-## 29   9.927907e-02
-## 30   8.561535e-02
-## 31   2.095800e-01
-## 32  -2.109747e-01
-## 33  -1.953012e-01
-## 34  -6.398106e-02
-## 35   1.043293e-01
-## 36  -1.639318e-02
-## 37  -7.315760e-02
-## 38   3.610801e-02
-## 39   7.804174e-02
-## 40   2.124700e-01
-## 41  -2.035567e-01
-## 42  -2.995334e-03
-## 43  -1.701234e-01
-## 44  -2.112383e-01
-## 45   1.341985e-02
-## 46   2.122277e-01
-## 47   4.120303e-02
-## 48  -2.093201e-01
-## 49  -1.040704e-01
-## 50  -1.362445e-01
-## 51  -2.071462e-01
-## 52   3.117940e-02
-## 53   1.868306e-01
-## 54  -5.434367e-02
-## 55   1.302471e-01
-## 56   2.111246e-01
-## 57   3.969632e-02
-## 58   1.167564e-01
-## 59  -1.787841e-01
-## 60   1.876500e-01
-## 61  -7.022242e-02
-## 62   2.709862e-03
-## 63   8.389189e-02
-## 64  -2.011813e-02
-## 65   2.157690e-01
-## 66  -9.369402e-02
-## 67  -8.180145e-02
-## 68   1.215697e-01
-## 69   1.735218e-01
-## 70   1.100079e-01
-## 71   1.638838e-02
-## 72   2.029597e-01
-## 73  -2.011580e-01
-## 74  -2.127428e-01
-## 75   6.425598e-02
-## 76   4.553799e-02
-## 77   6.048331e-02
-## 78  -5.185747e-02
-## 79  -3.179883e-03
-## 80  -1.857247e-01
-## 81  -1.607665e-01
-## 82   1.367655e-01
-## 83   1.894223e-01
-## 84   2.141312e-01
-## 85  -2.025491e-01
-## 86   8.863520e-02
-## 87   1.568191e-01
-## 88   2.152105e-01
-## 89   1.152898e-01
-## 90   3.066622e-02
-## 91   2.138780e-01
-## 92   2.146135e-01
-## 93   1.877860e-01
-## 94  -2.050887e-01
-## 95  -1.787007e-01
-## 96   2.101650e-01
-## 97   1.839226e-01
-## 98   1.746507e-01
-## 99  -1.815625e-01
-## 100  9.170167e-02
-## 101 -7.111658e-02
-## 102  5.344515e-02
-## 103 -2.157587e-01
-## 104  2.154274e-01
-## 105 -1.991238e-01
-## 106 -3.141418e-02
-## 107 -6.463382e-02
-## 108 -1.982041e-01
-## 109  8.199501e-02
-## 110  1.448517e-01
-## 111 -2.102963e-01
-## 112  4.048309e-02
-## 113 -2.136430e-01
-## 114  1.396340e-01
-## 115  1.363872e-01
-## 116  2.131528e-01
-## 117  1.671534e-01
-## 118  6.732463e-04
-## 119 -3.539085e-02
-## 120  1.625898e-01
-## 121  2.031546e-01
-## 122 -4.375748e-02
-## 123  1.709603e-01
-## 124  2.141825e-01
-## 125  2.829127e-03
-## 126  8.877262e-03
-## 127 -7.190929e-02
-## 128 -7.659865e-02
-## 129  4.804852e-02
-## 130  9.518179e-02
-## 131  2.155438e-02
-## 132  9.057391e-02
-## 133  2.037136e-01
-## 134 -1.310570e-01
-## 135  5.669736e-02
-## 136  2.113961e-02
-## 137  1.259577e-01
-## 138 -9.740352e-02
-## 139  1.519713e-01
-## 140  2.056993e-01
-## 141  1.762546e-01
-## 142 -4.225555e-03
-## 143 -2.077407e-01
-## 144  2.159640e-01
-## 145  1.938718e-01
-## 146 -2.150798e-01
-## 147 -7.300813e-02
-## 148 -7.471968e-02
-## 149  2.107346e-01
-## 150  8.221743e-02
-## 151 -6.507926e-02
-## 152  3.922351e-02
-## 153 -2.014953e-01
-## 154 -2.126809e-01
-## 155  2.883625e-03
-## 156 -1.900663e-01
-## 157 -1.933118e-02
-## 158 -2.104210e-01
-## 159 -1.801565e-01
-## 160 -1.730147e-01
-## 161 -2.022645e-01
-## 162  1.071519e-01
-## 163  1.948324e-01
-## 164 -1.703637e-01
-## 165  2.876523e-02
-## 166  1.838091e-01
-## 167  2.764886e-02
-## 168 -2.100975e-01
-## 169  4.484118e-02
-## 170 -1.146687e-01
-## 171  7.449418e-02
-## 172 -2.281019e-02
-## 173 -6.941650e-02
-## 174 -1.769921e-01
-## 175 -1.357318e-01
-## 176 -1.826705e-01
-## 177  1.724487e-01
-## 178 -2.146653e-01
-## 179  5.329327e-03
-## 180  7.670110e-02
-## 181 -1.812400e-01
-## 182 -1.287948e-01
-## 183 -1.901891e-01
-## 184 -2.030891e-01
-## 185 -1.144608e-01
-## 186  1.370038e-01
-## 187  1.337146e-02
-## 188  5.681506e-03
-## 189  1.109260e-01
-## 190 -2.060693e-01
-## 191 -1.950693e-02
-## 192 -1.529414e-01
-## 193 -2.227712e-02
-## 194  1.557500e-01
-## 195 -1.754657e-01
-## 196  7.862666e-07
-## 197  4.401497e-02
-## 198  1.462098e-01
-## 199 -1.668721e-01
-## 200  2.061330e-01
+##          weights predictions_1 predictions_0 probabilities_1 probabilities_0
+## 1   6.408614e-03    0.37714125     1.0373453      0.17143080       0.8285692
+## 2   4.069074e-03    0.46516838     0.9465387      0.26050109       0.7394989
+## 3   8.478890e-05    0.49554427     0.4949818      0.50026475       0.4997352
+## 4   6.019554e-03    0.29425456     0.7815640      0.27116773       0.7288323
+## 5   8.529959e-03    0.24792086     0.3351759      0.45651989       0.5434801
+## 6   3.466777e-03    0.37076597     0.4876873      0.44458711       0.5554129
+## 7   7.143169e-03    0.25980107     0.5065021      0.38173083       0.6182692
+## 8   6.728993e-03    0.36038533     1.0624024      0.14987220       0.8501278
+## 9   9.459067e-03    0.24653141     0.9526972      0.16596553       0.8340345
+## 10  1.952733e-03    0.42547709     0.5404905      0.44585291       0.5541471
+## 11  6.884772e-03    0.36676136     1.0476604      0.16115983       0.8388402
+## 12  1.046638e-03    0.42656461     0.4268691      0.49985561       0.5001444
+## 13  6.632154e-03    0.45686702     0.9334005      0.26416701       0.7358330
+## 14  5.694566e-03    0.34661343     0.8392470      0.26618187       0.7338181
+## 15  8.199805e-03    0.29044879     0.3979352      0.44769091       0.5523091
+## 16  7.974757e-03    0.34208516     0.8763006      0.24538694       0.7546131
+## 17  1.016052e-05    0.50008404     0.5008871      0.49962202       0.5003780
+## 18  1.077733e-03    0.47310069     0.4945723      0.48988963       0.5101104
+## 19  4.555596e-03    0.43194367     0.9691883      0.23344952       0.7665505
+## 20  1.797040e-03    0.40140327     0.4763705      0.46452977       0.5354702
+## 21  7.726297e-03    0.36613331     0.2079584      0.57897919       0.4210208
+## 22  7.537852e-03    0.33716479     1.0938416      0.12177907       0.8782209
+## 23  5.078895e-04    0.48835958     0.5396067      0.47587229       0.5241277
+## 24  8.673474e-03    0.34928903     1.0777078      0.13630039       0.8636996
+## 25  6.743411e-03    0.28645585     0.2974432      0.49452584       0.5054742
+## 26  2.597985e-03    0.34630227     0.3301959      0.50785849       0.4921415
+## 27  7.946911e-03    0.32381881     0.9735060      0.18622722       0.8137728
+## 28  3.132542e-03    0.37158327     0.4640120      0.45608396       0.5439160
+## 29  1.413325e-03    0.50486840     0.6852096      0.41406952       0.5859305
+## 30  1.952905e-03    0.50803523     0.6558099      0.42980542       0.5701946
+## 31  7.786354e-03    0.34741236     1.0685414      0.14103857       0.8589614
+## 32  6.412179e-03    0.36399171     0.2144078      0.57461752       0.4253825
+## 33  8.813903e-03    0.14764168     0.4589503      0.34574856       0.6542514
+## 34  3.104395e-03    0.35538687     0.5085653      0.42745368       0.5725463
+## 35  1.494452e-03    0.50471084     0.6952247      0.40910466       0.5908953
+## 36  1.979537e-03    0.43997262     0.5224387      0.46116813       0.5388319
+## 37  1.781772e-03    0.42523291     0.4282943      0.49854806       0.5014519
+## 38  8.631740e-04    0.49491102     0.5728497      0.46325832       0.5367417
+## 39  2.624354e-03    0.46497183     0.6798734      0.39816837       0.6018316
+## 40  7.278409e-03    0.34905418     1.0741074      0.13836260       0.8616374
+## 41  9.198636e-03    0.21786461     0.3741713      0.42227208       0.5777279
+## 42  8.939710e-04    0.45949760     0.5303565      0.46664821       0.5333518
+## 43  5.755561e-03    0.32270787     0.3367562      0.49312040       0.5068796
+## 44  9.197598e-03    0.32806665     0.2496263      0.53913535       0.4608646
+## 45  7.835590e-03    0.20378551     0.7852619      0.22815796       0.7718420
+## 46  7.304276e-03    0.34955434     1.0730092      0.13921843       0.8607816
+## 47  2.825585e-03    0.43352583     0.6371530      0.40405005       0.5959499
+## 48  5.701607e-03    0.36363400     0.2181770      0.57250290       0.4274971
+## 49  9.403839e-03    0.14601797     0.6247015      0.27122818       0.7287718
+## 50  8.874280e-03    0.08319604     0.6259964      0.23775918       0.7622408
+## 51  5.856153e-03    0.35220680     0.2339843      0.55886956       0.4411304
+## 52  7.506319e-04    0.50195984     0.5572225      0.47395691       0.5260431
+## 53  2.829871e-03    0.51333910     0.8552131      0.33161744       0.6683826
+## 54  1.403796e-03    0.42963844     0.4600167      0.48563963       0.5143604
+## 55  2.256222e-03    0.50956486     0.7420473      0.38819982       0.6118002
+## 56  8.706739e-03    0.32821719     1.0912941      0.11983046       0.8801695
+## 57  6.495227e-04    0.51007566     0.5661375      0.47355883       0.5264412
+## 58  7.423215e-03    0.46620774     0.7547749      0.36198157       0.6380184
+## 59  9.409367e-03    0.12397261     0.5121636      0.30905232       0.6909477
+## 60  3.467645e-03    0.47043120     0.8983506      0.28929940       0.7107006
+## 61  4.891585e-03    0.25236016     0.5896630      0.34011455       0.6598855
+## 62  5.191919e-05    0.49955438     0.5055161      0.49719380       0.5028062
+## 63  6.960881e-04    0.52499287     0.6371782      0.44671371       0.5532863
+## 64  3.234067e-03    0.43693106     0.5181213      0.46176054       0.5382395
+## 65  8.095405e-03    0.32338768     1.1079813      0.10778777       0.8922122
+## 66  2.123864e-03    0.38804726     0.4229340      0.48337200       0.5166280
+## 67  3.309518e-03    0.36617689     0.4653322      0.45286639       0.5471336
+## 68  5.300329e-03    0.45370052     0.7757856      0.34578402       0.6542160
+## 69  7.890242e-03    0.43151836     0.9045737      0.26894812       0.7310519
+## 70  5.248723e-03    0.44718763     0.7585647      0.35144311       0.6485569
+## 71  9.625057e-04    0.48690886     0.5426170      0.47377134       0.5262287
+## 72  3.609097e-03    0.48364078     0.9192295      0.28373016       0.7162698
+## 73  5.617329e-03    0.34034003     0.2579076      0.54093438       0.4590656
+## 74  9.237887e-03    0.26393393     0.3105135      0.47674372       0.5232563
+## 75  9.275353e-03    0.20156879     0.8823507      0.18190526       0.8180947
+## 76  7.561670e-04    0.49760860     0.5883611      0.45717689       0.5428231
+## 77  1.374263e-03    0.48128816     0.6314624      0.42902088       0.5709791
+## 78  2.232129e-03    0.37084550     0.5174122      0.43073033       0.5692697
+## 79  7.759625e-03    0.19416138     0.7630443      0.23377581       0.7662242
+## 80  3.268253e-03    0.35954595     0.2702605      0.54401485       0.4559852
+## 81  5.423895e-03    0.32883027     0.3491396      0.49009389       0.5099061
+## 82  3.519797e-03    0.44627564     0.8133954      0.32337015       0.6766299
+## 83  3.686690e-03    0.46329523     0.9091087      0.28031363       0.7196864
+## 84  8.770650e-03    0.34686168     1.0804290      0.13370219       0.8662978
+## 85  4.499834e-03    0.32020854     0.2749703      0.52248058       0.4775194
+## 86  6.913635e-03    0.45482457     0.7095721      0.37906307       0.6209369
+## 87  7.423989e-03    0.38267173     0.9137446      0.24307454       0.7569255
+## 88  9.184997e-03    0.32784976     1.1020921      0.11311844       0.8868816
+## 89  9.934938e-04    0.53182183     0.6919862      0.42330355       0.5766964
+## 90  7.108557e-03    0.41232918     0.6358960      0.39477027       0.6052297
+## 91  6.307975e-03    0.35899760     1.0677309      0.14614703       0.8538530
+## 92  5.444530e-03    0.36801098     1.0605664      0.15404711       0.8459529
+## 93  5.708904e-03    0.40224861     0.9639683      0.22381773       0.7761823
+## 94  7.141561e-03    0.26731227     0.3222444      0.47266687       0.5273331
+## 95  7.903713e-03    0.16503977     0.4725605      0.34873889       0.6512611
+## 96  5.645807e-03    0.39114729     1.0268658      0.18329921       0.8167008
+## 97  3.539554e-03    0.49407716     0.8675386      0.31638400       0.6836160
+## 98  2.396317e-03    0.52472961     0.8185412      0.35610946       0.6438905
+## 99  3.785424e-03    0.31833636     0.3185355      0.49990197       0.5000980
+## 100 6.899727e-03    0.34665495     0.8118087      0.27989298       0.7201070
+## 101 1.963958e-03    0.38847654     0.4653266      0.46355677       0.5364432
+## 102 4.301069e-03    0.46970567     0.6283352      0.42510995       0.5748901
+## 103 8.824290e-03    0.44210578     0.1264227      0.65781858       0.3421814
+## 104 9.245072e-03    0.29598217     1.1344334      0.08099393       0.9190061
+## 105 7.604964e-03    0.24465134     0.3562680      0.44460827       0.5553917
+## 106 7.759268e-04    0.45320405     0.4823024      0.48628343       0.5137166
+## 107 6.426895e-03    0.36017770     0.5030301      0.43233607       0.5676639
+## 108 5.150249e-03    0.34234848     0.2619044      0.53989153       0.4601085
+## 109 5.158771e-03    0.38924139     0.7550982      0.32689679       0.6731032
+## 110 7.247160e-03    0.48560880     0.7937026      0.35114912       0.6488509
+## 111 7.664692e-03    0.27774103     0.3016060      0.48809770       0.5119023
+## 112 4.033598e-03    0.35902332     0.7016212      0.33886187       0.6611381
+## 113 8.610544e-03    0.29051865     0.2822042      0.50415282       0.4958472
+## 114 9.173485e-03    0.27410838     0.9733603      0.16627370       0.8337263
+## 115 2.312141e-03    0.51128192     0.7527716      0.38361563       0.6163844
+## 116 5.785912e-03    0.40348498     1.0217407      0.19141205       0.8085879
+## 117 3.133029e-03    0.50150724     0.8249308      0.34222256       0.6577774
+## 118 3.027803e-04    0.49290501     0.5075815      0.49309179       0.5069082
+## 119 6.494774e-04    0.46052427     0.4682541      0.49635504       0.5036450
+## 120 2.627321e-03    0.51441103     0.8032533      0.35933654       0.6406635
+## 121 6.300118e-03    0.38606931     1.0151756      0.18797894       0.8120211
+## 122 5.009005e-03    0.39456016     0.5113977      0.44484480       0.5551552
+## 123 8.546357e-03    0.36682710     0.9593040      0.21165629       0.7883437
+## 124 5.935042e-03    0.36343500     1.0640665      0.15011602       0.8498840
+## 125 5.670056e-05    0.49996438     0.5053768      0.49745234       0.5025477
+## 126 1.956694e-04    0.49743772     0.5190521      0.48982517       0.5101748
+## 127 3.491569e-03    0.36763750     0.4826404      0.44545031       0.5545497
+## 128 6.018842e-03    0.25616411     0.5745524      0.34884899       0.6511510
+## 129 2.453778e-03    0.42789201     0.6552214      0.39282715       0.6071729
+## 130 3.330195e-03    0.45417305     0.7229733      0.37220846       0.6277915
+## 131 4.568058e-04    0.49890141     0.5417206      0.47983381       0.5201662
+## 132 1.878873e-03    0.49715241     0.6752413      0.41533263       0.5846674
+## 133 7.274750e-03    0.36343791     1.0385279      0.16518574       0.8348143
+## 134 8.055270e-03    0.17014299     0.5542960      0.31464697       0.6853530
+## 135 7.918719e-03    0.35004369     0.7405532      0.31614416       0.6838558
+## 136 1.613960e-03    0.44481836     0.5890183      0.43212130       0.5678787
+## 137 4.043005e-03    0.45292971     0.7853299      0.34062783       0.6593722
+## 138 2.836492e-03    0.36867919     0.4335517      0.46904473       0.5309553
+## 139 8.648536e-03    0.40487932     0.8830264      0.26894496       0.7310550
+## 140 7.121030e-03    0.40200465     1.0056064      0.20009289       0.7999071
+## 141 7.015624e-03    0.50187230     0.8437294      0.33252515       0.6674748
+## 142 2.042604e-03    0.44644732     0.5396343      0.45614015       0.5438598
+## 143 7.276373e-03    0.27335984     0.3110208      0.48123851       0.5187615
+## 144 8.504937e-03    0.28247517     1.1493785      0.06658550       0.9334145
+## 145 9.535921e-03    0.40889049     0.9714828      0.22238905       0.7776110
+## 146 8.545091e-03    0.32920843     0.2406706      0.54424966       0.4557503
+## 147 2.254398e-03    0.37776176     0.4714298      0.45556209       0.5444379
+## 148 5.514651e-03    0.27258801     0.5631967      0.36208360       0.6379164
+## 149 6.254560e-03    0.37577593     1.0434209      0.16731376       0.8326862
+## 150 6.128050e-03    0.46189360     0.6907313      0.39148614       0.6085139
+## 151 1.952048e-03    0.39256313     0.4730384      0.46188233       0.5381177
+## 152 8.239200e-03    0.33030142     0.7244077      0.31481580       0.6851842
+## 153 4.212187e-03    0.32458168     0.2727708      0.52573386       0.4742661
+## 154 6.562633e-03    0.32256037     0.2521837      0.53513537       0.4648646
+## 155 8.529452e-05    0.49978515     0.5056391      0.49724449       0.5027555
+## 156 4.627415e-03    0.30253610     0.3171597      0.49277405       0.5072260
+## 157 7.506022e-03    0.19114462     0.7362700      0.24439886       0.7556011
+## 158 5.802968e-03    0.36849401     0.2110728      0.57850615       0.4214939
+## 159 8.889093e-03    0.13810196     0.4959950      0.32384848       0.6761515
+## 160 3.338891e-03    0.35704129     0.2980884      0.52889689       0.4711031
+## 161 5.739428e-03    0.29183905     0.3035596      0.49417589       0.5058241
+## 162 9.051019e-03    0.24618977     0.9294581      0.17769374       0.8223063
+## 163 7.187216e-03    0.44810276     0.9357911      0.25904136       0.7409586
+## 164 2.371262e-03    0.37102330     0.2899472      0.53968911       0.4603109
+## 165 5.791201e-03    0.33183351     0.7032194      0.32554578       0.6744542
+## 166 5.959915e-03    0.39382659     0.9629482      0.22086087       0.7791391
+## 167 8.379680e-03    0.25726600     0.7659295      0.26171938       0.7382806
+## 168 8.564844e-03    0.32893640     0.2510774      0.53882508       0.4611749
+## 169 1.064177e-03    0.50320864     0.5820375      0.46280363       0.5371964
+## 170 6.110630e-03    0.23336254     0.5255237      0.35980767       0.6401923
+## 171 1.771706e-03    0.52165766     0.6221197      0.45237445       0.5476256
+## 172 3.746941e-03    0.42731665     0.5216065      0.45558329       0.5444167
+## 173 8.344937e-03    0.25568851     0.5881502      0.34243333       0.6575667
+## 174 8.671874e-03    0.14356028     0.4964644      0.32654345       0.6734566
+## 175 5.165876e-03    0.29467774     0.4293383      0.43492991       0.5650701
+## 176 6.250491e-03    0.26256158     0.3704982      0.44683128       0.5531687
+## 177 5.663535e-03    0.47401131     0.8621297      0.31031897       0.6896810
+## 178 8.189466e-03    0.32238324     0.2483320      0.53700277       0.4629972
+## 179 5.172787e-03    0.37674556     0.6194582      0.38587109       0.6141289
+## 180 2.048906e-03    0.51888456     0.6288527      0.44784838       0.5521516
+## 181 6.680525e-03    0.31019463     0.3270606      0.49169947       0.5083005
+## 182 4.062967e-03    0.32344524     0.4156342      0.45557096       0.5444290
+## 183 8.424910e-03    0.28920352     0.3299449      0.47986599       0.5201340
+## 184 7.709358e-03    0.31518486     0.2788500      0.51806096       0.4819390
+## 185 2.544983e-03    0.36650207     0.4030769      0.48246229       0.5175377
+## 186 5.364966e-03    0.50714408     0.7578390      0.37916478       0.6208352
+## 187 5.934410e-04    0.49408196     0.5305317      0.48283973       0.5171603
+## 188 5.020772e-05    0.50207164     0.5088920      0.49678951       0.5032105
+## 189 2.873655e-03    0.52784565     0.6870685      0.42385754       0.5761425
+## 190 5.514606e-03    0.30662476     0.2813498      0.51258088       0.4874191
+## 191 2.057597e-03    0.41814279     0.5359942      0.44449887       0.5555011
+## 192 8.173496e-03    0.15968125     0.5246355      0.32242309       0.6775769
+## 193 2.086392e-03    0.43346769     0.5171342      0.46058870       0.5394113
+## 194 3.212343e-03    0.46856269     0.8320486      0.32370141       0.6762986
+## 195 7.999160e-03    0.22223376     0.4232661      0.40126814       0.5987319
+## 196 9.251449e-07    0.49996937     0.5000287      0.49997206       0.5000279
+## 197 2.268155e-03    0.45362675     0.6246519      0.41936308       0.5806369
+## 198 7.367501e-03    0.37636981     0.8968114      0.24939839       0.7506016
+## 199 2.263759e-03    0.37305021     0.2949578      0.53817011       0.4618299
+## 200 3.956566e-03    0.46982353     0.9399072      0.26622578       0.7337742
+##          errors_1      errors_0
+## 1    2.057104e-01  2.087761e-01
+## 2    2.046673e-01  2.070398e-01
+## 3   -4.720487e-03 -4.753428e-03
+## 4    2.308683e-02  5.273171e-02
+## 5   -2.085990e-01 -2.083042e-01
+## 6   -7.382114e-02 -6.772560e-02
+## 7   -1.219298e-01 -1.117670e-01
+## 8    2.105131e-01  2.122746e-01
+## 9    8.056588e-02  1.186627e-01
+## 10  -2.037582e-02 -1.365657e-02
+## 11   2.056015e-01  2.088203e-01
+## 12  -7.329100e-02 -7.327534e-02
+## 13   1.927000e-01  1.975675e-01
+## 14   8.043156e-02  1.054288e-01
+## 15  -1.572421e-01 -1.543739e-01
+## 16   9.669821e-02  1.216876e-01
+## 17   4.620245e-04  5.090774e-04
+## 18  -1.678894e-02 -1.553809e-02
+## 19   1.984941e-01  2.026378e-01
+## 20  -6.312650e-02 -5.909976e-02
+## 21  -2.128459e-01 -2.130624e-01
+## 22   2.153857e-01  2.156207e-01
+## 23   1.248730e-02  1.547897e-02
+## 24   2.129886e-01  2.140081e-01
+## 25  -2.080700e-01 -2.080310e-01
+## 26  -1.615562e-01 -1.619456e-01
+## 27   1.375916e-01  1.597333e-01
+## 28  -8.450068e-02 -7.990403e-02
+## 29   9.079888e-02  9.927907e-02
+## 30   7.822981e-02  8.561535e-02
+## 31   2.063738e-01  2.095800e-01
+## 32  -2.106258e-01 -2.109747e-01
+## 33  -1.981069e-01 -1.953012e-01
+## 34  -7.206681e-02 -6.398106e-02
+## 35   9.560617e-02  1.043293e-01
+## 36  -2.119550e-02 -1.639318e-02
+## 37  -7.331516e-02 -7.315760e-02
+## 38   3.165269e-02  3.610801e-02
+## 39   6.680346e-02  7.804174e-02
+## 40   2.106916e-01  2.124700e-01
+## 41  -2.044075e-01 -2.035567e-01
+## 42  -7.150611e-03 -2.995334e-03
+## 43  -1.704125e-01 -1.701234e-01
+## 44  -2.110687e-01 -2.112383e-01
+## 45  -2.437245e-02  1.341985e-02
+## 46   2.103359e-01  2.122277e-01
+## 47   2.947577e-02  4.120303e-02
+## 48  -2.088689e-01 -2.093201e-01
+## 49  -1.252102e-01 -1.040704e-01
+## 50  -1.545631e-01 -1.362445e-01
+## 51  -2.066628e-01 -2.071462e-01
+## 52   2.800293e-02  3.117940e-02
+## 53   1.817217e-01  1.868306e-01
+## 54  -5.600119e-02 -5.434367e-02
+## 55   1.213650e-01  1.302471e-01
+## 56   2.083867e-01  2.111246e-01
+## 57   3.651684e-02  3.969632e-02
+## 58   1.042262e-01  1.167564e-01
+## 59  -1.850797e-01 -1.787841e-01
+## 60   1.811318e-01  1.876500e-01
+## 61  -8.775439e-02 -7.022242e-02
+## 62   2.360581e-03  2.709862e-03
+## 63   7.827916e-02  8.389189e-02
+## 64  -2.482948e-02 -2.011813e-02
+## 65   2.155999e-01  2.157690e-01
+## 66  -9.532473e-02 -9.369402e-02
+## 67  -8.668950e-02 -8.180145e-02
+## 68   1.079165e-01  1.215697e-01
+## 69   1.625702e-01  1.735218e-01
+## 70   9.574452e-02  1.100079e-01
+## 71   1.313751e-02  1.638838e-02
+## 72   1.999106e-01  2.029597e-01
+## 73  -2.005943e-01 -2.011580e-01
+## 74  -2.128098e-01 -2.127428e-01
+## 75   1.966353e-02  6.425598e-02
+## 76   4.043171e-02  4.553799e-02
+## 77   5.226728e-02  6.048331e-02
+## 78  -5.988483e-02 -5.185747e-02
+## 79  -3.961444e-02 -3.179883e-03
+## 80  -1.844689e-01 -1.857247e-01
+## 81  -1.612636e-01 -1.607665e-01
+## 82   1.229055e-01  1.367655e-01
+## 83   1.829816e-01  1.894223e-01
+## 84   2.131595e-01  2.141312e-01
+## 85  -2.022720e-01 -2.025491e-01
+## 86   7.576150e-02  8.863520e-02
+## 87   1.395972e-01  1.568191e-01
+## 88   2.147313e-01  2.152105e-01
+## 89   1.085183e-01  1.152898e-01
+## 90   1.755891e-02  3.066622e-02
+## 91   2.128506e-01  2.138780e-01
+## 92   2.139639e-01  2.146135e-01
+## 93   1.784309e-01  1.877860e-01
+## 94  -2.053546e-01 -2.050887e-01
+## 95  -1.836991e-01 -1.787007e-01
+## 96   2.078481e-01  2.101650e-01
+## 97   1.776932e-01  1.839226e-01
+## 98   1.686202e-01  1.746507e-01
+## 99  -1.815656e-01 -1.815625e-01
+## 100  6.676197e-02  9.170167e-02
+## 101 -7.508023e-02 -7.111658e-02
+## 102  4.459572e-02  5.344515e-02
+## 103 -2.157128e-01 -2.157587e-01
+## 104  2.149882e-01  2.154274e-01
+## 105 -1.999569e-01 -1.991238e-01
+## 106 -3.307938e-02 -3.141418e-02
+## 107 -7.215837e-02 -6.463382e-02
+## 108 -1.975430e-01 -1.982041e-01
+## 109  6.234460e-02  8.199501e-02
+## 110  1.344597e-01  1.448517e-01
+## 111 -2.103567e-01 -2.102963e-01
+## 112  2.016145e-02  4.048309e-02
+## 113 -2.136342e-01 -2.136430e-01
+## 114  1.078347e-01  1.396340e-01
+## 115  1.276663e-01  1.363872e-01
+## 116  2.120729e-01  2.131528e-01
+## 117  1.592847e-01  1.671534e-01
+## 118 -1.867798e-04  6.732463e-04
+## 119 -3.583076e-02 -3.539085e-02
+## 120  1.550745e-01  1.625898e-01
+## 121  1.980904e-01  2.031546e-01
+## 122 -5.028463e-02 -4.375748e-02
+## 123  1.551708e-01  1.709603e-01
+## 124  2.133190e-01  2.141825e-01
+## 125  2.512032e-03  2.829127e-03
+## 126  7.612545e-03  8.877262e-03
+## 127 -7.781280e-02 -7.190929e-02
+## 128 -9.268488e-02 -7.659865e-02
+## 129  3.506486e-02  4.804852e-02
+## 130  8.196459e-02  9.518179e-02
+## 131  1.906760e-02  2.155438e-02
+## 132  8.181978e-02  9.057391e-02
+## 133  1.982522e-01  2.037136e-01
+## 134 -1.445040e-01 -1.310570e-01
+## 135  3.389953e-02  5.669736e-02
+## 136  1.269706e-02  2.113961e-02
+## 137  1.123019e-01  1.259577e-01
+## 138 -1.003655e-01 -9.740352e-02
+## 139  1.359344e-01  1.519713e-01
+## 140  2.019118e-01  2.056993e-01
+## 141  1.693471e-01  1.762546e-01
+## 142 -9.692835e-03 -4.225555e-03
+## 143 -2.078787e-01 -2.077407e-01
+## 144  2.158897e-01  2.159640e-01
+## 145  1.865014e-01  1.938718e-01
+## 146 -2.150412e-01 -2.150798e-01
+## 147 -7.780032e-02 -7.300813e-02
+## 148 -8.949558e-02 -7.471968e-02
+## 149  2.084622e-01  2.107346e-01
+## 150  7.040746e-02  8.221743e-02
+## 151 -6.931920e-02 -6.507926e-02
+## 152  1.548562e-02  3.922351e-02
+## 153 -2.011522e-01 -2.014953e-01
+## 154 -2.125750e-01 -2.126809e-01
+## 155  2.540660e-03  2.883625e-03
+## 156 -1.902379e-01 -1.900663e-01
+## 157 -5.325424e-02 -1.933118e-02
+## 158 -2.100121e-01 -2.104210e-01
+## 159 -1.857465e-01 -1.801565e-01
+## 160 -1.718556e-01 -1.730147e-01
+## 161 -2.023368e-01 -2.022645e-01
+## 162  6.849603e-02  1.071519e-01
+## 163  1.890614e-01  1.948324e-01
+## 164 -1.686658e-01 -1.703637e-01
+## 165  6.287725e-03  2.876523e-02
+## 166  1.729657e-01  1.838091e-01
+## 167 -4.453383e-03  2.764886e-02
+## 168 -2.098887e-01 -2.100975e-01
+## 169  4.040500e-02  4.484118e-02
+## 170 -1.264451e-01 -1.146687e-01
+## 171  6.928322e-02  7.449418e-02
+## 172 -2.826664e-02 -2.281019e-02
+## 173 -8.674482e-02 -6.941650e-02
+## 174 -1.829832e-01 -1.769921e-01
+## 175 -1.402522e-01 -1.357318e-01
+## 176 -1.842697e-01 -1.826705e-01
+## 177  1.636923e-01  1.724487e-01
+## 178 -2.146195e-01 -2.146653e-01
+## 179 -9.125533e-03  5.329327e-03
+## 180  7.103619e-02  7.670110e-02
+## 181 -1.815048e-01 -1.812400e-01
+## 182 -1.321257e-01 -1.287948e-01
+## 183 -1.906625e-01 -1.901891e-01
+## 184 -2.028761e-01 -2.030891e-01
+## 185 -1.159602e-01 -1.144608e-01
+## 186  1.279793e-01  1.370038e-01
+## 187  1.124223e-02  1.337146e-02
+## 188  5.282130e-03  5.681506e-03
+## 189  1.039881e-01  1.109260e-01
+## 190 -2.059561e-01 -2.060693e-01
+## 191 -2.635608e-02 -1.950693e-02
+## 192 -1.627418e-01 -1.529414e-01
+## 193 -2.712101e-02 -2.227712e-02
+## 194  1.448613e-01  1.557500e-01
+## 195 -1.790344e-01 -1.754657e-01
+## 196 -2.691493e-06  7.862666e-07
+## 197  3.426368e-02  4.401497e-02
+## 198  1.269714e-01  1.462098e-01
+## 199 -1.651199e-01 -1.668721e-01
+## 200  2.035978e-01  2.061330e-01
 ## 
 ## $values
 ## $values$divergencekl
@@ -1852,6 +2044,209 @@ not specify any other. This would be:</p>
 ## 
 ## $values$message
 ## [1] &quot;relative convergence (4)&quot;
+## 
+## $values$q
+##        [,1] [,2]
+##   [1,]  0.5  0.5
+##   [2,]  0.5  0.5
+##   [3,]  0.5  0.5
+##   [4,]  0.5  0.5
+##   [5,]  0.5  0.5
+##   [6,]  0.5  0.5
+##   [7,]  0.5  0.5
+##   [8,]  0.5  0.5
+##   [9,]  0.5  0.5
+##  [10,]  0.5  0.5
+##  [11,]  0.5  0.5
+##  [12,]  0.5  0.5
+##  [13,]  0.5  0.5
+##  [14,]  0.5  0.5
+##  [15,]  0.5  0.5
+##  [16,]  0.5  0.5
+##  [17,]  0.5  0.5
+##  [18,]  0.5  0.5
+##  [19,]  0.5  0.5
+##  [20,]  0.5  0.5
+##  [21,]  0.5  0.5
+##  [22,]  0.5  0.5
+##  [23,]  0.5  0.5
+##  [24,]  0.5  0.5
+##  [25,]  0.5  0.5
+##  [26,]  0.5  0.5
+##  [27,]  0.5  0.5
+##  [28,]  0.5  0.5
+##  [29,]  0.5  0.5
+##  [30,]  0.5  0.5
+##  [31,]  0.5  0.5
+##  [32,]  0.5  0.5
+##  [33,]  0.5  0.5
+##  [34,]  0.5  0.5
+##  [35,]  0.5  0.5
+##  [36,]  0.5  0.5
+##  [37,]  0.5  0.5
+##  [38,]  0.5  0.5
+##  [39,]  0.5  0.5
+##  [40,]  0.5  0.5
+##  [41,]  0.5  0.5
+##  [42,]  0.5  0.5
+##  [43,]  0.5  0.5
+##  [44,]  0.5  0.5
+##  [45,]  0.5  0.5
+##  [46,]  0.5  0.5
+##  [47,]  0.5  0.5
+##  [48,]  0.5  0.5
+##  [49,]  0.5  0.5
+##  [50,]  0.5  0.5
+##  [51,]  0.5  0.5
+##  [52,]  0.5  0.5
+##  [53,]  0.5  0.5
+##  [54,]  0.5  0.5
+##  [55,]  0.5  0.5
+##  [56,]  0.5  0.5
+##  [57,]  0.5  0.5
+##  [58,]  0.5  0.5
+##  [59,]  0.5  0.5
+##  [60,]  0.5  0.5
+##  [61,]  0.5  0.5
+##  [62,]  0.5  0.5
+##  [63,]  0.5  0.5
+##  [64,]  0.5  0.5
+##  [65,]  0.5  0.5
+##  [66,]  0.5  0.5
+##  [67,]  0.5  0.5
+##  [68,]  0.5  0.5
+##  [69,]  0.5  0.5
+##  [70,]  0.5  0.5
+##  [71,]  0.5  0.5
+##  [72,]  0.5  0.5
+##  [73,]  0.5  0.5
+##  [74,]  0.5  0.5
+##  [75,]  0.5  0.5
+##  [76,]  0.5  0.5
+##  [77,]  0.5  0.5
+##  [78,]  0.5  0.5
+##  [79,]  0.5  0.5
+##  [80,]  0.5  0.5
+##  [81,]  0.5  0.5
+##  [82,]  0.5  0.5
+##  [83,]  0.5  0.5
+##  [84,]  0.5  0.5
+##  [85,]  0.5  0.5
+##  [86,]  0.5  0.5
+##  [87,]  0.5  0.5
+##  [88,]  0.5  0.5
+##  [89,]  0.5  0.5
+##  [90,]  0.5  0.5
+##  [91,]  0.5  0.5
+##  [92,]  0.5  0.5
+##  [93,]  0.5  0.5
+##  [94,]  0.5  0.5
+##  [95,]  0.5  0.5
+##  [96,]  0.5  0.5
+##  [97,]  0.5  0.5
+##  [98,]  0.5  0.5
+##  [99,]  0.5  0.5
+## [100,]  0.5  0.5
+## [101,]  0.5  0.5
+## [102,]  0.5  0.5
+## [103,]  0.5  0.5
+## [104,]  0.5  0.5
+## [105,]  0.5  0.5
+## [106,]  0.5  0.5
+## [107,]  0.5  0.5
+## [108,]  0.5  0.5
+## [109,]  0.5  0.5
+## [110,]  0.5  0.5
+## [111,]  0.5  0.5
+## [112,]  0.5  0.5
+## [113,]  0.5  0.5
+## [114,]  0.5  0.5
+## [115,]  0.5  0.5
+## [116,]  0.5  0.5
+## [117,]  0.5  0.5
+## [118,]  0.5  0.5
+## [119,]  0.5  0.5
+## [120,]  0.5  0.5
+## [121,]  0.5  0.5
+## [122,]  0.5  0.5
+## [123,]  0.5  0.5
+## [124,]  0.5  0.5
+## [125,]  0.5  0.5
+## [126,]  0.5  0.5
+## [127,]  0.5  0.5
+## [128,]  0.5  0.5
+## [129,]  0.5  0.5
+## [130,]  0.5  0.5
+## [131,]  0.5  0.5
+## [132,]  0.5  0.5
+## [133,]  0.5  0.5
+## [134,]  0.5  0.5
+## [135,]  0.5  0.5
+## [136,]  0.5  0.5
+## [137,]  0.5  0.5
+## [138,]  0.5  0.5
+## [139,]  0.5  0.5
+## [140,]  0.5  0.5
+## [141,]  0.5  0.5
+## [142,]  0.5  0.5
+## [143,]  0.5  0.5
+## [144,]  0.5  0.5
+## [145,]  0.5  0.5
+## [146,]  0.5  0.5
+## [147,]  0.5  0.5
+## [148,]  0.5  0.5
+## [149,]  0.5  0.5
+## [150,]  0.5  0.5
+## [151,]  0.5  0.5
+## [152,]  0.5  0.5
+## [153,]  0.5  0.5
+## [154,]  0.5  0.5
+## [155,]  0.5  0.5
+## [156,]  0.5  0.5
+## [157,]  0.5  0.5
+## [158,]  0.5  0.5
+## [159,]  0.5  0.5
+## [160,]  0.5  0.5
+## [161,]  0.5  0.5
+## [162,]  0.5  0.5
+## [163,]  0.5  0.5
+## [164,]  0.5  0.5
+## [165,]  0.5  0.5
+## [166,]  0.5  0.5
+## [167,]  0.5  0.5
+## [168,]  0.5  0.5
+## [169,]  0.5  0.5
+## [170,]  0.5  0.5
+## [171,]  0.5  0.5
+## [172,]  0.5  0.5
+## [173,]  0.5  0.5
+## [174,]  0.5  0.5
+## [175,]  0.5  0.5
+## [176,]  0.5  0.5
+## [177,]  0.5  0.5
+## [178,]  0.5  0.5
+## [179,]  0.5  0.5
+## [180,]  0.5  0.5
+## [181,]  0.5  0.5
+## [182,]  0.5  0.5
+## [183,]  0.5  0.5
+## [184,]  0.5  0.5
+## [185,]  0.5  0.5
+## [186,]  0.5  0.5
+## [187,]  0.5  0.5
+## [188,]  0.5  0.5
+## [189,]  0.5  0.5
+## [190,]  0.5  0.5
+## [191,]  0.5  0.5
+## [192,]  0.5  0.5
+## [193,]  0.5  0.5
+## [194,]  0.5  0.5
+## [195,]  0.5  0.5
+## [196,]  0.5  0.5
+## [197,]  0.5  0.5
+## [198,]  0.5  0.5
+## [199,]  0.5  0.5
+## [200,]  0.5  0.5
 ## 
 ## 
 ## $tol
@@ -2281,14 +2676,14 @@ not specify any other. This would be:</p>
 ## Dunemp          0.000     0.000
 ## 
 ## 
-## $cross_moments_hp
+## $cross_moments_A
 ##             1          0         
 ## (Intercept)       0.34       0.66
 ## Dcollege          0.17       0.44
 ## Totalincome  103036.63  189594.78
 ## Dunemp            0.16       0.29
 ## 
-## $cross_moments_hs
+## $cross_moments_B
 ##             1          0         
 ## (Intercept)       0.34       0.66
 ## Dcollege          0.17       0.44
@@ -2299,7 +2694,7 @@ not specify any other. This would be:</p>
 ## [1] 2
 ## 
 ## $fn
-## datahp$poor_liq ~ Dcollege + Totalincome + Dunemp
+## dataA$poor_liq ~ Dcollege + Totalincome + Dunemp
 ## 
 ## attr(,&quot;class&quot;)
 ## [1] &quot;kl&quot;</code></pre>
@@ -2311,10 +2706,11 @@ case.</p>
 ei_gme()</h1>
 <p>In the case the user does not have prior information the function
 ei_gme() is also available. This function is provided for cases where
-the user may prefer using GME (Generalized maximum entropy) if the user
-has a big volume of data, because it is a more efficient function in
-computational terms than ei_gce() with the uniform distribution as
-prior. Both functions should provide the same result.</p>
+the user may prefer using GME (Generalized maximum entropy).
+Specifically, if the user has a big volume of data because it is a more
+efficient function in computational terms than ei_gce() with the uniform
+distribution as prior. Both functions should provide the same
+result.</p>
 <p>ei_gme() applies the Shannon entropy function to the optimization. It
 is adequate when you cannot assume anything about the distribution of
 <span class="math inline">\(Y\)</span>. So the starting point is the
@@ -2323,413 +2719,413 @@ uniform distribution.</p>
 in terms of wealth and our independent variables are the income and
 dummies for unemployment and college studies. In this case, we need to
 define the function</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>result3 <span class="ot">&lt;-</span> <span class="fu">ei_gme</span> (fn,datahp,datahs,<span class="at">weights=</span><span class="st">&quot;w&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>result3 <span class="ot">&lt;-</span> <span class="fu">ei_gme</span> (fn,dataA,dataB,<span class="at">weights=</span><span class="st">&quot;w&quot;</span>)</span></code></pre></div>
 <p>The function will produce the same output as ei_gce(), see the
 previous section for further details.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>result3</span></code></pre></div>
 <pre><code>## $estimations
-##          weights predictions_1 predictions_0   p_dual_1  p_dual_0      e_dual_1
-## 1   6.408614e-03    0.37714100     1.0373456 0.17143056 0.8285694  2.057104e-01
-## 2   4.069074e-03    0.46516844     0.9465387 0.26050116 0.7394988  2.046673e-01
-## 3   8.478890e-05    0.49554426     0.4949818 0.50026475 0.4997352 -4.720492e-03
-## 4   6.019554e-03    0.29425398     0.7815639 0.27116751 0.7288325  2.308647e-02
-## 5   8.529959e-03    0.24791986     0.3351769 0.45651891 0.5434811 -2.085990e-01
-## 6   3.466777e-03    0.37076550     0.4876877 0.44458668 0.5554133 -7.382118e-02
-## 7   7.143169e-03    0.25980016     0.5065030 0.38172997 0.6182700 -1.219298e-01
-## 8   6.728993e-03    0.36038509     1.0624027 0.14987197 0.8501280  2.105131e-01
-## 9   9.459067e-03    0.24653071     0.9526971 0.16596528 0.8340347  8.056542e-02
-## 10  1.952733e-03    0.42547701     0.5404902 0.44585302 0.5541470 -2.037601e-02
-## 11  6.884772e-03    0.36676112     1.0476607 0.16115959 0.8388404  2.056015e-01
-## 12  1.046638e-03    0.42656444     0.4268691 0.49985549 0.5001445 -7.329105e-02
-## 13  6.632154e-03    0.45686631     0.9334013 0.26416625 0.7358337  1.927001e-01
-## 14  5.694566e-03    0.34661296     0.8392470 0.26618165 0.7338183  8.043131e-02
-## 15  8.199805e-03    0.29044842     0.3979353 0.44769069 0.5523093 -1.572423e-01
-## 16  7.974757e-03    0.34208495     0.8762999 0.24538724 0.7546128  9.669772e-02
-## 17  1.016052e-05    0.50008404     0.5008871 0.49962202 0.5003780  4.620248e-04
-## 18  1.077733e-03    0.47310062     0.4945723 0.48988960 0.5101104 -1.678897e-02
-## 19  4.555596e-03    0.43194344     0.9691885 0.23344930 0.7665507  1.984941e-01
-## 20  1.797040e-03    0.40140320     0.4763702 0.46452988 0.5354701 -6.312668e-02
-## 21  7.726297e-03    0.36613320     0.2079584 0.57897910 0.4210209 -2.128459e-01
-## 22  7.537852e-03    0.33716485     1.0938415 0.12177914 0.8782209  2.153857e-01
-## 23  5.078895e-04    0.48835953     0.5396067 0.47587226 0.5241277  1.248727e-02
-## 24  8.673474e-03    0.34928915     1.0777076 0.13630052 0.8636995  2.129886e-01
-## 25  6.743411e-03    0.28645508     0.2974439 0.49452509 0.5054749 -2.080700e-01
-## 26  2.597985e-03    0.34630193     0.3301962 0.50785821 0.4921418 -1.615563e-01
-## 27  7.946911e-03    0.32381835     0.9735062 0.18622698 0.8137730  1.375914e-01
-## 28  3.132542e-03    0.37158284     0.4640124 0.45608357 0.5439164 -8.450073e-02
-## 29  1.413325e-03    0.50486829     0.6852096 0.41406943 0.5859306  9.079887e-02
-## 30  1.952905e-03    0.50803501     0.6558103 0.42980514 0.5701949  7.822987e-02
-## 31  7.786354e-03    0.34741212     1.0685416 0.14103834 0.8589617  2.063738e-01
-## 32  6.412179e-03    0.36399162     0.2144079 0.57461746 0.4253825 -2.106258e-01
-## 33  8.813903e-03    0.14764207     0.4589496 0.34574908 0.6542509 -1.981070e-01
-## 34  3.104395e-03    0.35538676     0.5085648 0.42745386 0.5725461 -7.206710e-02
-## 35  1.494452e-03    0.50471073     0.6952247 0.40910457 0.5908954  9.560616e-02
-## 36  1.979537e-03    0.43997236     0.5224390 0.46116787 0.5388321 -2.119551e-02
-## 37  1.781772e-03    0.42523278     0.4282943 0.49854802 0.5014520 -7.331524e-02
-## 38  8.631740e-04    0.49491100     0.5728496 0.46325836 0.5367416  3.165264e-02
-## 39  2.624354e-03    0.46497177     0.6798731 0.39816848 0.6018315  6.680329e-02
-## 40  7.278409e-03    0.34905395     1.0741076 0.13836237 0.8616376  2.106916e-01
-## 41  9.198636e-03    0.21786352     0.3741723 0.42227101 0.5777290 -2.044075e-01
-## 42  8.939710e-04    0.45949750     0.5303564 0.46664817 0.5333518 -7.150672e-03
-## 43  5.755561e-03    0.32270764     0.3367562 0.49312027 0.5068797 -1.704126e-01
-## 44  9.197598e-03    0.32806646     0.2496265 0.53913519 0.4608648 -2.110687e-01
-## 45  7.835590e-03    0.20378477     0.7852617 0.22815772 0.7718423 -2.437296e-02
-## 46  7.304276e-03    0.34955410     1.0730095 0.13921821 0.8607818  2.103359e-01
-## 47  2.825585e-03    0.43352574     0.6371526 0.40405019 0.5959498  2.947555e-02
-## 48  5.701607e-03    0.36363393     0.2181771 0.57250285 0.4274972 -2.088689e-01
-## 49  9.403839e-03    0.14601780     0.6247003 0.27122861 0.7287714 -1.252108e-01
-## 50  8.874280e-03    0.08319548     0.6259962 0.23775894 0.7622411 -1.545635e-01
-## 51  5.856153e-03    0.35220670     0.2339843 0.55886949 0.4411305 -2.066628e-01
-## 52  7.506319e-04    0.50195976     0.5572226 0.47395680 0.5260432  2.800295e-02
-## 53  2.829871e-03    0.51333914     0.8552131 0.33161750 0.6683825  1.817216e-01
-## 54  1.403796e-03    0.42963824     0.4600169 0.48563946 0.5143605 -5.600122e-02
-## 55  2.256222e-03    0.50956487     0.7420472 0.38819990 0.6118001  1.213650e-01
-## 56  8.706739e-03    0.32821696     1.0912943 0.11983024 0.8801698  2.083867e-01
-## 57  6.495227e-04    0.51007559     0.5661376 0.47355873 0.5264413  3.651686e-02
-## 58  7.423215e-03    0.46620740     0.7547751 0.36198130 0.6380187  1.042261e-01
-## 59  9.409367e-03    0.12397287     0.5121628 0.30905282 0.6909472 -1.850800e-01
-## 60  3.467645e-03    0.47043100     0.8983508 0.28929920 0.7107008  1.811318e-01
-## 61  4.891585e-03    0.25235968     0.5896629 0.34011437 0.6598856 -8.775469e-02
-## 62  5.191919e-05    0.49955438     0.5055161 0.49719380 0.5028062  2.360579e-03
-## 63  6.960881e-04    0.52499283     0.6371783 0.44671365 0.5532863  7.827917e-02
-## 64  3.234067e-03    0.43693087     0.5181214 0.46176043 0.5382396 -2.482957e-02
-## 65  8.095405e-03    0.32338775     1.1079812 0.10778784 0.8922122  2.155999e-01
-## 66  2.123864e-03    0.38804696     0.4229342 0.48337175 0.5166283 -9.532478e-02
-## 67  3.309518e-03    0.36617643     0.4653326 0.45286598 0.5471340 -8.668955e-02
-## 68  5.300329e-03    0.45369992     0.7757864 0.34578335 0.6542166  1.079166e-01
-## 69  7.890242e-03    0.43151755     0.9045747 0.26894725 0.7310527  1.625703e-01
-## 70  5.248723e-03    0.44718704     0.7585655 0.35144245 0.6485576  9.574459e-02
-## 71  9.625057e-04    0.48690874     0.5426172 0.47377121 0.5262288  1.313752e-02
-## 72  3.609097e-03    0.48364084     0.9192295 0.28373023 0.7162698  1.999106e-01
-## 73  5.617329e-03    0.34033991     0.2579077 0.54093430 0.4590657 -2.005944e-01
-## 74  9.237887e-03    0.26393288     0.3105145 0.47674268 0.5232573 -2.128098e-01
-## 75  9.275353e-03    0.20156798     0.8823505 0.18190501 0.8180950  1.966296e-02
-## 76  7.561670e-04    0.49760854     0.5883611 0.45717684 0.5428232  4.043169e-02
-## 77  1.374263e-03    0.48128804     0.6314625 0.42902081 0.5709792  5.226723e-02
-## 78  2.232129e-03    0.37084525     0.5174121 0.43073025 0.5692698 -5.988499e-02
-## 79  7.759625e-03    0.19416064     0.7630441 0.23377557 0.7662244 -3.961493e-02
-## 80  3.268253e-03    0.35954585     0.2702604 0.54401482 0.4559852 -1.844690e-01
-## 81  5.423895e-03    0.32883003     0.3491396 0.49009377 0.5099062 -1.612637e-01
-## 82  3.519797e-03    0.44627539     0.8133955 0.32336997 0.6766300  1.229054e-01
-## 83  3.686690e-03    0.46329502     0.9091089 0.28031343 0.7196866  1.829816e-01
-## 84  8.770650e-03    0.34686180     1.0804289 0.13370232 0.8662977  2.131595e-01
-## 85  4.499834e-03    0.32020803     0.2749708 0.52248010 0.4775199 -2.022721e-01
-## 86  6.913635e-03    0.45482424     0.7095723 0.37906282 0.6209372  7.576142e-02
-## 87  7.423989e-03    0.38267169     0.9137441 0.24307479 0.7569252  1.395969e-01
-## 88  9.184997e-03    0.32784987     1.1020920 0.11311855 0.8868814  2.147313e-01
-## 89  9.934938e-04    0.53182177     0.6919863 0.42330347 0.5766965  1.085183e-01
-## 90  7.108557e-03    0.41232879     0.6358961 0.39477003 0.6052300  1.755876e-02
-## 91  6.307975e-03    0.35899737     1.0677312 0.14614680 0.8538532  2.128506e-01
-## 92  5.444530e-03    0.36801075     1.0605667 0.15404688 0.8459531  2.139639e-01
-## 93  5.708904e-03    0.40224834     0.9639685 0.22381750 0.7761825  1.784308e-01
-## 94  7.141561e-03    0.26731143     0.3222452 0.47266606 0.5273339 -2.053546e-01
-## 95  7.903713e-03    0.16504002     0.4725597 0.34873935 0.6512606 -1.836993e-01
-## 96  5.645807e-03    0.39114706     1.0268661 0.18329898 0.8167010  2.078481e-01
-## 97  3.539554e-03    0.49407722     0.8675384 0.31638410 0.6836159  1.776931e-01
-## 98  2.396317e-03    0.52472964     0.8185411 0.35610951 0.6438905  1.686201e-01
-## 99  3.785424e-03    0.31833590     0.3185359 0.49990155 0.5000984 -1.815657e-01
-## 100 6.899727e-03    0.34665472     0.8118079 0.27989326 0.7201067  6.676146e-02
-## 101 1.963958e-03    0.38847647     0.4653263 0.46355690 0.5364431 -7.508043e-02
-## 102 4.301069e-03    0.46970545     0.6283353 0.42510979 0.5748902  4.459566e-02
-## 103 8.824290e-03    0.44210574     0.1264228 0.65781855 0.3421815 -2.157128e-01
-## 104 9.245072e-03    0.29598198     1.1344336 0.08099374 0.9190063  2.149882e-01
-## 105 7.604964e-03    0.24465042     0.3562688 0.44460738 0.5553926 -1.999570e-01
-## 106 7.759268e-04    0.45320401     0.4823022 0.48628348 0.5137165 -3.307947e-02
-## 107 6.426895e-03    0.36017732     0.5030302 0.43233587 0.5676641 -7.215855e-02
-## 108 5.150249e-03    0.34234836     0.2619044 0.53989146 0.4601085 -1.975431e-01
-## 109 5.158771e-03    0.38924124     0.7550976 0.32689702 0.6731030  6.234423e-02
-## 110 7.247160e-03    0.48560850     0.7937028 0.35114885 0.6488512  1.344596e-01
-## 111 7.664692e-03    0.27774016     0.3016068 0.48809683 0.5119032 -2.103567e-01
-## 112 4.033598e-03    0.35902292     0.7016212 0.33886170 0.6611383  2.016121e-02
-## 113 8.610544e-03    0.29051769     0.2822052 0.50415187 0.4958481 -2.136342e-01
-## 114 9.173485e-03    0.27410778     0.9733603 0.16627345 0.8337265  1.078343e-01
-## 115 2.312141e-03    0.51128193     0.7527714 0.38361570 0.6163843  1.276662e-01
-## 116 5.785912e-03    0.40348506     1.0217406 0.19141214 0.8085879  2.120729e-01
-## 117 3.133029e-03    0.50150728     0.8249307 0.34222266 0.6577773  1.592846e-01
-## 118 3.027803e-04    0.49290497     0.5075815 0.49309175 0.5069082 -1.867789e-04
-## 119 6.494774e-04    0.46052418     0.4682542 0.49635496 0.5036450 -3.583079e-02
-## 120 2.627321e-03    0.51441106     0.8032531 0.35933661 0.6406634  1.550744e-01
-## 121 6.300118e-03    0.38606905     1.0151758 0.18797870 0.8120213  1.980903e-01
-## 122 5.009005e-03    0.39455986     0.5113978 0.44484464 0.5551554 -5.028477e-02
-## 123 8.546357e-03    0.36682709     0.9593036 0.21165655 0.7883435  1.551705e-01
-## 124 5.935042e-03    0.36343477     1.0640667 0.15011579 0.8498842  2.133190e-01
-## 125 5.670056e-05    0.49996437     0.5053768 0.49745235 0.5025477  2.512029e-03
-## 126 1.956694e-04    0.49743770     0.5190521 0.48982516 0.5101748  7.612538e-03
-## 127 3.491569e-03    0.36763703     0.4826408 0.44544988 0.5545501 -7.781284e-02
-## 128 6.018842e-03    0.25616395     0.5745515 0.34884931 0.6511507 -9.268536e-02
-## 129 2.453778e-03    0.42789177     0.6552214 0.39282704 0.6071730  3.506474e-02
-## 130 3.330195e-03    0.45417300     0.7229730 0.37220860 0.6277914  8.196439e-02
-## 131 4.568058e-04    0.49890140     0.5417205 0.47983383 0.5201662  1.906758e-02
-## 132 1.878873e-03    0.49715239     0.6752411 0.41533270 0.5846673  8.181969e-02
-## 133 7.274750e-03    0.36343765     1.0385281 0.16518550 0.8348145  1.982521e-01
-## 134 8.055270e-03    0.17014297     0.5542951 0.31464738 0.6853526 -1.445044e-01
-## 135 7.918719e-03    0.35004282     0.7405543 0.31614325 0.6838568  3.389958e-02
-## 136 1.613960e-03    0.44481819     0.5890183 0.43212122 0.5678788  1.269697e-02
-## 137 4.043005e-03    0.45292968     0.7853295 0.34062799 0.6593720  1.123017e-01
-## 138 2.836492e-03    0.36867880     0.4335521 0.46904439 0.5309556 -1.003656e-01
-## 139 8.648536e-03    0.40487846     0.8830274 0.26894402 0.7310560  1.359344e-01
-## 140 7.121030e-03    0.40200478     1.0056062 0.20009305 0.7999069  2.019117e-01
-## 141 7.015624e-03    0.50187202     0.8437297 0.33252488 0.6674751  1.693471e-01
-## 142 2.042604e-03    0.44644705     0.5396346 0.45613989 0.5438601 -9.692835e-03
-## 143 7.276373e-03    0.27335900     0.3110216 0.48123769 0.5187623 -2.078787e-01
-## 144 8.504937e-03    0.28247500     1.1493787 0.06658533 0.9334147  2.158897e-01
-## 145 9.535921e-03    0.40888960     0.9714838 0.22238811 0.7776119  1.865015e-01
-## 146 8.545091e-03    0.32920752     0.2406715 0.54424876 0.4557512 -2.150412e-01
-## 147 2.254398e-03    0.37776169     0.4714294 0.45556223 0.5444378 -7.780054e-02
-## 148 5.514651e-03    0.27258786     0.5631959 0.36208390 0.6379161 -8.949604e-02
-## 149 6.254560e-03    0.37577569     1.0434211 0.16731353 0.8326865  2.084622e-01
-## 150 6.128050e-03    0.46189330     0.6907315 0.39148591 0.6085141  7.040738e-02
-## 151 1.952048e-03    0.39256306     0.4730381 0.46188246 0.5381175 -6.931940e-02
-## 152 8.239200e-03    0.33030051     0.7244088 0.31481486 0.6851851  1.548565e-02
-## 153 4.212187e-03    0.32458121     0.2727712 0.52573342 0.4742666 -2.011522e-01
-## 154 6.562633e-03    0.32255966     0.2521844 0.53513468 0.4648653 -2.125750e-01
-## 155 8.529452e-05    0.49978514     0.5056392 0.49724448 0.5027555  2.540662e-03
-## 156 4.627415e-03    0.30253554     0.3171601 0.49277353 0.5072265 -1.902380e-01
-## 157 7.506022e-03    0.19114391     0.7362697 0.24439862 0.7556014 -5.325471e-02
-## 158 5.802968e-03    0.36849394     0.2110729 0.57850610 0.4214939 -2.100122e-01
-## 159 8.889093e-03    0.13810223     0.4959942 0.32384897 0.6761510 -1.857467e-01
-## 160 3.338891e-03    0.35704116     0.2980883 0.52889685 0.4711032 -1.718557e-01
-## 161 5.739428e-03    0.29183838     0.3035602 0.49417525 0.5058248 -2.023369e-01
-## 162 9.051019e-03    0.24618906     0.9294580 0.17769349 0.8223065  6.849557e-02
-## 163 7.187216e-03    0.44810200     0.9357919 0.25904055 0.7409594  1.890615e-01
-## 164 2.371262e-03    0.37102321     0.2899472 0.53968910 0.4603109 -1.686659e-01
-## 165 5.791201e-03    0.33183326     0.7032186 0.32554605 0.6744539  6.287213e-03
-## 166 5.959915e-03    0.39382630     0.9629484 0.22086063 0.7791394  1.729657e-01
-## 167 8.379680e-03    0.25726560     0.7659283 0.26171973 0.7382803 -4.454133e-03
-## 168 8.564844e-03    0.32893623     0.2510775 0.53882493 0.4611751 -2.098887e-01
-## 169 1.064177e-03    0.50320852     0.5820377 0.46280348 0.5371965  4.040504e-02
-## 170 6.110630e-03    0.23336248     0.5255228 0.35980801 0.6401920 -1.264455e-01
-## 171 1.771706e-03    0.52165759     0.6221198 0.45237437 0.5476256  6.928322e-02
-## 172 3.746941e-03    0.42731642     0.5216066 0.45558316 0.5444168 -2.826674e-02
-## 173 8.344937e-03    0.25568751     0.5881512 0.34243236 0.6575676 -8.674485e-02
-## 174 8.671874e-03    0.14356052     0.4964636 0.32654393 0.6734561 -1.829834e-01
-## 175 5.165876e-03    0.29467706     0.4293389 0.43492929 0.5650707 -1.402522e-01
-## 176 6.250491e-03    0.26256080     0.3704989 0.44683054 0.5531695 -1.842697e-01
-## 177 5.663535e-03    0.47401068     0.8621305 0.31031827 0.6896817  1.636924e-01
-## 178 8.189466e-03    0.32238236     0.2483328 0.53700190 0.4629981 -2.146195e-01
-## 179 5.172787e-03    0.37674492     0.6194590 0.38587044 0.6141296 -9.125522e-03
-## 180 2.048906e-03    0.51888448     0.6288528 0.44784828 0.5521517  7.103619e-02
-## 181 6.680525e-03    0.31019439     0.3270606 0.49169932 0.5083007 -1.815049e-01
-## 182 4.062967e-03    0.32344469     0.4156347 0.45557047 0.5444295 -1.321258e-01
-## 183 8.424910e-03    0.28920324     0.3299450 0.47986579 0.5201342 -1.906626e-01
-## 184 7.709358e-03    0.31518467     0.2788501 0.51806082 0.4819392 -2.028761e-01
-## 185 2.544983e-03    0.36650172     0.4030771 0.48246199 0.5175380 -1.159603e-01
-## 186 5.364966e-03    0.50714385     0.7578392 0.37916456 0.6208354  1.279793e-01
-## 187 5.934410e-04    0.49408188     0.5305318 0.48283964 0.5171604  1.124224e-02
-## 188 5.020772e-05    0.50207164     0.5088920 0.49678951 0.5032105  5.282129e-03
-## 189 2.873655e-03    0.52784553     0.6870686 0.42385741 0.5761426  1.039881e-01
-## 190 5.514606e-03    0.30662414     0.2813504 0.51258028 0.4874197 -2.059561e-01
-## 191 2.057597e-03    0.41814271     0.5359939 0.44449899 0.5555010 -2.635628e-02
-## 192 8.173496e-03    0.15968134     0.5246346 0.32242353 0.6775765 -1.627422e-01
-## 193 2.086392e-03    0.43346741     0.5171345 0.46058843 0.5394116 -2.712102e-02
-## 194 3.212343e-03    0.46856248     0.8320487 0.32370124 0.6762988  1.448612e-01
-## 195 7.999160e-03    0.22223277     0.4232671 0.40126720 0.5987328 -1.790344e-01
-## 196 9.251449e-07    0.49996937     0.5000287 0.49997206 0.5000279 -2.691577e-06
-## 197 2.268155e-03    0.45362669     0.6246516 0.41936319 0.5806368  3.426350e-02
-## 198 7.367501e-03    0.37636973     0.8968109 0.24939865 0.7506013  1.269711e-01
-## 199 2.263759e-03    0.37305012     0.2949577 0.53817009 0.4618299 -1.651200e-01
-## 200 3.956566e-03    0.46982359     0.9399072 0.26622585 0.7337742  2.035977e-01
-##          e_dual_0
-## 1    2.087761e-01
-## 2    2.070398e-01
-## 3   -4.753433e-03
-## 4    5.273141e-02
-## 5   -2.083042e-01
-## 6   -6.772559e-02
-## 7   -1.117670e-01
-## 8    2.122746e-01
-## 9    1.186624e-01
-## 10  -1.365677e-02
-## 11   2.088203e-01
-## 12  -7.327537e-02
-## 13   1.975676e-01
-## 14   1.054286e-01
-## 15  -1.543740e-01
-## 16   1.216871e-01
-## 17   5.090779e-04
-## 18  -1.553812e-02
-## 19   2.026378e-01
-## 20  -5.909996e-02
-## 21  -2.130625e-01
-## 22   2.156207e-01
-## 23   1.547896e-02
-## 24   2.140081e-01
-## 25  -2.080310e-01
-## 26  -1.619456e-01
-## 27   1.597331e-01
-## 28  -7.990404e-02
-## 29   9.927906e-02
-## 30   8.561544e-02
-## 31   2.095800e-01
-## 32  -2.109747e-01
-## 33  -1.953013e-01
-## 34  -6.398138e-02
-## 35   1.043293e-01
-## 36  -1.639315e-02
-## 37  -7.315768e-02
-## 38   3.610795e-02
-## 39   7.804157e-02
-## 40   2.124700e-01
-## 41  -2.035567e-01
-## 42  -2.995391e-03
-## 43  -1.701235e-01
-## 44  -2.112383e-01
-## 45   1.341938e-02
-## 46   2.122277e-01
-## 47   4.120279e-02
-## 48  -2.093201e-01
-## 49  -1.040711e-01
-## 50  -1.362448e-01
-## 51  -2.071462e-01
-## 52   3.117943e-02
-## 53   1.868306e-01
-## 54  -5.434368e-02
-## 55   1.302471e-01
-## 56   2.111246e-01
-## 57   3.969636e-02
-## 58   1.167564e-01
-## 59  -1.787844e-01
-## 60   1.876500e-01
-## 61  -7.022273e-02
-## 62   2.709861e-03
-## 63   8.389191e-02
-## 64  -2.011820e-02
-## 65   2.157690e-01
-## 66  -9.369404e-02
-## 67  -8.180145e-02
-## 68   1.215698e-01
-## 69   1.735219e-01
-## 70   1.100080e-01
-## 71   1.638841e-02
-## 72   2.029597e-01
-## 73  -2.011580e-01
-## 74  -2.127428e-01
-## 75   6.425551e-02
-## 76   4.553798e-02
-## 77   6.048327e-02
-## 78  -5.185763e-02
-## 79  -3.180358e-03
-## 80  -1.857248e-01
-## 81  -1.607666e-01
-## 82   1.367655e-01
-## 83   1.894223e-01
-## 84   2.141312e-01
-## 85  -2.025491e-01
-## 86   8.863514e-02
-## 87   1.568188e-01
-## 88   2.152105e-01
-## 89   1.152898e-01
-## 90   3.066611e-02
-## 91   2.138780e-01
-## 92   2.146135e-01
-## 93   1.877860e-01
-## 94  -2.050887e-01
-## 95  -1.787009e-01
-## 96   2.101650e-01
-## 97   1.839225e-01
-## 98   1.746506e-01
-## 99  -1.815625e-01
-## 100  9.170119e-02
-## 101 -7.111679e-02
-## 102  5.344510e-02
-## 103 -2.157587e-01
-## 104  2.154274e-01
-## 105 -1.991238e-01
-## 106 -3.141428e-02
-## 107 -6.463398e-02
-## 108 -1.982041e-01
-## 109  8.199463e-02
-## 110  1.448517e-01
-## 111 -2.102963e-01
-## 112  4.048288e-02
-## 113 -2.136430e-01
-## 114  1.396337e-01
-## 115  1.363871e-01
-## 116  2.131528e-01
-## 117  1.671533e-01
-## 118  6.732522e-04
-## 119 -3.539087e-02
-## 120  1.625898e-01
-## 121  2.031546e-01
-## 122 -4.375760e-02
-## 123  1.709601e-01
-## 124  2.141825e-01
-## 125  2.829124e-03
-## 126  8.877257e-03
-## 127 -7.190928e-02
-## 128 -7.659921e-02
-## 129  4.804841e-02
-## 130  9.518159e-02
-## 131  2.155435e-02
-## 132  9.057382e-02
-## 133  2.037136e-01
-## 134 -1.310576e-01
-## 135  5.669753e-02
-## 136  2.113953e-02
-## 137  1.259575e-01
-## 138 -9.740354e-02
-## 139  1.519715e-01
-## 140  2.056993e-01
-## 141  1.762546e-01
-## 142 -4.225522e-03
-## 143 -2.077407e-01
-## 144  2.159640e-01
-## 145  1.938719e-01
-## 146 -2.150798e-01
-## 147 -7.300837e-02
-## 148 -7.472020e-02
-## 149  2.107346e-01
-## 150  8.221738e-02
-## 151 -6.507947e-02
-## 152  3.922368e-02
-## 153 -2.014954e-01
-## 154 -2.126809e-01
-## 155  2.883628e-03
-## 156 -1.900663e-01
-## 157 -1.933165e-02
-## 158 -2.104210e-01
-## 159 -1.801568e-01
-## 160 -1.730148e-01
-## 161 -2.022645e-01
-## 162  1.071515e-01
-## 163  1.948325e-01
-## 164 -1.703637e-01
-## 165  2.876469e-02
-## 166  1.838091e-01
-## 167  2.764807e-02
-## 168 -2.100975e-01
-## 169  4.484123e-02
-## 170 -1.146692e-01
-## 171  7.449420e-02
-## 172 -2.281027e-02
-## 173 -6.941641e-02
-## 174 -1.769924e-01
-## 175 -1.357318e-01
-## 176 -1.826705e-01
-## 177  1.724487e-01
-## 178 -2.146653e-01
-## 179  5.329423e-03
-## 180  7.670112e-02
-## 181 -1.812400e-01
-## 182 -1.287948e-01
-## 183 -1.901892e-01
-## 184 -2.030891e-01
-## 185 -1.144609e-01
-## 186  1.370038e-01
-## 187  1.337148e-02
-## 188  5.681505e-03
-## 189  1.109260e-01
-## 190 -2.060693e-01
-## 191 -1.950714e-02
-## 192 -1.529419e-01
-## 193 -2.227710e-02
-## 194  1.557500e-01
-## 195 -1.754657e-01
-## 196  7.861760e-07
-## 197  4.401479e-02
-## 198  1.462095e-01
-## 199 -1.668722e-01
-## 200  2.061330e-01
+##          weights predictions_1 predictions_0 probabilities_1 probabilities_0
+## 1   6.408614e-03    0.37714100     1.0373456      0.17143056       0.8285694
+## 2   4.069074e-03    0.46516844     0.9465387      0.26050116       0.7394988
+## 3   8.478890e-05    0.49554426     0.4949818      0.50026475       0.4997352
+## 4   6.019554e-03    0.29425398     0.7815639      0.27116751       0.7288325
+## 5   8.529959e-03    0.24791986     0.3351769      0.45651891       0.5434811
+## 6   3.466777e-03    0.37076550     0.4876877      0.44458668       0.5554133
+## 7   7.143169e-03    0.25980016     0.5065030      0.38172997       0.6182700
+## 8   6.728993e-03    0.36038509     1.0624027      0.14987197       0.8501280
+## 9   9.459067e-03    0.24653071     0.9526971      0.16596528       0.8340347
+## 10  1.952733e-03    0.42547701     0.5404902      0.44585302       0.5541470
+## 11  6.884772e-03    0.36676112     1.0476607      0.16115959       0.8388404
+## 12  1.046638e-03    0.42656444     0.4268691      0.49985549       0.5001445
+## 13  6.632154e-03    0.45686631     0.9334013      0.26416625       0.7358337
+## 14  5.694566e-03    0.34661296     0.8392470      0.26618165       0.7338183
+## 15  8.199805e-03    0.29044842     0.3979353      0.44769069       0.5523093
+## 16  7.974757e-03    0.34208495     0.8762999      0.24538724       0.7546128
+## 17  1.016052e-05    0.50008404     0.5008871      0.49962202       0.5003780
+## 18  1.077733e-03    0.47310062     0.4945723      0.48988960       0.5101104
+## 19  4.555596e-03    0.43194344     0.9691885      0.23344930       0.7665507
+## 20  1.797040e-03    0.40140320     0.4763702      0.46452988       0.5354701
+## 21  7.726297e-03    0.36613320     0.2079584      0.57897910       0.4210209
+## 22  7.537852e-03    0.33716485     1.0938415      0.12177914       0.8782209
+## 23  5.078895e-04    0.48835953     0.5396067      0.47587226       0.5241277
+## 24  8.673474e-03    0.34928915     1.0777076      0.13630052       0.8636995
+## 25  6.743411e-03    0.28645508     0.2974439      0.49452509       0.5054749
+## 26  2.597985e-03    0.34630193     0.3301962      0.50785821       0.4921418
+## 27  7.946911e-03    0.32381835     0.9735062      0.18622698       0.8137730
+## 28  3.132542e-03    0.37158284     0.4640124      0.45608357       0.5439164
+## 29  1.413325e-03    0.50486829     0.6852096      0.41406943       0.5859306
+## 30  1.952905e-03    0.50803501     0.6558103      0.42980514       0.5701949
+## 31  7.786354e-03    0.34741212     1.0685416      0.14103834       0.8589617
+## 32  6.412179e-03    0.36399162     0.2144079      0.57461746       0.4253825
+## 33  8.813903e-03    0.14764207     0.4589496      0.34574908       0.6542509
+## 34  3.104395e-03    0.35538676     0.5085648      0.42745386       0.5725461
+## 35  1.494452e-03    0.50471073     0.6952247      0.40910457       0.5908954
+## 36  1.979537e-03    0.43997236     0.5224390      0.46116787       0.5388321
+## 37  1.781772e-03    0.42523278     0.4282943      0.49854802       0.5014520
+## 38  8.631740e-04    0.49491100     0.5728496      0.46325836       0.5367416
+## 39  2.624354e-03    0.46497177     0.6798731      0.39816848       0.6018315
+## 40  7.278409e-03    0.34905395     1.0741076      0.13836237       0.8616376
+## 41  9.198636e-03    0.21786352     0.3741723      0.42227101       0.5777290
+## 42  8.939710e-04    0.45949750     0.5303564      0.46664817       0.5333518
+## 43  5.755561e-03    0.32270764     0.3367562      0.49312027       0.5068797
+## 44  9.197598e-03    0.32806646     0.2496265      0.53913519       0.4608648
+## 45  7.835590e-03    0.20378477     0.7852617      0.22815772       0.7718423
+## 46  7.304276e-03    0.34955410     1.0730095      0.13921821       0.8607818
+## 47  2.825585e-03    0.43352574     0.6371526      0.40405019       0.5959498
+## 48  5.701607e-03    0.36363393     0.2181771      0.57250285       0.4274972
+## 49  9.403839e-03    0.14601780     0.6247003      0.27122861       0.7287714
+## 50  8.874280e-03    0.08319548     0.6259962      0.23775894       0.7622411
+## 51  5.856153e-03    0.35220670     0.2339843      0.55886949       0.4411305
+## 52  7.506319e-04    0.50195976     0.5572226      0.47395680       0.5260432
+## 53  2.829871e-03    0.51333914     0.8552131      0.33161750       0.6683825
+## 54  1.403796e-03    0.42963824     0.4600169      0.48563946       0.5143605
+## 55  2.256222e-03    0.50956487     0.7420472      0.38819990       0.6118001
+## 56  8.706739e-03    0.32821696     1.0912943      0.11983024       0.8801698
+## 57  6.495227e-04    0.51007559     0.5661376      0.47355873       0.5264413
+## 58  7.423215e-03    0.46620740     0.7547751      0.36198130       0.6380187
+## 59  9.409367e-03    0.12397287     0.5121628      0.30905282       0.6909472
+## 60  3.467645e-03    0.47043100     0.8983508      0.28929920       0.7107008
+## 61  4.891585e-03    0.25235968     0.5896629      0.34011437       0.6598856
+## 62  5.191919e-05    0.49955438     0.5055161      0.49719380       0.5028062
+## 63  6.960881e-04    0.52499283     0.6371783      0.44671365       0.5532863
+## 64  3.234067e-03    0.43693087     0.5181214      0.46176043       0.5382396
+## 65  8.095405e-03    0.32338775     1.1079812      0.10778784       0.8922122
+## 66  2.123864e-03    0.38804696     0.4229342      0.48337175       0.5166283
+## 67  3.309518e-03    0.36617643     0.4653326      0.45286598       0.5471340
+## 68  5.300329e-03    0.45369992     0.7757864      0.34578335       0.6542166
+## 69  7.890242e-03    0.43151755     0.9045747      0.26894725       0.7310527
+## 70  5.248723e-03    0.44718704     0.7585655      0.35144245       0.6485576
+## 71  9.625057e-04    0.48690874     0.5426172      0.47377121       0.5262288
+## 72  3.609097e-03    0.48364084     0.9192295      0.28373023       0.7162698
+## 73  5.617329e-03    0.34033991     0.2579077      0.54093430       0.4590657
+## 74  9.237887e-03    0.26393288     0.3105145      0.47674268       0.5232573
+## 75  9.275353e-03    0.20156798     0.8823505      0.18190501       0.8180950
+## 76  7.561670e-04    0.49760854     0.5883611      0.45717684       0.5428232
+## 77  1.374263e-03    0.48128804     0.6314625      0.42902081       0.5709792
+## 78  2.232129e-03    0.37084525     0.5174121      0.43073025       0.5692698
+## 79  7.759625e-03    0.19416064     0.7630441      0.23377557       0.7662244
+## 80  3.268253e-03    0.35954585     0.2702604      0.54401482       0.4559852
+## 81  5.423895e-03    0.32883003     0.3491396      0.49009377       0.5099062
+## 82  3.519797e-03    0.44627539     0.8133955      0.32336997       0.6766300
+## 83  3.686690e-03    0.46329502     0.9091089      0.28031343       0.7196866
+## 84  8.770650e-03    0.34686180     1.0804289      0.13370232       0.8662977
+## 85  4.499834e-03    0.32020803     0.2749708      0.52248010       0.4775199
+## 86  6.913635e-03    0.45482424     0.7095723      0.37906282       0.6209372
+## 87  7.423989e-03    0.38267169     0.9137441      0.24307479       0.7569252
+## 88  9.184997e-03    0.32784987     1.1020920      0.11311855       0.8868814
+## 89  9.934938e-04    0.53182177     0.6919863      0.42330347       0.5766965
+## 90  7.108557e-03    0.41232879     0.6358961      0.39477003       0.6052300
+## 91  6.307975e-03    0.35899737     1.0677312      0.14614680       0.8538532
+## 92  5.444530e-03    0.36801075     1.0605667      0.15404688       0.8459531
+## 93  5.708904e-03    0.40224834     0.9639685      0.22381750       0.7761825
+## 94  7.141561e-03    0.26731143     0.3222452      0.47266606       0.5273339
+## 95  7.903713e-03    0.16504002     0.4725597      0.34873935       0.6512606
+## 96  5.645807e-03    0.39114706     1.0268661      0.18329898       0.8167010
+## 97  3.539554e-03    0.49407722     0.8675384      0.31638410       0.6836159
+## 98  2.396317e-03    0.52472964     0.8185411      0.35610951       0.6438905
+## 99  3.785424e-03    0.31833590     0.3185359      0.49990155       0.5000984
+## 100 6.899727e-03    0.34665472     0.8118079      0.27989326       0.7201067
+## 101 1.963958e-03    0.38847647     0.4653263      0.46355690       0.5364431
+## 102 4.301069e-03    0.46970545     0.6283353      0.42510979       0.5748902
+## 103 8.824290e-03    0.44210574     0.1264228      0.65781855       0.3421815
+## 104 9.245072e-03    0.29598198     1.1344336      0.08099374       0.9190063
+## 105 7.604964e-03    0.24465042     0.3562688      0.44460738       0.5553926
+## 106 7.759268e-04    0.45320401     0.4823022      0.48628348       0.5137165
+## 107 6.426895e-03    0.36017732     0.5030302      0.43233587       0.5676641
+## 108 5.150249e-03    0.34234836     0.2619044      0.53989146       0.4601085
+## 109 5.158771e-03    0.38924124     0.7550976      0.32689702       0.6731030
+## 110 7.247160e-03    0.48560850     0.7937028      0.35114885       0.6488512
+## 111 7.664692e-03    0.27774016     0.3016068      0.48809683       0.5119032
+## 112 4.033598e-03    0.35902292     0.7016212      0.33886170       0.6611383
+## 113 8.610544e-03    0.29051769     0.2822052      0.50415187       0.4958481
+## 114 9.173485e-03    0.27410778     0.9733603      0.16627345       0.8337265
+## 115 2.312141e-03    0.51128193     0.7527714      0.38361570       0.6163843
+## 116 5.785912e-03    0.40348506     1.0217406      0.19141214       0.8085879
+## 117 3.133029e-03    0.50150728     0.8249307      0.34222266       0.6577773
+## 118 3.027803e-04    0.49290497     0.5075815      0.49309175       0.5069082
+## 119 6.494774e-04    0.46052418     0.4682542      0.49635496       0.5036450
+## 120 2.627321e-03    0.51441106     0.8032531      0.35933661       0.6406634
+## 121 6.300118e-03    0.38606905     1.0151758      0.18797870       0.8120213
+## 122 5.009005e-03    0.39455986     0.5113978      0.44484464       0.5551554
+## 123 8.546357e-03    0.36682709     0.9593036      0.21165655       0.7883435
+## 124 5.935042e-03    0.36343477     1.0640667      0.15011579       0.8498842
+## 125 5.670056e-05    0.49996437     0.5053768      0.49745235       0.5025477
+## 126 1.956694e-04    0.49743770     0.5190521      0.48982516       0.5101748
+## 127 3.491569e-03    0.36763703     0.4826408      0.44544988       0.5545501
+## 128 6.018842e-03    0.25616395     0.5745515      0.34884931       0.6511507
+## 129 2.453778e-03    0.42789177     0.6552214      0.39282704       0.6071730
+## 130 3.330195e-03    0.45417300     0.7229730      0.37220860       0.6277914
+## 131 4.568058e-04    0.49890140     0.5417205      0.47983383       0.5201662
+## 132 1.878873e-03    0.49715239     0.6752411      0.41533270       0.5846673
+## 133 7.274750e-03    0.36343765     1.0385281      0.16518550       0.8348145
+## 134 8.055270e-03    0.17014297     0.5542951      0.31464738       0.6853526
+## 135 7.918719e-03    0.35004282     0.7405543      0.31614325       0.6838568
+## 136 1.613960e-03    0.44481819     0.5890183      0.43212122       0.5678788
+## 137 4.043005e-03    0.45292968     0.7853295      0.34062799       0.6593720
+## 138 2.836492e-03    0.36867880     0.4335521      0.46904439       0.5309556
+## 139 8.648536e-03    0.40487846     0.8830274      0.26894402       0.7310560
+## 140 7.121030e-03    0.40200478     1.0056062      0.20009305       0.7999069
+## 141 7.015624e-03    0.50187202     0.8437297      0.33252488       0.6674751
+## 142 2.042604e-03    0.44644705     0.5396346      0.45613989       0.5438601
+## 143 7.276373e-03    0.27335900     0.3110216      0.48123769       0.5187623
+## 144 8.504937e-03    0.28247500     1.1493787      0.06658533       0.9334147
+## 145 9.535921e-03    0.40888960     0.9714838      0.22238811       0.7776119
+## 146 8.545091e-03    0.32920752     0.2406715      0.54424876       0.4557512
+## 147 2.254398e-03    0.37776169     0.4714294      0.45556223       0.5444378
+## 148 5.514651e-03    0.27258786     0.5631959      0.36208390       0.6379161
+## 149 6.254560e-03    0.37577569     1.0434211      0.16731353       0.8326865
+## 150 6.128050e-03    0.46189330     0.6907315      0.39148591       0.6085141
+## 151 1.952048e-03    0.39256306     0.4730381      0.46188246       0.5381175
+## 152 8.239200e-03    0.33030051     0.7244088      0.31481486       0.6851851
+## 153 4.212187e-03    0.32458121     0.2727712      0.52573342       0.4742666
+## 154 6.562633e-03    0.32255966     0.2521844      0.53513468       0.4648653
+## 155 8.529452e-05    0.49978514     0.5056392      0.49724448       0.5027555
+## 156 4.627415e-03    0.30253554     0.3171601      0.49277353       0.5072265
+## 157 7.506022e-03    0.19114391     0.7362697      0.24439862       0.7556014
+## 158 5.802968e-03    0.36849394     0.2110729      0.57850610       0.4214939
+## 159 8.889093e-03    0.13810223     0.4959942      0.32384897       0.6761510
+## 160 3.338891e-03    0.35704116     0.2980883      0.52889685       0.4711032
+## 161 5.739428e-03    0.29183838     0.3035602      0.49417525       0.5058248
+## 162 9.051019e-03    0.24618906     0.9294580      0.17769349       0.8223065
+## 163 7.187216e-03    0.44810200     0.9357919      0.25904055       0.7409594
+## 164 2.371262e-03    0.37102321     0.2899472      0.53968910       0.4603109
+## 165 5.791201e-03    0.33183326     0.7032186      0.32554605       0.6744539
+## 166 5.959915e-03    0.39382630     0.9629484      0.22086063       0.7791394
+## 167 8.379680e-03    0.25726560     0.7659283      0.26171973       0.7382803
+## 168 8.564844e-03    0.32893623     0.2510775      0.53882493       0.4611751
+## 169 1.064177e-03    0.50320852     0.5820377      0.46280348       0.5371965
+## 170 6.110630e-03    0.23336248     0.5255228      0.35980801       0.6401920
+## 171 1.771706e-03    0.52165759     0.6221198      0.45237437       0.5476256
+## 172 3.746941e-03    0.42731642     0.5216066      0.45558316       0.5444168
+## 173 8.344937e-03    0.25568751     0.5881512      0.34243236       0.6575676
+## 174 8.671874e-03    0.14356052     0.4964636      0.32654393       0.6734561
+## 175 5.165876e-03    0.29467706     0.4293389      0.43492929       0.5650707
+## 176 6.250491e-03    0.26256080     0.3704989      0.44683054       0.5531695
+## 177 5.663535e-03    0.47401068     0.8621305      0.31031827       0.6896817
+## 178 8.189466e-03    0.32238236     0.2483328      0.53700190       0.4629981
+## 179 5.172787e-03    0.37674492     0.6194590      0.38587044       0.6141296
+## 180 2.048906e-03    0.51888448     0.6288528      0.44784828       0.5521517
+## 181 6.680525e-03    0.31019439     0.3270606      0.49169932       0.5083007
+## 182 4.062967e-03    0.32344469     0.4156347      0.45557047       0.5444295
+## 183 8.424910e-03    0.28920324     0.3299450      0.47986579       0.5201342
+## 184 7.709358e-03    0.31518467     0.2788501      0.51806082       0.4819392
+## 185 2.544983e-03    0.36650172     0.4030771      0.48246199       0.5175380
+## 186 5.364966e-03    0.50714385     0.7578392      0.37916456       0.6208354
+## 187 5.934410e-04    0.49408188     0.5305318      0.48283964       0.5171604
+## 188 5.020772e-05    0.50207164     0.5088920      0.49678951       0.5032105
+## 189 2.873655e-03    0.52784553     0.6870686      0.42385741       0.5761426
+## 190 5.514606e-03    0.30662414     0.2813504      0.51258028       0.4874197
+## 191 2.057597e-03    0.41814271     0.5359939      0.44449899       0.5555010
+## 192 8.173496e-03    0.15968134     0.5246346      0.32242353       0.6775765
+## 193 2.086392e-03    0.43346741     0.5171345      0.46058843       0.5394116
+## 194 3.212343e-03    0.46856248     0.8320487      0.32370124       0.6762988
+## 195 7.999160e-03    0.22223277     0.4232671      0.40126720       0.5987328
+## 196 9.251449e-07    0.49996937     0.5000287      0.49997206       0.5000279
+## 197 2.268155e-03    0.45362669     0.6246516      0.41936319       0.5806368
+## 198 7.367501e-03    0.37636973     0.8968109      0.24939865       0.7506013
+## 199 2.263759e-03    0.37305012     0.2949577      0.53817009       0.4618299
+## 200 3.956566e-03    0.46982359     0.9399072      0.26622585       0.7337742
+##          errors_1      errors_0
+## 1    2.057104e-01  2.087761e-01
+## 2    2.046673e-01  2.070398e-01
+## 3   -4.720492e-03 -4.753433e-03
+## 4    2.308647e-02  5.273141e-02
+## 5   -2.085990e-01 -2.083042e-01
+## 6   -7.382118e-02 -6.772559e-02
+## 7   -1.219298e-01 -1.117670e-01
+## 8    2.105131e-01  2.122746e-01
+## 9    8.056542e-02  1.186624e-01
+## 10  -2.037601e-02 -1.365677e-02
+## 11   2.056015e-01  2.088203e-01
+## 12  -7.329105e-02 -7.327537e-02
+## 13   1.927001e-01  1.975676e-01
+## 14   8.043131e-02  1.054286e-01
+## 15  -1.572423e-01 -1.543740e-01
+## 16   9.669772e-02  1.216871e-01
+## 17   4.620248e-04  5.090779e-04
+## 18  -1.678897e-02 -1.553812e-02
+## 19   1.984941e-01  2.026378e-01
+## 20  -6.312668e-02 -5.909996e-02
+## 21  -2.128459e-01 -2.130625e-01
+## 22   2.153857e-01  2.156207e-01
+## 23   1.248727e-02  1.547896e-02
+## 24   2.129886e-01  2.140081e-01
+## 25  -2.080700e-01 -2.080310e-01
+## 26  -1.615563e-01 -1.619456e-01
+## 27   1.375914e-01  1.597331e-01
+## 28  -8.450073e-02 -7.990404e-02
+## 29   9.079887e-02  9.927906e-02
+## 30   7.822987e-02  8.561544e-02
+## 31   2.063738e-01  2.095800e-01
+## 32  -2.106258e-01 -2.109747e-01
+## 33  -1.981070e-01 -1.953013e-01
+## 34  -7.206710e-02 -6.398138e-02
+## 35   9.560616e-02  1.043293e-01
+## 36  -2.119551e-02 -1.639315e-02
+## 37  -7.331524e-02 -7.315768e-02
+## 38   3.165264e-02  3.610795e-02
+## 39   6.680329e-02  7.804157e-02
+## 40   2.106916e-01  2.124700e-01
+## 41  -2.044075e-01 -2.035567e-01
+## 42  -7.150672e-03 -2.995391e-03
+## 43  -1.704126e-01 -1.701235e-01
+## 44  -2.110687e-01 -2.112383e-01
+## 45  -2.437296e-02  1.341938e-02
+## 46   2.103359e-01  2.122277e-01
+## 47   2.947555e-02  4.120279e-02
+## 48  -2.088689e-01 -2.093201e-01
+## 49  -1.252108e-01 -1.040711e-01
+## 50  -1.545635e-01 -1.362448e-01
+## 51  -2.066628e-01 -2.071462e-01
+## 52   2.800295e-02  3.117943e-02
+## 53   1.817216e-01  1.868306e-01
+## 54  -5.600122e-02 -5.434368e-02
+## 55   1.213650e-01  1.302471e-01
+## 56   2.083867e-01  2.111246e-01
+## 57   3.651686e-02  3.969636e-02
+## 58   1.042261e-01  1.167564e-01
+## 59  -1.850800e-01 -1.787844e-01
+## 60   1.811318e-01  1.876500e-01
+## 61  -8.775469e-02 -7.022273e-02
+## 62   2.360579e-03  2.709861e-03
+## 63   7.827917e-02  8.389191e-02
+## 64  -2.482957e-02 -2.011820e-02
+## 65   2.155999e-01  2.157690e-01
+## 66  -9.532478e-02 -9.369404e-02
+## 67  -8.668955e-02 -8.180145e-02
+## 68   1.079166e-01  1.215698e-01
+## 69   1.625703e-01  1.735219e-01
+## 70   9.574459e-02  1.100080e-01
+## 71   1.313752e-02  1.638841e-02
+## 72   1.999106e-01  2.029597e-01
+## 73  -2.005944e-01 -2.011580e-01
+## 74  -2.128098e-01 -2.127428e-01
+## 75   1.966296e-02  6.425551e-02
+## 76   4.043169e-02  4.553798e-02
+## 77   5.226723e-02  6.048327e-02
+## 78  -5.988499e-02 -5.185763e-02
+## 79  -3.961493e-02 -3.180358e-03
+## 80  -1.844690e-01 -1.857248e-01
+## 81  -1.612637e-01 -1.607666e-01
+## 82   1.229054e-01  1.367655e-01
+## 83   1.829816e-01  1.894223e-01
+## 84   2.131595e-01  2.141312e-01
+## 85  -2.022721e-01 -2.025491e-01
+## 86   7.576142e-02  8.863514e-02
+## 87   1.395969e-01  1.568188e-01
+## 88   2.147313e-01  2.152105e-01
+## 89   1.085183e-01  1.152898e-01
+## 90   1.755876e-02  3.066611e-02
+## 91   2.128506e-01  2.138780e-01
+## 92   2.139639e-01  2.146135e-01
+## 93   1.784308e-01  1.877860e-01
+## 94  -2.053546e-01 -2.050887e-01
+## 95  -1.836993e-01 -1.787009e-01
+## 96   2.078481e-01  2.101650e-01
+## 97   1.776931e-01  1.839225e-01
+## 98   1.686201e-01  1.746506e-01
+## 99  -1.815657e-01 -1.815625e-01
+## 100  6.676146e-02  9.170119e-02
+## 101 -7.508043e-02 -7.111679e-02
+## 102  4.459566e-02  5.344510e-02
+## 103 -2.157128e-01 -2.157587e-01
+## 104  2.149882e-01  2.154274e-01
+## 105 -1.999570e-01 -1.991238e-01
+## 106 -3.307947e-02 -3.141428e-02
+## 107 -7.215855e-02 -6.463398e-02
+## 108 -1.975431e-01 -1.982041e-01
+## 109  6.234423e-02  8.199463e-02
+## 110  1.344596e-01  1.448517e-01
+## 111 -2.103567e-01 -2.102963e-01
+## 112  2.016121e-02  4.048288e-02
+## 113 -2.136342e-01 -2.136430e-01
+## 114  1.078343e-01  1.396337e-01
+## 115  1.276662e-01  1.363871e-01
+## 116  2.120729e-01  2.131528e-01
+## 117  1.592846e-01  1.671533e-01
+## 118 -1.867789e-04  6.732522e-04
+## 119 -3.583079e-02 -3.539087e-02
+## 120  1.550744e-01  1.625898e-01
+## 121  1.980903e-01  2.031546e-01
+## 122 -5.028477e-02 -4.375760e-02
+## 123  1.551705e-01  1.709601e-01
+## 124  2.133190e-01  2.141825e-01
+## 125  2.512029e-03  2.829124e-03
+## 126  7.612538e-03  8.877257e-03
+## 127 -7.781284e-02 -7.190928e-02
+## 128 -9.268536e-02 -7.659921e-02
+## 129  3.506474e-02  4.804841e-02
+## 130  8.196439e-02  9.518159e-02
+## 131  1.906758e-02  2.155435e-02
+## 132  8.181969e-02  9.057382e-02
+## 133  1.982521e-01  2.037136e-01
+## 134 -1.445044e-01 -1.310576e-01
+## 135  3.389958e-02  5.669753e-02
+## 136  1.269697e-02  2.113953e-02
+## 137  1.123017e-01  1.259575e-01
+## 138 -1.003656e-01 -9.740354e-02
+## 139  1.359344e-01  1.519715e-01
+## 140  2.019117e-01  2.056993e-01
+## 141  1.693471e-01  1.762546e-01
+## 142 -9.692835e-03 -4.225522e-03
+## 143 -2.078787e-01 -2.077407e-01
+## 144  2.158897e-01  2.159640e-01
+## 145  1.865015e-01  1.938719e-01
+## 146 -2.150412e-01 -2.150798e-01
+## 147 -7.780054e-02 -7.300837e-02
+## 148 -8.949604e-02 -7.472020e-02
+## 149  2.084622e-01  2.107346e-01
+## 150  7.040738e-02  8.221738e-02
+## 151 -6.931940e-02 -6.507947e-02
+## 152  1.548565e-02  3.922368e-02
+## 153 -2.011522e-01 -2.014954e-01
+## 154 -2.125750e-01 -2.126809e-01
+## 155  2.540662e-03  2.883628e-03
+## 156 -1.902380e-01 -1.900663e-01
+## 157 -5.325471e-02 -1.933165e-02
+## 158 -2.100122e-01 -2.104210e-01
+## 159 -1.857467e-01 -1.801568e-01
+## 160 -1.718557e-01 -1.730148e-01
+## 161 -2.023369e-01 -2.022645e-01
+## 162  6.849557e-02  1.071515e-01
+## 163  1.890615e-01  1.948325e-01
+## 164 -1.686659e-01 -1.703637e-01
+## 165  6.287213e-03  2.876469e-02
+## 166  1.729657e-01  1.838091e-01
+## 167 -4.454133e-03  2.764807e-02
+## 168 -2.098887e-01 -2.100975e-01
+## 169  4.040504e-02  4.484123e-02
+## 170 -1.264455e-01 -1.146692e-01
+## 171  6.928322e-02  7.449420e-02
+## 172 -2.826674e-02 -2.281027e-02
+## 173 -8.674485e-02 -6.941641e-02
+## 174 -1.829834e-01 -1.769924e-01
+## 175 -1.402522e-01 -1.357318e-01
+## 176 -1.842697e-01 -1.826705e-01
+## 177  1.636924e-01  1.724487e-01
+## 178 -2.146195e-01 -2.146653e-01
+## 179 -9.125522e-03  5.329423e-03
+## 180  7.103619e-02  7.670112e-02
+## 181 -1.815049e-01 -1.812400e-01
+## 182 -1.321258e-01 -1.287948e-01
+## 183 -1.906626e-01 -1.901892e-01
+## 184 -2.028761e-01 -2.030891e-01
+## 185 -1.159603e-01 -1.144609e-01
+## 186  1.279793e-01  1.370038e-01
+## 187  1.124224e-02  1.337148e-02
+## 188  5.282129e-03  5.681505e-03
+## 189  1.039881e-01  1.109260e-01
+## 190 -2.059561e-01 -2.060693e-01
+## 191 -2.635628e-02 -1.950714e-02
+## 192 -1.627422e-01 -1.529419e-01
+## 193 -2.712102e-02 -2.227710e-02
+## 194  1.448612e-01  1.557500e-01
+## 195 -1.790344e-01 -1.754657e-01
+## 196 -2.691577e-06  7.861760e-07
+## 197  3.426350e-02  4.401479e-02
+## 198  1.269711e-01  1.462095e-01
+## 199 -1.651200e-01 -1.668722e-01
+## 200  2.035977e-01  2.061330e-01
 ## 
 ## $values
 ## $values$entropy
@@ -3169,14 +3565,14 @@ previous section for further details.</p>
 ## Dunemp       0.000 0.00
 ## 
 ## 
-## $cross_moments_hp
+## $cross_moments_A
 ##             1          0         
 ## (Intercept)       0.34       0.66
 ## Dcollege          0.17       0.44
 ## Totalincome  103036.63  189594.78
 ## Dunemp            0.16       0.29
 ## 
-## $cross_moments_hs
+## $cross_moments_B
 ##             1          0         
 ## (Intercept)       0.34       0.66
 ## Dcollege          0.17       0.44
@@ -3187,7 +3583,7 @@ previous section for further details.</p>
 ## [1] 2
 ## 
 ## $fn
-## datahp$poor_liq ~ Dcollege + Totalincome + Dunemp
+## dataA$poor_liq ~ Dcollege + Totalincome + Dunemp
 ## 
 ## $divergencekl
 ## [1] 13.52074
@@ -3203,10 +3599,10 @@ predictions, the probabilities and the error.</p>
 ## Entropy value[1] 393.749
 ## [1] 13.52074
 ## [1] &quot;mean_estimations&quot;
-##       weights predictions_1 predictions_0  p_dual_1  p_dual_0     e_dual_1
-## 1 0.006608031     0.3377784     0.6622217 0.3420553 0.6579447 -0.004276907
-##      e_dual_0
-## 1 0.004276958
+##       weights predictions_1 predictions_0 probabilities_1 probabilities_0
+## 1 0.006608031     0.3377784     0.6622217       0.3420553       0.6579447
+##       errors_1    errors_0
+## 1 -0.004276907 0.004276958
 ## [1] &quot;lambda&quot;
 ##   (Intercept) Dcollege  Totalincome    Dunemp
 ## 1    1925.471 2117.909 -0.008238336 -485.6150
@@ -3214,7 +3610,7 @@ predictions, the probabilities and the error.</p>
 <p>Graphs are generated with the plot function, showing the averages of
 the predictions for each territorial unit and the 95% confidence
 interval associated with each of them.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>result3, <span class="at">reg=</span>datahs<span class="sc">$</span>reg)   </span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>result3, <span class="at">reg=</span>dataB<span class="sc">$</span>reg)   </span></code></pre></div>
 <p><img role="img" src="data:image/png;base64,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" /><!-- --><img role="img" src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="references" class="section level1">

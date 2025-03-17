@@ -5,18 +5,18 @@ knitr::opts_chunk$set(echo = TRUE)
 devtools::load_all(here())
 
 ## -----------------------------------------------------------------------------
-datahp <- financial()
-datahs <- social()
+dataA <- financial()
+dataB <- social()
 
 ## -----------------------------------------------------------------------------
-fn <- datahp$poor_liq ~ Dcollege+Totalincome+Dunemp
+fn <- dataA$poor_liq ~ Dcollege+Totalincome+Dunemp
 
 ## -----------------------------------------------------------------------------
-q <- c(0.4,0.6) 
+q <- c(0.2,0.8) 
 v <- matrix(c(1,0,-1),nrow=1)
 
 ## ----ei_gce-------------------------------------------------------------------
-result <- ei_gce(fn,datahp,datahs,q=q,weights = "w",v=v)
+result <- ei_gce(fn,dataA,dataB,q=q,weights = "w",v=v)
 result
 
 ## -----------------------------------------------------------------------------
@@ -24,14 +24,14 @@ suppressPackageStartupMessages(library(dplyr))
 summary(result)
 
 ## ----echo=TRUE----------------------------------------------------------------
-plot(x=result,datahs$reg)
+plot(x=result,dataB$reg)
 
 ## -----------------------------------------------------------------------------
-result2 <- ei_gce(fn,datahp,datahs,weights= "w")
+result2 <- ei_gce(fn,dataA,dataB,weights= "w")
 result2
 
 ## -----------------------------------------------------------------------------
-result3 <- ei_gme (fn,datahp,datahs,weights="w")
+result3 <- ei_gme (fn,dataA,dataB,weights="w")
 
 ## -----------------------------------------------------------------------------
 result3
@@ -41,5 +41,5 @@ summary(object=result3)
 
 
 ## ----echo=TRUE----------------------------------------------------------------
-plot(x=result3, reg=datahs$reg)   
+plot(x=result3, reg=dataB$reg)   
 

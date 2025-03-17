@@ -1,11 +1,6 @@
 ---
 title: "Vignette EIEntropy"
-output: 
-  rmarkdown::html_vignette:
-    toc: true
-editor_options:
-  markdown:
-    wrap: sentence
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Vignette EIEntropy}
   %\VignetteEngine{knitr::rmarkdown}
@@ -19,49 +14,25 @@ knitr::opts_chunk$set(echo = TRUE)
 devtools::load_all(here())
 ```
 
-In a wide range of analyses, there is a common problem. 
-The data is usually not available at the desired spatial scale that researchers need. 
-Ecological inference allows us to recover incomplete or unavailable data by inferring individual behaviours based on the aggregated information.
-In some cases, the database containing the variable of interest does not have it at the needed spatial level. 
-Entropy allows us to obtain the best solution according to the information that we have. 
-To learn more about the methodology, see Fernández-Vázquez et al. (2020)
+In a wide range of analyses, there is a common problem.  The data is usually not available at the desired spatial scale that researchers need.  Ecological inference allows us to recover incomplete or unavailable data by inferring individual behaviours based on the aggregated information. Sometimes, the database containing the variable of interest does not have it at the needed spatial level.  Entropy allows us to obtain the best solution according to the information that we have.  To learn more about the methodology, see Fernández-Vázquez et al. (2020)
 
-The package extrapolates the value of the variable of interest above a data frame with more detailed geographical information, being consistent with the aggregates available.
-This package contains two functions, ei_gce() and ei_gme().
-The method that the function ei_gce() applies is framed between GCE (Generalized Cross entropy), minimising the distance between the two distributions $P$ and $Q$, being this $Q$ the prior information we can initially have. 
-If the user does not have prior information can choose ei_gme() for computational reasons which will use GME (Generalized maximum entropy) since our distribution a priori will be the uniform distribution. 
-These two kinds of problems will be explained in the next sections. 
+The package estimates the variable of interest using a second data frame that provides more detailed geographical information, ensuring consistency with the aggregates available in the first database. This package contains two functions, ei_gce() and ei_gme(). The method that the function ei_gce() applies is framed between GCE (Generalized Cross entropy), minimising the distance between the two distributions $P$ and $Q$, being this $Q$ the prior information we can initially have.  If the user does not have prior information can choose ei_gme() for computational reasons which will use GME (Generalized maximum entropy) since our distribution a priori will be the uniform distribution.  These two kinds of problems will be explained in the
 
-The EIentropy package makes the process of assessing uncertainty to estimate information at the desired level of disaggregation into one function.
-It gathers all the steps making it easy to apply this methodology to problems of absence of data.
-This document introduces you to the functions ei_gme() and ei_gce(), which apply entropy to solve issues of ecological inference, providing, consistent disaggregated indicators with observable aggregated data and cross moments.
+The EIentropy package makes the process of assessing uncertainty to estimate information at the desired level of disaggregation into one function. It gathers all the steps making it easy to apply this methodology to problems of absence of data. This document introduces you to the functions ei_gme() and ei_gce(), which apply entropy to solve issues of ecological inference while providing consistent disaggregated indicators with observable aggregated data and cross moments.
 
-Once you've installed it, the vignette ("EIEntropy") will allow you to learn more.
-We will use the data included in this package to explore its functions.
+Once you've installed it, the vignette ("EIEntropy") will allow you to learn more. We will use the data included in this package to explore its functions.
 
 This package is on CRAN and can be installed from within R.
 
 ## 1. Methodology
 
-The problem assessed is the need to obtain a variable $Y$ at a spatial level that is not available.
-This variable $Y$ can take $J$ values.
-The method aims to obtain a matrix $P$ with dimension $n$ *x* $J$ being $n$ the number of observations.
-Matrix $P$ is compounded by the probabilities associated with each $j$ value for each observation.
-Taking advantage of the information that we have, the method introduces the cross-moments as a restriction to assure consistency.
+The problem assessed is the need to obtain a variable $Y$ at a spatial level that is not available. This variable $Y$ can take $J$ values. The method aims to obtain a matrix $P$ with dimension $n$ *x* $J$ being $n$ the number of observations. Matrix $P$ is compounded by the probabilities associated with each $j$ value for each observation. Taking advantage of the information that we have, the method introduces cross-moments as a restriction to assure consistency.
 
-Taking into account $Y$ is the sum of $P$ and $U$, being $U$ the random noise.
-Once we have estimated matrix $P$ and the error term, we can obtain $Y$ as $Y=P+U$.
-The error term is built as a weighted mean of a support vector $V$ in which weights $W$ are estimated.
+Taking into account $Y$ is the sum of $P$ and $U$, being $U$ the random noise. Once we have estimated matrix $P$ and the error term, we can obtain $Y$ as $Y=P+U$. The error term is built as a weighted mean of a support vector $V$ in which weights $W$ are estimated in the optimization.
 
-The support vector is the component of the noise defining the flexibility of the estimation.
-It represents the maximum and minimum error around a value in the center.
-By default, $V$ is defined as (var, 0, -var) where *var* represents the variance of the dependent variable.
-If the estimation requires more flexibility $V$ can be defined wider--with (1,0,-1) as the recommended maximum.
+The support vector is the component of the noise defining the flexibility of the estimation. It represents the maximum and minimum error around a value in the center. By default, $V$ is defined as (var, 0, -var) where *var* represents the variance of the dependent variable. If the estimation requires more flexibility $V$ can be defined wider--with (1,0,-1) as the recommended maximum.
 
-We present two functions to apply ecological inference through entropy.
-The general case minimizes the Kullback-Leibler divergence to find the matrix of probabilities $P$ with the minimum divergence with a prior.
-This case is adequate even when we have prior information on the distribution of the probabilities of our variable of interest.
-This information refers to all existing knowledge previous to the data that can influence the expectations of the variable of interest.
+We present two functions to apply ecological inference through entropy. The general case minimizes the Kullback-Leibler divergence to find the matrix of probabilities $P$ with the minimum divergence with a prior. This case is adequate when we have prior information on the distribution of the probabilities of our variable of interest. This information refers to all existing knowledge previous to the data that can influence the expectations of the variable of interest.
 
 \$\$\\min\_{P} \\, \\text{KL}(P, Q) = \\sum\_{i=1}\^{n} \\sum\_{j=1}\^{J} p\_{ij} \\log\\left(\\frac{p\_{ij}}{q\_{ij}}\\right)+ \\sum\_{l=1}\^{L} \\sum\_{i=1}\^{n} \\sum\_{j=1}\^{J} w\_{ijl} \\log\\left(\\frac{w\_{ijl}}{wo\_{ijl}}\\right)\\quad \\text{s.t.}\$\$
 
@@ -78,99 +49,72 @@ j=1,\ldots,J
 \]
 $$
 
-This function minimizes the distance between $P$ and $Q$.
-Being $Q$ the prior information that we already have.
-If we have some information about the possible distribution of our variable of interest we can include this information here.
-For example, if you know your variable of interest can take two values but one of them is more common than the other you can include it in your estimation by using $Q$.
+This function minimizes the distance between $P$ and $Q$. Being $Q$ the prior information that we already have. If we have some information about the possible distribution of our variable of interest we can include this information here. For example, if you know your variable of interest can take two values but one of them is more common than the other you can include it in your estimation by using $Q$.
 
-If we don't have any information then we will assume there is the same probability for each possibility $j$ of our variable of interest.
-In this sense, we minimize the divergence with a uniform distribution.
+If we don't have any information then we will assume there is the same probability for each possibility $j$ of our variable of interest. In this sense, we minimize the divergence with a uniform distribution.
 
-Solving the optimization problem, we obtain estimations as $\hat{Y}= \hat{P} + \hat{W}V$.
-The solution should be consistent with the restrictions.
-In this case, the restrictions will contain information from two data sources, datahp and datahs.
-If there were divergences between the two sources of data, they would be captured in the error term.
-This is one of the main advantages of the methodology because it allows the user to use two databases with divergences between them.
+Solving the optimization problem, we obtain estimations as $\hat{Y}= \hat{P} + \hat{W}V$. The solution should be consistent with the restrictions. In this case, the restrictions will contain information from two data sources, dataA and dataB. If there were divergences between the two sources of data, they would be captured in the error term. This is one of the main advantages of the methodology because it allows the user to use two databases with divergences between them.
 
 ## 2. Data
 
-To explore the functions we will use data included in the package.
-In our example, we want to obtain microdata about poverty, in terms of wealth, with an indication of location at regional level.
-We have the variable of interest in one official database but without information about location.
-At the same time, in other database, the variable of interest is not available but the household location is.
+To explore the functions we will use data included in the package. In our example, we want to obtain microdata about poverty, in terms of wealth, with an indication of location at the regional level. We have the variable of interest in one official database but without information about location. At the same time, in another database, the variable of interest is not available but the household location is.
 
 The data can be loaded by calling the functions financial() and social().
 
 ```{r}
-datahp <- financial()
-datahs <- social()
+dataA <- financial()
+dataB <- social()
 ```
 
-In this example, we aim to obtain probabilities of being poor in terms of wealth for each individual or observation in the survey with detailed information about location.
-With this procedure, we will have our variable of interest at the desired spatial scale.
-As it is known, some variables, such as education level, income, or employment status are related to wealth.
-Hence, we will use these variables as regressors in the example.
-These variables are going to be our X.
-We have the same variables in both data frames with the same name.
-For this example, the financial survey includes 100 observations for the variables Dcollege, Dunemp, total income and the variable of interest: poor_liq.
-They are a dummy for college, a dummy for being unemployed, the household income (in euros) and a dummy for being poor in terms of liquid assets respectively.
+In this example, we aim to obtain probabilities of being poor in terms of wealth for each individual or observation in the survey with detailed information about location. With this procedure, we will have our variable of interest at the desired spatial scale. As it is known, some variables, such as education level, income, or employment status are related to wealth. Hence, we will use these variables as regressors in the example. These variables are going to be our X. We have the same variables in both data frames with the same name. For this example, the financial survey includes 100 observations for the variables Dcollege, Dunemp, total income and the variable of interest: poor_liq. They are a dummy for college, a dummy for being unemployed, the household income (in euros) and a dummy for being poor in terms of liquid assets respectively.
 
-The data called social has the same variables but instead of the variable of interest, it has another variable with the region of each household.
-In this database, we have 200 observations (households).
+The data called social has the same variables but instead of the variable of interest, it has another variable with the region of each household. In this database, we have 200 observations (households).
 
 ## 3. Examples
 
 # 3.1 Generalized Cross entropy: ei_gce()
 
-The function ei_gce() allows the user to introduce prior information in the estimation.
-In this example, we keep using the databases included in this package *financial* and *social*.
-Once we have chosen the best function for our case note that we need to specify our function :
+The function ei_gce() allows the user to introduce prior information in the estimation. In this example, we keep using the databases included in this package *financial* and *social*. Once we have chosen the best function for our case note that we need to specify our function :
 
 ```{r}
-fn <- datahp$poor_liq ~ Dcollege+Totalincome+Dunemp
+fn <- dataA$poor_liq ~ Dcollege+Totalincome+Dunemp
 ```
 
 Note that the same name in both datasets for the independent variables is required.
 
-This function's arguments are the previously defined function, the databases used, the weights, the tolerance, the maximum number of iterations allowed and the support vector.
-With this function, weights can be used and included with *weights*.
-If there are no weights the function assumes a matrix of 1.
-Note that the weights used in this methodology are normalised so analytics and sampling weights can be used without distinction.
+This function's arguments are the previously defined function, the databases used, the weights, the tolerance, the maximum number of iterations allowed and the support vector. With this function, weights can be used and included with *weights*. If there are no weights the function assumes a matrix of 1. Note that the weights used in this methodology are normalised so analytics and sampling weights can be used without distinction.
 
-In this example the variable of interest (poor_liq) is defined with a function in the argument *fn* (see previous section)
+In this example, the variable of interest (poor_liq) is defined with a function in the argument *fn* (see previous section)
 
 The arguments corresponding to the information a priori and the support vector can be included as :
 
 ```{r}
-q <- c(0.4,0.6) 
+q <- c(0.2,0.8) 
 v <- matrix(c(1,0,-1),nrow=1)
 ```
 
-In this example we assume a priori distribution of poverty equal to 0.4 for poor and 0.6 for non-poor.
-The support vector has been set to the maximum (1,0,-1).
-Applying the ei_gce() we can solve the estimation as:
+In this example we assume a priori distribution of poverty equal to 0.2 for poor and 0.8 for non-poor. The support vector has been set to the maximum (1,0,-1). Applying the ei_gce() we can solve the estimation as:
 
 ```{r ei_gce}
-result <- ei_gce(fn,datahp,datahs,q=q,weights = "w",v=v)
+result <- ei_gce(fn,dataA,dataB,q=q,weights = "w",v=v)
 result
 ```
 
-The function will produce a data frame called a table with the following information:
+The function will produce a data frame called estimations with the following information:
+
+-   The prediction for each individual is the result of the sum of the probability plus the error.
+
+<!-- -->
 
 -   Probabilities for each individual to each possibility $j$ of the variable of interest $Y$.
 
 -   The errors are calculated to the $j$ possibilities of $Y$.
 
--   The prediction for each individual is the result of the sum of the probability plus the error.
-
 The function provides information about the optimization process, in concrete:
 
--   The value of entropy resulting from the optimization, the iterations, which indicate the times the objective function and the gradient have been evaluated during the optimization process and a message in case something went wrong.
+-   The value of entropy resulting from the optimization, the iterations, which indicate the times the objective function and the gradient have been evaluated during the optimization process, a message in case something went wrong and the prior included in the optimization.
 
-Lagrange multipliers $\lambda$ associated to each independent variables are also provided in the form of a data frame.
-In addition, it provides an object with the restrictions checked which should be approximately zero.
-Being g1 the restriction related to the unit probability constraint, g2 to the error unit sum constraint, and g3 to the consistency restriction that implies that the difference between the cross moment in both datasets must be zero.
-The restriction g3 can be checked thoroughly with the objects separately which are to be provided in the output as cross moments hp (the cross moments in datahp) and cross moments hs (the cross moments in datahs).
+Lagrange multipliers $\lambda$ associated to each independent variables are also provided in the form of a data frame. In addition, it provides an object with the restrictions checked which should be approximately zero. Being g1 the restriction related to the unit probability constraint, g2 to the error unit sum constraint, and g3 to the consistency restriction that implies that the difference between the cross moment in both datasets must be zero. The restriction g3 can be checked thoroughly with the objects separately which are to be provided in the output as cross moments A (the cross moments in dataA) and cross moments B (the cross moments in dataB).
 
 To make the results more visual, this package includes a personalized summary function, providing the means for each category $j$ for the predictions, the probabilities and the error.
 
@@ -182,22 +126,19 @@ summary(result)
 Graphs included are generated with the plot function, showing the averages of the predictions for each territorial unit and the 95% confidence interval associated with each of them.
 
 ```{r, echo=TRUE}
-plot(x=result,datahs$reg)
+plot(x=result,dataB$reg)
 ```
 
-Notes: Arguments *tol and iter* can be defined by the user.
-The default tolerance has been set in 1e-10 while the maximum number or iterations by default is settled in 1000.
+Notes: Arguments *tol and iter* can be defined by the user. The default tolerance has been set in 1e-10 while the maximum number or iterations by default is settled in 1000.
 
 # 3.2 Without prior information
 
-Suppose we do not have prior information about our variable of interest.
-In that case, the process starting point will be the uniform distribution as we do not have information to think one characteristic is more likely than the other.
+Suppose we do not have prior information about our variable of interest. In that case, the process starting point will be the uniform distribution as we do not have the information to think one characteristic is more likely than the other.
 
-The function ei_gce() will include by default the uniform distribution as $Q$ if the user does not specify any other.
-This would be:
+The function ei_gce() will include by default the uniform distribution as $Q$ if the user does not specify any other. This would be:
 
 ```{r}
-result2 <- ei_gce(fn,datahp,datahs,weights= "w")
+result2 <- ei_gce(fn,dataA,dataB,weights= "w")
 result2
 ```
 
@@ -205,19 +146,14 @@ The summary and the plot options are the same as in the previous case.
 
 # 3.2.1 Another option when we do not have prior information: ei_gme()
 
-In the case the user does not have prior information the function ei_gme() is also available.
-This function is provided for cases where the user may prefer using GME (Generalized maximum entropy) if the user has a big volume of data, because it is a more efficient function in computational terms than ei_gce() with the uniform distribution as prior.
-Both functions should provide the same result.
+In the case the user does not have prior information the function ei_gme() is also available. This function is provided for cases where the user may prefer using GME (Generalized maximum entropy). Specifically, if the user has a big volume of data because it is a more efficient function in computational terms than ei_gce() with the uniform distribution as prior. Both functions should provide the same result.
 
-ei_gme() applies the Shannon entropy function to the optimization.
-It is adequate when you cannot assume anything about the distribution of $Y$.
-So the starting point is the uniform distribution.
+ei_gme() applies the Shannon entropy function to the optimization. It is adequate when you cannot assume anything about the distribution of $Y$. So the starting point is the uniform distribution.
 
-Using the same example, our variable of interest is the poverty rate in terms of wealth and our independent variables are the income and dummies for unemployment and college studies.
-In this case, we need to define the function
+Using the same example, our variable of interest is the poverty rate in terms of wealth and our independent variables are the income and dummies for unemployment and college studies. In this case, we need to define the function
 
 ```{r}
-result3 <- ei_gme (fn,datahp,datahs,weights="w")
+result3 <- ei_gme (fn,dataA,dataB,weights="w")
 ```
 
 The function will produce the same output as ei_gce(), see the previous section for further details.
@@ -236,11 +172,9 @@ summary(object=result3)
 Graphs are generated with the plot function, showing the averages of the predictions for each territorial unit and the 95% confidence interval associated with each of them.
 
 ```{r, echo=TRUE}
-plot(x=result3, reg=datahs$reg)   
+plot(x=result3, reg=dataB$reg)   
 ```
 
 # References
 
-Fernandez-Vazquez, E., Díaz-Dapena, A., Rubiera-Morollon, F., Viñuela, A., (2020) Spatial Disaggregation of Social Indicators: An Info-Metrics Approach.
-Social Indicators Research, 152(2), 809--821.
-<https://doi.org/10.1007/s11205-020-02455-z>.
+Fernandez-Vazquez, E., Díaz-Dapena, A., Rubiera-Morollon, F., Viñuela, A., (2020) Spatial Disaggregation of Social Indicators: An Info-Metrics Approach. Social Indicators Research, 152(2), 809--821. <https://doi.org/10.1007/s11205-020-02455-z>.

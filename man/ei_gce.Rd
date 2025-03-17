@@ -4,25 +4,24 @@
 \alias{ei_gce}
 \title{Ecologic Inference applying entropy}
 \usage{
-ei_gce(fn, datahp, datahs, q, weights = NULL, v, tol, iter)
+ei_gce(fn, dataA, dataB, q, weights = NULL, v, tol, iter)
 }
 \arguments{
-\item{fn}{is the formula that represents the dependent variable in the optimization.
+\item{fn}{Is the formula that represents the dependent variable in the optimization.
 In the context of this function, 'fn' is used to define the dependent variable
 to be optimized by the Kullback-Leibler divergence function.
 Note: If the dependent variable is categorical the sorting criterion for the columns, and therefore for J, is alphabetical order.}
 
-\item{datahp}{The data where the variable of interest y is available and also the independent variables.
-Note: The variables and weights used as independent variables must have the same name in 'datahp' and in 'datahs'}
+\item{dataA}{The data where the variable of interest y is available and also the independent variables.
+Note: The variables and weights used as independent variables must have the same name in 'dataA' and in 'dataB'}
 
-\item{datahs}{The data with the information of the independent variables as a
-disaggregated level.
-Note: The variables and weights used as independent variables must have the same name in 'datahp' and in 'datahs'. The variables in both databases need to match up in content.}
+\item{dataB}{The data which contains information on the independent variables at a disaggregated level.
+Note: The variables and weights used as independent variables must have the same name in 'dataA' and in 'dataB'. The variables in both databases need to match up in content.}
 
 \item{q}{The prior distribution Q}
 
-\item{weights}{A character string specifying the column name to be used as weights in both \code{datahp} and \code{datahs} datasets.
-If \code{weights} is provided and exists in both datasets, each dataset's weights will be normalized by the sum of the weights in that dataset.
+\item{weights}{A character string specifying the column name to be used as weights in both 'dataA'  and 'dataB' datasets.
+If the argument \code{weights} is provided and present in both datasets,  the weights in each dataset will be normalized by the sum of the weights within that dataset.
 If \code{weights} is NULL or the specified column does not exist in both datasets, equal weights are applied across all observations.}
 
 \item{v}{The support vector}
@@ -34,15 +33,17 @@ Increasing the number of iterations may improve the likelihood of finding an opt
 but can also increases computation time.If the maximum number of iterations is not specified, it will default to 1000}
 }
 \value{
-The function will provide you a dataframe called table with the next information:
+The function will provide you a dataframe called estimations with the next information:
 \itemize{
-\item \strong{probabilities}  Probabilities for each individual to each possibility \code{j} of the variable of interest \code{y}.
-\item \strong{error dual}  Errors calculated to the \code{j} possibilities of \code{y}.
+\item \strong{weights} The weights used in the optimization process.
 \item \strong{predictions}  The prediction for each individual is calculated as the sum of the probability plus the error.
+\item \strong{probabilities}  Probabilities for each individual to each possibility \code{j} of the variable of interest \code{y}.
+\item \strong{errors}  Errors calculated to the \code{j} possibilities of \code{y}.
 The function provides information about the optimization process as:
-\item \strong{divergencekl}The Kullback-Leibler divergence value resulting from the optimization.
+\item \strong{divergencekl} The Kullback-Leibler divergence value resulting from the optimization.
 \item \strong{iterations} Indicates the times the objective function and the gradient has been evaluated during the optimization process,if any.
 \item \strong{message} Indicates the message if it has been generated in the process of optimization.
+\item \strong{q} Indicates prior implemented in the optimization.
 \item \strong{tol} Indicates the tolerance of the optimization process.
 \item \strong{v} Indicates the support vector used in the function.
 The function provides a dataframe containing the information about lambda:
@@ -50,8 +51,8 @@ The function provides a dataframe containing the information about lambda:
 It is provided an object with the restrictions checked which should be zero.
 \item  \strong{check restrictions} Being  \code{g1}  the restriction related to the unit probability constraint, \code{g2}  to the error unit sum constraint, and \code{g3}  to the consistency restriction that implies that the difference between the cross moment in both datasets must be zero.
 The restriction g3 can be checked thoroughly with the objects by separate.
-\item  \strong{cross moments hp} Cross moments in \code{datahp}.
-\item  \strong{cross moments hs} Cross moments in \code{datahs}.
+\item  \strong{cross moments A} Cross moments in \code{dataA}.
+\item  \strong{cross moments B} Cross moments in \code{dataB}.
 }
 }
 \description{
@@ -62,7 +63,7 @@ of our variable of interest previous to the analysis. The function will set
 the optimization parameters and, using the "nlminb"
 function, an optimal solution is obtained.
 The function defines the independent variables in the two databases
-needed, which we call datahp with "n_hp" observations and datahs with "n_hs"
+needed, which we call dataA with "n_A" observations and dataB with "n_B"
 observations; and the function of the variable of interest y. Then the
 weights of each observation for the two databases used are defined, if there
 are not weights available it will be 1 by default. The errors are calculated
@@ -81,20 +82,20 @@ In addition, the initial values of p are settled as the defined prior and the er
 }
 \examples{
 #In this example we use the data of this package
-datahp <- financial()
-datahs <- social()
+dataA <- financial()
+dataB <- social()
 # Setting up our function for the dependent variable.
-fn               <- datahp$poor_liq ~ Dcollege+Totalincome+Dunemp
+fn               <- dataA$poor_liq ~ Dcollege+Totalincome+Dunemp
 #In this case we know that the mean probability of being poor is 0.35.With this function
 #we can add the information as information a priori. This information a priori correspond to the
 #Q distribution and in this function is called q for the sake of simplicity:
-q<- c(0.5,0.5)
+q<- c(0.35,0.65)
 v<- matrix(c(0.2,0,-0.2))
-#Applying the function ei_gce to our databases. In this case datahp is the
-# data where we have our variable of interest
-#datahs is the data where we have the information for the disaggregation.
+#Applying the function ei_gce to our databases. In this case dataA is the
+#dataA where we have our variable of interest
+#dataB is the data where we have the information for the disaggregation.
 #w can be included if we have weights in both surveys
-result  <- ei_gce(fn,datahp,datahs,q=q,weights="w",v=v)
+result  <- ei_gce(fn,dataA,dataB,q=q,weights="w",v=v)
 }
 \references{
 Fernandez-Vazquez, E., Diaz-Dapena, A., Rubiera-Morollon, F., Viñuela, A., (2020) Spatial Disaggregation of Social Indicators: An Info-Metrics Approach. Social Indicators Research, 152(2), 809–821. https://doi.org/10.1007/s11205-020-02455-z.

@@ -4,23 +4,23 @@
 \alias{ei_gme}
 \title{Ecologic Inference applying entropy}
 \usage{
-ei_gme(fn, datahp, datahs, weights = NULL, tol, v, iter)
+ei_gme(fn, dataA, dataB, weights = NULL, tol, v, iter)
 }
 \arguments{
-\item{fn}{is the formula that represents the dependent variable in the optimization.
+\item{fn}{Is the formula that represents the dependent variable in the optimization.
 In the context of this function, 'fn' is used to define the dependent variable
 to be optimized by the entropy function.
 Note: If the dependent variable is categorical the sorting criterion for the columns, and therefore for J, is alphabetical order.}
 
-\item{datahp}{The data where the variable of interest y is available and also the independent variables.
-Note: The variables and weights used as independent variables must have the same name in 'datahp' and in 'datahs'
+\item{dataA}{The data where the variable of interest y is available and also the independent variables.
+Note: The variables and weights used as independent variables must have the same name in 'dataA' and in 'dataB'
 The variables in both databases need to match up in content.}
 
-\item{datahs}{The data with the information of the independent variables as a disaggregated level.
-Note: The variables and weights used as independent variables must be the same and must have the same name in 'datahp' and in 'datahs'}
+\item{dataB}{The data which contains information on the independent variables at a disaggregated level.
+Note: The variables and weights used as independent variables must be the same and must have the same name in 'dataA' and in 'dataB'}
 
-\item{weights}{A character string specifying the column name to be used as weights in both \code{datahp} and \code{datahs} datasets.
-If \code{weights} is provided and exists in both datasets, each dataset's weights will be normalized by the sum of the weights in that dataset.
+\item{weights}{A character string specifying the column name to be used as weights in both 'dataA' and 'dataB' datasets.
+If the argument \code{weights} is provided and present in both datasets,  the weights in each dataset will be normalized by the sum of the weights within that dataset.
 If \code{weights} is NULL or the specified column does not exist in both datasets, equal weights are applied across all observations.}
 
 \item{tol}{The tolerance to be applied in the optimization function. If the tolerance is not specified, the default tolerance has been set in 1e-10}
@@ -34,9 +34,10 @@ but can also increases computation time.If the maximum number of iterations is n
 \value{
 The function will provide you a dataframe called table with the next information:
 \itemize{
-\item \strong{probabilities}  Probabilities for each individual to each possibility j of the variable of interest y.
-\item \strong{error primal} Errors calculated to the j possibilities of y.
-\item \strong{predictions} The prediction for each individual is calculated as the sum of the probability plus the error primal.
+\item \strong{weights} The weights used in the optimization process.
+\item \strong{predictions}  The prediction for each individual is calculated as the sum of the probability plus the error.
+\item \strong{probabilities}  Probabilities for each individual to each possibility \code{j} of the variable of interest \code{y}.
+\item \strong{errors}  Errors calculated to the \code{j} possibilities of \code{y}.
 The function provides information about the optimization process as :
 \item \strong{value_of_entropy} The value of entropy resulting from the optimization.
 \item \strong{iterations} Indicates the times the objective function and the gradient has been evaluated during the optimization process
@@ -50,15 +51,15 @@ It is provided an object with the restrictions checked which should be approxima
 }
 The restriction g3 can be checked thoroughly with the objects by separate.
 \itemize{
-\item  \strong{cross moments hp} Cross moments in \code{datahp}.
-\item  \strong{cross moments hs} Cross moments in \code{datahs}.}
+\item  \strong{cross moments A} Cross moments in \code{dataA}.
+\item  \strong{cross moments B} Cross moments in \code{dataB}.}
 }
 \description{
 The function ei_gme defines the Shannon entropy function which takes a vector of probabilities as input and returns the negative
 sum of p times the natural logarithm of p.The function will set the optimization parameters and using the "nlminb" function an optimal
 solution is obtained.
-The function defines the independent variables in the two databases needed, which we call datahp with "n_hp" observations and datahs
-with "n_hs" observations; and the function of the binary variable of interest y. Then the weights of each observation for the two
+The function defines the independent variables in the two databases needed, which we call dataA with "n_A" observations and dataB
+with "n_B" observations; and the function of the binary variable of interest y. Then the weights of each observation for the two
 databases used are defined, if there are no weights available it will be 1.
 The errors are calculated pondering the support vector of dimension \code{var, 0, -var}. This support vector can be specified by the user.
 The default support vector is based on variance.We recommend a wider interval with v(1,0,-1) as the maximum.
@@ -73,17 +74,17 @@ In addition, the initial values of p are settled as a uniform distribution and t
 }
 \examples{
 #In this example we use the data of this package
-datahp <- financial()
-datahs <- social()
+dataA <- financial()
+dataB <- social()
 # Setting up our function for the dependent variable.
-fn               <- datahp$poor_liq ~ Dcollege+Totalincome+Dunemp
-#Applying the function ei_gme to our databases. In this case datahp
-#is the data where we have our variable of interest datahs is the data
+fn               <- dataA$poor_liq ~ Dcollege+Totalincome+Dunemp
+#Applying the function ei_gme to our databases. In this case dataA
+#is the data where we have our variable of interest dataB is the data
 # where we have the information for the disaggregation.
 #w can be included if we have weights in both surveys
 #Tolerance in this example is fixed in 1e-10 and v will be (1,0,-1)
 v=matrix(c(1, 0, -1), nrow = 1)
-result  <- ei_gme(fn=fn,datahp=datahp,datahs=datahs,weights="w",v=v)
+result  <- ei_gme(fn=fn,dataA=dataA,dataB=dataB,weights="w",v=v)
 }
 \references{
 Fernandez-Vazquez, E., Díaz-Dapena, A., Rubiera-Morollon, F., Viñuela, A., (2020) Spatial Disaggregation of Social Indicators: An Info-Metrics Approach. Social Indicators Research, 152(2), 809–821. https://doi.org/10.1007/s11205-020-02455-z.

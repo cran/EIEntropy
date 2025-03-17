@@ -1,3 +1,17 @@
+
+# EIEntropy 0.0.1.4 (2025-03-18)
+
+## Changes
+- Updated the names of objects in the output to improve clarity and consistency.
+- The following output objects have been renamed:
+  - `p_dual` → `probabilities`
+  - `e_dual` → `errors`
+- Added `q` to `output$values` to facilitate verifications and debugging.
+  
+### Bug Fixes
+- Fixed a bug in 'ei_gce()' where the 'q' argument always took the default value when the user provided a **vector** ignoring the input entered.
+- This issue **did not affect** cases where 'q' was a matrix ('matrix()'), which were already handled correctly.
+
 # EIEntropy 0.0.1.3 (2024-11-03)
 
 ### Bug Fixes
